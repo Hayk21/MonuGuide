@@ -2,22 +2,22 @@
 <items version="2" >
 
     <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/71d13a119bed0eda20ffd4b8b755c192be5d2c6a/output/jars/classes.jar"
-        jumboMode="false"
+        is-multidex="true"
+        jar="C:\Users\user\AndroidStudioProjects\MonuGuide\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
         optimize="true"
         revision="25.0.2"
-        sha1="0d5cbbbfe040201c7569478b70a13b58fd11aab4">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_cdaa1e2ec7544e51d3833c1984c7f2781bf94e49.jar" />
+        sha1="c82741bc129dd5f99f11a4ab8666ae24262053b6">
+        <dex dex="C:\Users\user\AndroidStudioProjects\MonuGuide\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_85debca0d23124cbacf32714345535c98b7017d9\classes.dex" />
     </item>
     <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/063aef9bc9ea4f0c6065fa8823d9d29933eefd35/output/jars/classes.jar"
-        jumboMode="false"
+        is-multidex="true"
+        jar="C:\Users\user\AndroidStudioProjects\MonuGuide\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
         optimize="true"
         revision="25.0.2"
-        sha1="48532a016bb0dfbe7970c147ce784598a515406b">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_85a30aa54a7a62d420d03cb58106ea2b5991d453.jar" />
+        sha1="53fa2d21ae2e56e60203b2f5e61c33fe38525f5e">
+        <dex dex="C:\Users\user\AndroidStudioProjects\MonuGuide\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_5c1be2e0a2fb98c19500f8aeba49450bfdb81d85\classes.dex" />
     </item>
 
 </items>
