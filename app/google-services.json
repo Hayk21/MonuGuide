@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "677587039095",
+    "firebase_url": "https://monuguide-aa957.firebaseio.com",
+    "project_id": "monuguide-aa957",
+    "storage_bucket": "monuguide-aa957.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:677587039095:android:2c2fb4ae989a9b7f",
+        "android_client_info": {
+          "package_name": "blue_team.com.monuguide"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "677587039095-c3dth1js6ri6o3iapfgp3kpeanjs87bk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "blue_team.com.monuguide",
+            "certificate_hash": "3fb650e0053ef2b89fc369af89c15b13e7890733"
+          }
+        },
+        {
+          "client_id": "677587039095-4u5042s9p87cqvije9p0vjolkn9upjoj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0eK7Qkr6kJL9GIN1kI4vzsPCrfA9e0zo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "677587039095-4u5042s9p87cqvije9p0vjolkn9upjoj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
