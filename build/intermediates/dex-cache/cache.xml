@@ -3,192 +3,21 @@
 
     <item
         is-multidex="false"
-        jar="/home/seda/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.2.2/d20be6a5ddd6f8cfd36ebf6dea329873a1c41f1b/jackson-core-2.2.2.jar"
+        jar="/home/seda/.android/build-cache/71d13a119bed0eda20ffd4b8b755c192be5d2c6a/output/jars/classes.jar"
         jumboMode="false"
         optimize="true"
         revision="25.0.2"
-        sha1="d20be6a5ddd6f8cfd36ebf6dea329873a1c41f1b">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/jackson-core-2.2.2_56886b53a7ef3f4ebd08e3cfa8fc353d92264a9d.jar" />
+        sha1="0d5cbbbfe040201c7569478b70a13b58fd11aab4">
+        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_cdaa1e2ec7544e51d3833c1984c7f2781bf94e49.jar" />
     </item>
     <item
         is-multidex="false"
-        jar="/home/seda/.android/build-cache/d480c622db07ee185a18029d3fdbf60c8c81da47/output/jars/classes.jar"
+        jar="/home/seda/.android/build-cache/063aef9bc9ea4f0c6065fa8823d9d29933eefd35/output/jars/classes.jar"
         jumboMode="false"
         optimize="true"
         revision="25.0.2"
-        sha1="30489a97b06cc3945bdbcc1770089af9e3b3b64d">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_a26440ceab0c1e4df2f2b09dd400d85485cb5ca9.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/45c00a1ccfdd9e97f4ce50e1022da0dbc79315a5/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="a378adc3106cb3560ab3dfed05f1fda26cff5b49">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_040d579ac87a1bbcf03b90f23f1604c3802aff53.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/048c64f3eee6416ab314d78550af1b128363066d/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="593fbaec1c3e100480a2bd72457b64b7dde6ac2d">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_a76cecc214215d362258164070d3dc531f243735.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/b851b84c4b811588bc6c4db62c98cafc2c1b6f62/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="fa6c324604383981fb74c4cb036d4171ed0a9a02">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_ed5389e2b0d7dc805dc4a6aaac5c671676cebfba.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/2d0a41c01a19aacd3149269933ac29c82fb626f3/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="e791f7f2fbf9ca5b3b576916533f844dfb384024">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_c98000720d8b85376ff10408dea264347ae4204e.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/191c5303863dbafdb42ee3f31ddda4997dbf6a01/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="44120508d7240c3e34a05957981a5c3c9b9f61aa">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_9a2196b77d74252da08fe66e9db376a936651dd7.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/05266ffa771d5c15a757b1ac47f168958f470650/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="4838df6db988160b107e954e02a745370df543b6">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_83cb6b1d6ed64915bb3d31ff2215d03a9bdc2c21.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/ea3335f6dab92fb5535e8ee62401eb2d179caa4c/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="33203b081101ca6242a4cd746aafe5fc2dd98a34">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_e466455dda99694f41c9b92f83e0579dde1ff57a.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.2.2/285cb9c666f0f0f3dd8a1be04e1f457eb7b15113/jackson-annotations-2.2.2.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="285cb9c666f0f0f3dd8a1be04e1f457eb7b15113">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/jackson-annotations-2.2.2_2186c4fd98a230f0dee887a9ef3dc063c5a2738c.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/de6657d2bd630a955e1b65edb636a2caad5a8fd5/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="20ca7888c59f63d439f218a8810c88039f8bc7db">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_802ebda9935768aa8ea0d07721fa6e29029a13bd.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/821564d4319b5cb9c2bea316103fc8b7e0e0796f/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="dd7676ac12aa6653718b7ea33d93ce9d6915d526">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_40239f7394c3c85011818e45655f872f5901fc54.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/73cf9ec8be097968ffaaf69eb89bc3ee47b48409/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="dc4c18602ecffb3e69cda6cdc51ba4feac0f97d7">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_6465ac88dfc59249fc09690e972bc93691787186.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/cb7c74ad7ca3a25ad36e68897f6e3d29c57639a4/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="d7572433ba21aa9e4624c819fa738b2748b82d05">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_3f6124591d307c261007a63ffd164e96949bb177.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/3b3b54b058bcb5724e378ed05913b758905dc25a/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="363f626ad5686283250cdb6073ae1bba5cb07a87">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_252d4421282963722363437bd22b537155ee8f2e.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.gradle/caches/modules-2/files-2.1/com.firebase/firebase-client-jvm/2.3.1/4d53b7d6983247af02b8fe7e4228fff555a5e828/firebase-client-jvm-2.3.1.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="4d53b7d6983247af02b8fe7e4228fff555a5e828">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/firebase-client-jvm-2.3.1_fbed6adce3a05becb1ef7cc849b984edf7416ac6.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.gradle/caches/modules-2/files-2.1/com.firebase/tubesock/0.0.11/d37cb67277928cf59344b4196af8d9cee1f1a27c/tubesock-0.0.11.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="d37cb67277928cf59344b4196af8d9cee1f1a27c">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/tubesock-0.0.11_a0f523e39c86b89c689e9f616f251a6ecb73fdbc.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/e648885bd0b2c04e428d705dcd88344d6434072b/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="0595e77431edaba6793410f9bfa3603c063c58e7">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_951d8e41508fcf8b189037995d856dd7d8897288.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.android/build-cache/68d42fe4d3f0706accfe602d4d1b32ec22df533f/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="fb15fd9774b5c51dcb39d8e6fa1b6f06bcd1cd34">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_a23c338ea2de379ebeaaf5a92e1d95f926abec4a.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.gradle/caches/modules-2/files-2.1/com.firebase/firebase-client-android/2.3.1/be29b24233711c419ce935aa0a1b12ebc49d1c9a/firebase-client-android-2.3.1.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="be29b24233711c419ce935aa0a1b12ebc49d1c9a">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/firebase-client-android-2.3.1_6bfa3bf5db6ab8dd5de57a6d7b70d6636746838d.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/home/seda/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.2.2/3c8f6018eaa72d43b261181e801e6f8676c16ef6/jackson-databind-2.2.2.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="25.0.2"
-        sha1="3c8f6018eaa72d43b261181e801e6f8676c16ef6">
-        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/jackson-databind-2.2.2_9d611e9ad3439e9f649af397f32d584fbbb8cf8d.jar" />
+        sha1="48532a016bb0dfbe7970c147ce784598a515406b">
+        <dex dex="/home/seda/AndroidStudioProjects/MonuGuide/app/build/intermediates/pre-dexed/debug/classes_85a30aa54a7a62d420d03cb58106ea2b5991d453.jar" />
     </item>
 
 </items>
