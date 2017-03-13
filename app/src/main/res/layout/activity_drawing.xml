@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/paint_view_back"
+    tools:context="blue_team.com.monuguide.activities.DrawingActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:id="@+id/list_of_res"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/small_brush"
+        android:layout_centerHorizontal="true">
+
+        <ImageButton
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:id="@+id/create_button"
+            android:background="@color/paint_view_back"
+            android:paddingLeft="7dp"
+            android:paddingRight="7dp"
+            android:src="@mipmap/new_page_icon"/>
+
+        <ImageButton
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:id="@+id/brush_button"
+            android:background="@color/paint_view_back"
+            android:paddingLeft="7dp"
+            android:paddingRight="7dp"
+            android:src="@mipmap/brush_icon"/>
+
+        <ImageButton
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:id="@+id/eraser_button"
+            android:background="@color/paint_view_back"
+            android:paddingLeft="7dp"
+            android:paddingRight="7dp"
+            android:src="@mipmap/eraser_icon"/>
+
+        <ImageButton
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:id="@+id/save_button"
+            android:background="@color/paint_view_back"
+            android:paddingLeft="7dp"
+            android:paddingRight="7dp"
+            android:src="@mipmap/save_icon"/>
+
+    </LinearLayout>
+
+    <blue_team.com.monuguide.custom_views.PaintView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_below="@+id/list_of_res"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/paintView"
+        android:background="@android:color/white"
+        android:layout_marginRight="@dimen/small_brush"
+        android:layout_marginLeft="@dimen/small_brush"
+        android:layout_above="@+id/list_of_colors_1" />
+
+    <LinearLayout
+        android:id="@+id/list_of_colors_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/small_brush"
+        android:layout_centerHorizontal="true">
+
+        <ImageButton
+            android:layout_width="@dimen/big_brush"
+            android:layout_height="@dimen/big_brush"
+            android:layout_margin="2dp"
+            android:background="@color/paint_red"
+            android:src="@drawable/paint"
+            android:tag="#d61919" />
+
+        <ImageButton
+            android:layout_width="@dimen/big_brush"
+            android:layout_height="@dimen/big_brush"
+            android:layout_margin="2dp"
+            android:background="@color/paint_blue"
+            android:src="@drawable/paint"
+            android:tag="#49b3ce" />
+
+        <ImageButton
+            android:layout_width="@dimen/big_brush"
+            android:layout_height="@dimen/big_brush"
+            android:layout_margin="2dp"
+            android:background="@color/paint_orange"
+            android:src="@drawable/paint"
+            android:tag="#ec8117" />
+
+        <ImageButton
+            android:layout_width="@dimen/big_brush"
+            android:layout_height="@dimen/big_brush"
+            android:layout_margin="2dp"
+            android:background="@color/paint_grey"
+            android:src="@drawable/paint"
+            android:tag="#5c5454" />
+
+        <ImageButton
+            android:layout_width="@dimen/big_brush"
+            android:layout_height="@dimen/big_brush"
+            android:layout_margin="2dp"
+            android:background="@color/paint_dark_green"
+            android:src="@drawable/paint"
+            android:tag="#2c592a" />
+
+        <ImageButton
+            android:layout_width="@dimen/big_brush"
+            android:layout_height="@dimen/big_brush"
+            android:layout_margin="2dp"
+            android:background="@color/paint_dark_fiolet"
+            android:src="@drawable/paint"
+            android:tag="#9128b4" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/list_of_colors_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_above="@+id/list_of_colors_2"
+        android:layout_centerHorizontal="true">
+
+        <ImageButton
+            android:layout_width="@dimen/big_brush"
+            android:layout_height="@dimen/big_brush"
+            android:layout_margin="2dp"
+            android:background="@color/paint_black"
+            android:src="@drawable/paint"
+            android:tag="#0e0b0b" />
+
+        <ImageButton
+            android:layout_width="@dimen/big_brush"
+            android:layout_height="@dimen/big_brush"
+            android:layout_margin="2dp"
+            android:background="@color/paint_dark_red"
+            android:src="@drawable/paint"
+            android:tag="#FF660000" />
+
+        <ImageButton
+            android:layout_width="@dimen/big_brush"
+            android:layout_height="@dimen/big_brush"
+            android:layout_margin="2dp"
+            android:background="@color/paint_dark_blue"
+            android:src="@drawable/paint"
+            android:tag="#2140a7" />
+
+        <ImageButton
+            android:layout_width="@dimen/big_brush"
+            android:layout_height="@dimen/big_brush"
+            android:layout_margin="2dp"
+            android:background="@color/paint_yellow"
+            android:src="@drawable/paint"
+            android:tag="#f2e70e" />
+
+        <ImageButton
+            android:layout_width="@dimen/big_brush"
+            android:layout_height="@dimen/big_brush"
+            android:layout_margin="2dp"
+            android:background="@color/paint_green"
+            android:src="@drawable/paint"
+            android:tag="#3ee125" />
+
+        <ImageButton
+            android:layout_width="@dimen/big_brush"
+            android:layout_height="@dimen/big_brush"
+            android:layout_margin="2dp"
+            android:background="@color/paint_fiolet"
+            android:src="@drawable/paint"
+            android:tag="#e21ecf" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>
