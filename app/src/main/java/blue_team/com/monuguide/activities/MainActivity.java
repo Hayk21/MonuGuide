@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sharedPref = getSharedPreferences(NAME_OF_PREFERENCE, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(NAME_OF_PREFERENCE, false);
-        editor.commit();
+        editor.apply();
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

@@ -18,22 +18,33 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.activities.MainActivity;
+import blue_team.com.monuguide.activities.SettingsActivity;
+import blue_team.com.monuguide.firebase.FireHelper;
+import blue_team.com.monuguide.models.Monument;
 
 import static blue_team.com.monuguide.activities.MainActivity.NAME_OF_PREFERENCE;
 
 public class LocationService extends Service {
-    private LocationManager locationManager, second_locationManager;
-    Notification notification;
-    Intent intent;
+    private LocationManager locationManager;
+    Notification foregroundNotification;
+    Intent foregroundIntent;
     PendingIntent pendingIntent;
     private static final int ID_FOR_FOREGROUND = 1;
+    boolean isConnected = false;
+    FireHelper fireHelper = new FireHelper();
+    List<Monument> list_of_monument = new ArrayList<>();
 
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            Toast.makeText(LocationService.this, "New Cordinates", Toast.LENGTH_SHORT).show();
+            list_of_monument = fireHelper.getMonuments(location.getLatitude(),location.getLongitude(),1);
+            if(list_of_monument != null)
+                Toast.makeText(LocationService.this, "New Cordinates", Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -58,22 +69,22 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        second_locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        isConnected = false;
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isConnect()) {
-            intent = new Intent(this, MainActivity.class);
-            pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            isConnected = true;
+            foregroundIntent = new Intent(this, MainActivity.class);
+            pendingIntent = PendingIntent.getActivity(this, 0, foregroundIntent, 0);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
             builder.setSmallIcon(R.mipmap.ic_launcher).setContentText("Location Service is run").setContentTitle("MonuGuide").setAutoCancel(true).setWhen(System.currentTimeMillis()).setDefaults(Notification.DEFAULT_SOUND).setContentIntent(pendingIntent);
-            notification = builder.build();
-            startForeground(ID_FOR_FOREGROUND, notification);
+            foregroundNotification = builder.build();
+            startForeground(ID_FOR_FOREGROUND, foregroundNotification);
             SharedPreferences sharedPref = getSharedPreferences(NAME_OF_PREFERENCE, MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putBoolean(NAME_OF_PREFERENCE, true);
-            editor.commit();
+            editor.apply();
         } else {
             stopSelf();
-            locationManager = null;
         }
     }
 
@@ -82,8 +93,8 @@ public class LocationService extends Service {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
         } else if (isConnect()) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 5, locationListener);
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5, 5, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 5, locationListener);
             Toast.makeText(this, "Location Service Run", Toast.LENGTH_SHORT).show();
         }
         return START_STICKY;
@@ -97,20 +108,20 @@ public class LocationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (locationManager != null)
+        if (isConnected)
             locationManager.removeUpdates(locationListener);
         stopForeground(true);
         SharedPreferences sharedPref = getSharedPreferences(NAME_OF_PREFERENCE, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(NAME_OF_PREFERENCE, false);
-        editor.commit();
+        editor.apply();
 
     }
 
     private boolean isConnect() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED || second_locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED || locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             return true;
         } else
             return false;

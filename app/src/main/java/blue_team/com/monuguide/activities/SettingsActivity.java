@@ -26,8 +26,9 @@ import blue_team.com.monuguide.Services.LocationService;
 public class SettingsActivity extends AppCompatPreferenceActivity implements Preference.OnPreferenceChangeListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 17;
-    Intent intent;
+    public static final String KEY_OF_LIST_RADIUS = "notifications_new_message_radius";
     public static final String KEY_OF_FUNCTION = "notifications_new_message";
+    Intent intent;
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object o) {
@@ -38,6 +39,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Pre
             // the preference's 'entries' list.
             ListPreference listPreference = (ListPreference) preference;
             int index = listPreference.findIndexOfValue(stringValue);
+
+
 
             // Set the summary to reflect the new value.
             preference.setSummary(

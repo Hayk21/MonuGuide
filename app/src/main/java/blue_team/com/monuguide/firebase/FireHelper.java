@@ -72,6 +72,8 @@ public class FireHelper {
             }
         }
 
+        if(!monList.isEmpty())
         return monList;
+        else return null;
     }
 }
