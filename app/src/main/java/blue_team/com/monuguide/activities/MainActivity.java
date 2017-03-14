@@ -1,5 +1,6 @@
 package blue_team.com.monuguide.activities;
 
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;

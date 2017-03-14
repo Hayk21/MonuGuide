@@ -2,6 +2,7 @@ package blue_team.com.monuguide.Services;
 
 import android.Manifest;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -12,14 +13,20 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompatExtras;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.activities.MainActivity;
@@ -37,14 +44,36 @@ public class LocationService extends Service {
     private static final int ID_FOR_FOREGROUND = 1;
     boolean isConnected = false;
     FireHelper fireHelper = new FireHelper();
-    List<Monument> list_of_monument = new ArrayList<>();
+    List<Monument> listOfMonument, listOfFindedMonuments, showMonuments;
+    boolean isEqual = false;
+    Handler mHandler;
+    MyTask myTask = new MyTask();
+    NotificationManager manager;
+
 
     LocationListener locationListener = new LocationListener() {
         @Override
-        public void onLocationChanged(Location location) {
-            list_of_monument = fireHelper.getMonuments(location.getLatitude(),location.getLongitude(),1);
-            if(list_of_monument != null)
-                Toast.makeText(LocationService.this, "New Cordinates", Toast.LENGTH_SHORT).show();
+        public void onLocationChanged(final Location location) {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+            builder.setContentTitle("Service").setContentText("kgthjtt").setSmallIcon(R.mipmap.brush_icon);
+                NotificationCompat.Style inbox = new android.support.v4.app.NotificationCompat.InboxStyle();
+            inbox.setBuilder(builder);
+            builder.setGroup("OK");
+            Notification notification1 = builder.build();
+
+            manager.notify(3,notification1);
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LocationService.this);
+            Log.d("Log_Tag2", sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0"));
+            listOfMonument = fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), Double.valueOf(sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0")));
+            showMonuments = myTask.doInBackground(null);
+            if (showMonuments != null) {
+                Toast.makeText(LocationService.this, "Eeeeeeeeeeeeeeee", Toast.LENGTH_SHORT).show();
+                builder.setContentText("ayo");
+                builder.setGroup("OK");
+                Notification notification2 = builder.build();
+                manager.notify(4,notification2);
+            }
+
         }
 
         @Override
@@ -72,6 +101,9 @@ public class LocationService extends Service {
         isConnected = false;
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isConnect()) {
+            manager = (NotificationManager)getApplicationContext().getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
+            mHandler = new ConsoleHandler();
+            listOfFindedMonuments = new ArrayList<>();
             isConnected = true;
             foregroundIntent = new Intent(this, MainActivity.class);
             pendingIntent = PendingIntent.getActivity(this, 0, foregroundIntent, 0);
@@ -125,6 +157,43 @@ public class LocationService extends Service {
             return true;
         } else
             return false;
+    }
+
+    class MyTask extends AsyncTask {
+        List<Monument> resultMon;
+
+
+        @Override
+        protected List<Monument> doInBackground(Object[] objects) {
+            resultMon = new ArrayList<>();
+            if (listOfMonument != null) {
+                if (listOfFindedMonuments.isEmpty()) {
+                    for (Monument monument : listOfMonument)
+                        listOfFindedMonuments.add(monument);
+                    return listOfFindedMonuments;
+
+
+                } else {
+                    for (Monument monument : listOfMonument) {
+                        for (Monument findMon : listOfFindedMonuments) {
+                            if (monument.equals(findMon)) {
+                                isEqual = true;
+                                break;
+                            }
+                        }
+                        if (!isEqual) {
+                            listOfFindedMonuments.add(monument);
+                            resultMon.add(monument);
+                        }
+                        isEqual = false;
+                    }
+                    if (!resultMon.isEmpty())
+                        return resultMon;
+                    else return null;
+                }
+            } else return null;
+
+        }
     }
 
 }
