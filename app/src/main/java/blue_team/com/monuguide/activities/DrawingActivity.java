@@ -2,6 +2,7 @@ package blue_team.com.monuguide.activities;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +23,12 @@ public class DrawingActivity extends AppCompatActivity {
     AlertDialog alertDialog;
     final static public int SMALL_BRUSH = 10, MEDIUM_BRUSH = 30, BIG_BRUSH = 50;
     final static public int SMALL_ERASER = 30, MEDIUM_ERASER = 60, BIG_ERASER = 90;
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
 
 
     View.OnClickListener OnColorItemClickListtener = new View.OnClickListener() {
@@ -135,6 +142,7 @@ public class DrawingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawing);
+        setupActionBar();
 
         paintView = (PaintView) findViewById(R.id.paintView);
         FirstListOfColors = (LinearLayout) findViewById(R.id.list_of_colors_1);

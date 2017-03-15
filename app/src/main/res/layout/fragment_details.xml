@@ -1,0 +1,92 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/paint_view_back"
+    tools:context="blue_team.com.monuguide.fragments.DetailsFragment">
+
+
+    <ImageView
+        android:id="@+id/monument_img"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:layout_margin="@dimen/small_brush"
+        android:scaleType="fitStart"
+        android:src="@drawable/nyc_1"
+        android:adjustViewBounds="true"
+        android:layout_above="@+id/short_desc"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:maxLines="4"
+        android:layout_height="wrap_content"
+        android:text="TITTLE OF TE IMG JBJJKJ GIIITKK RKGJGMGKBK BJJBJH
+MBJHM BMJBJ H MHMJNMBMG G GMGMGG  GG MN G
+MBJNG NNGJBHJHJHJHJH JJGNJBIKMGN JGJTJVFGNH"
+        android:textColor="@color/paint_black"
+        android:id="@+id/short_desc"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+    <LinearLayout
+        android:id="@+id/linear_comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="23dp"
+        android:layout_marginStart="23dp"
+        android:layout_marginTop="23dp"
+        android:layout_below="@+id/short_desc"
+        android:layout_alignLeft="@+id/short_desc"
+        android:layout_alignStart="@+id/short_desc">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@mipmap/comment_icon"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/paint_black"
+            android:text="Notes"
+            android:textSize="20sp"
+            android:layout_weight="3"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_heart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/short_desc"
+        android:layout_alignRight="@+id/short_desc"
+        android:layout_marginTop="23dp"
+        android:layout_marginRight="23dp"
+        android:layout_marginEnd="23dp"
+        android:layout_alignEnd="@+id/short_desc">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/short_desc"
+            android:layout_alignRight="@+id/short_desc"
+            android:layout_below="@+id/short_desc"
+            app:srcCompat="@mipmap/heart_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/paint_black"
+            android:text="Add to Favorites"
+            android:textSize="20sp"
+            android:layout_weight="3"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
+</RelativeLayout>

@@ -1,9 +1,12 @@
 package blue_team.com.monuguide.models;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.HashMap;
 
-public class Monument {
+public class Monument implements Parcelable {
 
         private String id;
         private String name;
@@ -19,7 +22,29 @@ public class Monument {
         }
 
 
-        public String getId() {
+    protected Monument(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        desc = in.readString();
+        image = in.readString();
+        urlMon = in.readString();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
+    }
+
+    public static final Creator<Monument> CREATOR = new Creator<Monument>() {
+        @Override
+        public Monument createFromParcel(Parcel in) {
+            return new Monument(in);
+        }
+
+        @Override
+        public Monument[] newArray(int size) {
+            return new Monument[size];
+        }
+    };
+
+    public String getId() {
             return id;
         }
 
@@ -82,4 +107,20 @@ public class Monument {
         public void setLongitude(double longitude) {
             this.longitude = longitude;
         }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(name);
+        parcel.writeString(desc);
+        parcel.writeString(image);
+        parcel.writeString(urlMon);
+        parcel.writeDouble(latitude);
+        parcel.writeDouble(longitude);
+    }
 }

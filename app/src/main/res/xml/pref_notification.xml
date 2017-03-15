@@ -14,7 +14,7 @@
         android:dependency="notifications_new_message"
         android:key="notifications_new_message_radius"
         android:title="Radius"
-        android:defaultValue="5"
+        android:defaultValue="@string/default_radius"
         android:entries="@array/list_of_radius_titles"
         android:entryValues="@array/list_of_radius_values"/>
 

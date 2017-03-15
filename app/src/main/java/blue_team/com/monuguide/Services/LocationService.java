@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompatExtras;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -55,23 +54,20 @@ public class LocationService extends Service {
         @Override
         public void onLocationChanged(final Location location) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
-            builder.setContentTitle("Service").setContentText("kgthjtt").setSmallIcon(R.mipmap.brush_icon);
-                NotificationCompat.Style inbox = new android.support.v4.app.NotificationCompat.InboxStyle();
-            inbox.setBuilder(builder);
-            builder.setGroup("OK");
-            Notification notification1 = builder.build();
+            builder.setContentTitle("Theare is Monument").setSmallIcon(R.mipmap.brush_icon);
 
-            manager.notify(3,notification1);
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LocationService.this);
             Log.d("Log_Tag2", sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0"));
             listOfMonument = fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), Double.valueOf(sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0")));
-            showMonuments = myTask.doInBackground(null);
             if (showMonuments != null) {
-                Toast.makeText(LocationService.this, "Eeeeeeeeeeeeeeee", Toast.LENGTH_SHORT).show();
-                builder.setContentText("ayo");
-                builder.setGroup("OK");
-                Notification notification2 = builder.build();
-                manager.notify(4,notification2);
+                for (Monument monument:showMonuments){
+                builder.setContentText(monument.getName() + " is finded near you.");
+                    Intent intent = new Intent(LocationService.this,MainActivity.class);
+                    intent.putExtra("monument",monument);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(LocationService.this,0,intent,0);
+                    builder.setContentIntent(pendingIntent);
+                    Notification notification = builder.build();
+                manager.notify(4,notification);}
             }
 
         }
@@ -101,7 +97,7 @@ public class LocationService extends Service {
         isConnected = false;
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isConnect()) {
-            manager = (NotificationManager)getApplicationContext().getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
+            manager = (NotificationManager)getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
             mHandler = new ConsoleHandler();
             listOfFindedMonuments = new ArrayList<>();
             isConnected = true;

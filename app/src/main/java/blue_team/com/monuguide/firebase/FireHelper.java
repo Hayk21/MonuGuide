@@ -1,6 +1,8 @@
 package blue_team.com.monuguide.firebase;
 
 
+import android.util.Log;
+
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -72,6 +74,7 @@ public class FireHelper {
             }
         }
 
+        Log.d("Log_Tag", String.valueOf(pRadius));
         if(!monList.isEmpty())
         return monList;
         else return null;

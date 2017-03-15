@@ -1,8 +1,8 @@
 package blue_team.com.monuguide.activities;
 
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
@@ -19,17 +19,26 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.fragments.DetailsFragment;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
+import blue_team.com.monuguide.models.Monument;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,DetailsFragment.OnFragmentInteractionListener {
 
     public static final String NAME_OF_PREFERENCE = "Service_runing";
+    Fragment detailsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Monument monument;
+        Intent intent = getIntent();
+        if(intent!=null)
+            if (intent.getExtras() != null)
+                if(intent.getParcelableExtra("monument") != null)
+            monument = intent.getExtras().getParcelable("monument");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         SharedPreferences sharedPref = getSharedPreferences(NAME_OF_PREFERENCE, MODE_PRIVATE);
@@ -37,10 +46,12 @@ public class MainActivity extends AppCompatActivity
         editor.putBoolean(NAME_OF_PREFERENCE, false);
         editor.apply();
 
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        final FragmentManager fragmentManager = getFragmentManager();
+        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment mapStatueFragment = new MapStatueFragment();
-        fragmentTransaction.add(R.id.container, mapStatueFragment, "mapFragment");
+        detailsFragment = new DetailsFragment();
+        fragmentTransaction.addToBackStack("Yes");
+        fragmentTransaction.add(R.id.container,mapStatueFragment,"detailsfragmet");
         fragmentTransaction.commit();
 
 
@@ -48,8 +59,12 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,DrawingActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(MainActivity.this,DrawingActivity.class);
+//                startActivity(intent);
+                FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
+                fragmentTransaction1.replace(R.id.container,detailsFragment,"ok");
+                fragmentTransaction1.addToBackStack("Yes");
+                fragmentTransaction1.commit();
             }
         });
 
@@ -120,5 +135,10 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }
