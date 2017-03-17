@@ -32,6 +32,8 @@
     <string name="pref_title_vibrate">Vibrate</string>
 
     <string name="default_radius">1</string>
+    <string name="comment_text">Notes</string>
+    <string name="favorites_text">Add to Favorites</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

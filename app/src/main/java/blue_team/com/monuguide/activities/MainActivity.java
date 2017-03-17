@@ -1,7 +1,6 @@
 package blue_team.com.monuguide.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -19,39 +18,55 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.Services.LocationService;
 import blue_team.com.monuguide.fragments.DetailsFragment;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
 import blue_team.com.monuguide.models.Monument;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,DetailsFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, DetailsFragment.OnFragmentInteractionListener {
 
     public static final String NAME_OF_PREFERENCE = "Service_runing";
-    Fragment detailsFragment;
+    public static final String ARGUMENT_WITH_MONUMENT = "CurrentMonument";
+    public static final String HEADER_BACKSTACK = "HeaderBackStack";
+    Fragment mDetailsFragment, mMapStatueFragment;
+    Monument monument;
+    Intent mActivityIntent;
+    FragmentManager fragmentManager;
+    FragmentTransaction fragmentTransaction;
+    Bundle args;
+    public static ActionBarDrawerToggle toggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Monument monument;
-        Intent intent = getIntent();
-        if(intent!=null)
-            if (intent.getExtras() != null)
-                if(intent.getParcelableExtra("monument") != null)
-            monument = intent.getExtras().getParcelable("monument");
+        mActivityIntent = getIntent();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        SharedPreferences sharedPref = getSharedPreferences(NAME_OF_PREFERENCE, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean(NAME_OF_PREFERENCE, false);
-        editor.apply();
 
-        final FragmentManager fragmentManager = getFragmentManager();
-        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment mapStatueFragment = new MapStatueFragment();
-        detailsFragment = new DetailsFragment();
-        fragmentTransaction.addToBackStack("Yes");
-        fragmentTransaction.add(R.id.container,mapStatueFragment,"detailsfragmet");
+        fragmentManager = getFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        mMapStatueFragment = new MapStatueFragment();
+        mDetailsFragment = new DetailsFragment();
+        if (mActivityIntent.getExtras() != null) {
+            if (mActivityIntent.getParcelableExtra(LocationService.SHOWING_MONUMENT) != null) {
+                monument = mActivityIntent.getExtras().getParcelable(LocationService.SHOWING_MONUMENT);
+                args = new Bundle();
+                args.putParcelable(ARGUMENT_WITH_MONUMENT, monument);
+                mDetailsFragment.setArguments(args);
+                fragmentTransaction.add(R.id.container, mDetailsFragment);
+
+                this.getIntent().removeExtra(LocationService.SHOWING_MONUMENT);
+            } else {
+                fragmentTransaction.add(R.id.container, mMapStatueFragment, "MapFragment");
+                fragmentTransaction.addToBackStack(HEADER_BACKSTACK);
+            }
+        } else {
+            fragmentTransaction.add(R.id.container, mMapStatueFragment, "MapFragment");
+            fragmentTransaction.addToBackStack(HEADER_BACKSTACK);
+        }
         fragmentTransaction.commit();
 
 
@@ -59,17 +74,13 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(MainActivity.this,DrawingActivity.class);
-//                startActivity(intent);
-                FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
-                fragmentTransaction1.replace(R.id.container,detailsFragment,"ok");
-                fragmentTransaction1.addToBackStack("Yes");
-                fragmentTransaction1.commit();
+                Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
+                startActivity(intent);
             }
         });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
@@ -84,7 +95,7 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            this.finish();
         }
     }
 
@@ -123,7 +134,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
-            Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_share) {
@@ -141,4 +152,5 @@ public class MainActivity extends AppCompatActivity
     public void onFragmentInteraction(Uri uri) {
 
     }
+
 }

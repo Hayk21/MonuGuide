@@ -13,10 +13,11 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
@@ -24,8 +25,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.activities.MainActivity;
@@ -36,39 +35,32 @@ import blue_team.com.monuguide.models.Monument;
 import static blue_team.com.monuguide.activities.MainActivity.NAME_OF_PREFERENCE;
 
 public class LocationService extends Service {
-    private LocationManager locationManager;
-    Notification foregroundNotification;
-    Intent foregroundIntent;
-    PendingIntent pendingIntent;
-    private static final int ID_FOR_FOREGROUND = 1;
+    private static final int ID_FOR_FOREGROUND = 127;
+    public static final String SHOWING_MONUMENT = "ShowingMonument";
+
+    LocationManager locationManager;
+    NotificationManager mNotManager;
+    NotificationCompat.Builder mBuilder;
+    Notification foregroundNotification, monumentNotification;
+    Intent foregroundIntent, monumentIntent;
+    PendingIntent foregroundPendingIntent, monumentPendingIntent;
     boolean isConnected = false;
     FireHelper fireHelper = new FireHelper();
     List<Monument> listOfMonument, listOfFindedMonuments, showMonuments;
     boolean isEqual = false;
-    Handler mHandler;
-    MyTask myTask = new MyTask();
-    NotificationManager manager;
+    Thread thread;
+    int notifID;
+    long[] mVibrateTime = {300,200,300,200,300};
 
 
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(final Location location) {
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
-            builder.setContentTitle("Theare is Monument").setSmallIcon(R.mipmap.brush_icon);
-
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LocationService.this);
             Log.d("Log_Tag2", sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0"));
             listOfMonument = fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), Double.valueOf(sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0")));
-            if (showMonuments != null) {
-                for (Monument monument:showMonuments){
-                builder.setContentText(monument.getName() + " is finded near you.");
-                    Intent intent = new Intent(LocationService.this,MainActivity.class);
-                    intent.putExtra("monument",monument);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(LocationService.this,0,intent,0);
-                    builder.setContentIntent(pendingIntent);
-                    Notification notification = builder.build();
-                manager.notify(4,notification);}
-            }
+
+            testForNotification();
 
         }
 
@@ -97,20 +89,7 @@ public class LocationService extends Service {
         isConnected = false;
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isConnect()) {
-            manager = (NotificationManager)getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
-            mHandler = new ConsoleHandler();
-            listOfFindedMonuments = new ArrayList<>();
-            isConnected = true;
-            foregroundIntent = new Intent(this, MainActivity.class);
-            pendingIntent = PendingIntent.getActivity(this, 0, foregroundIntent, 0);
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-            builder.setSmallIcon(R.mipmap.ic_launcher).setContentText("Location Service is run").setContentTitle("MonuGuide").setAutoCancel(true).setWhen(System.currentTimeMillis()).setDefaults(Notification.DEFAULT_SOUND).setContentIntent(pendingIntent);
-            foregroundNotification = builder.build();
-            startForeground(ID_FOR_FOREGROUND, foregroundNotification);
-            SharedPreferences sharedPref = getSharedPreferences(NAME_OF_PREFERENCE, MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putBoolean(NAME_OF_PREFERENCE, true);
-            editor.apply();
+            startServiceOperation();
         } else {
             stopSelf();
         }
@@ -139,11 +118,30 @@ public class LocationService extends Service {
         if (isConnected)
             locationManager.removeUpdates(locationListener);
         stopForeground(true);
-        SharedPreferences sharedPref = getSharedPreferences(NAME_OF_PREFERENCE, MODE_PRIVATE);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(NAME_OF_PREFERENCE, false);
         editor.apply();
 
+    }
+
+    private void startServiceOperation() {
+        mNotManager = (NotificationManager) getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
+        mBuilder = new NotificationCompat.Builder(getApplicationContext());
+        showMonuments = new ArrayList<>();
+        listOfFindedMonuments = new ArrayList<>();
+        isConnected = true;
+        notifID = 0;
+        foregroundIntent = new Intent(this, SettingsActivity.class);
+        foregroundPendingIntent = PendingIntent.getActivity(this, 0, foregroundIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher).setContentText("Location Service is run").setContentTitle("MonuGuide").setAutoCancel(true).setWhen(System.currentTimeMillis()).setDefaults(Notification.DEFAULT_SOUND).setContentIntent(foregroundPendingIntent);
+        foregroundNotification = mBuilder.build();
+        startForeground(ID_FOR_FOREGROUND, foregroundNotification);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(NAME_OF_PREFERENCE, true);
+        editor.apply();
     }
 
     private boolean isConnect() {
@@ -155,40 +153,63 @@ public class LocationService extends Service {
             return false;
     }
 
-    class MyTask extends AsyncTask {
-        List<Monument> resultMon;
 
+    public void testForNotification() {
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        @Override
-        protected List<Monument> doInBackground(Object[] objects) {
-            resultMon = new ArrayList<>();
-            if (listOfMonument != null) {
-                if (listOfFindedMonuments.isEmpty()) {
-                    for (Monument monument : listOfMonument)
-                        listOfFindedMonuments.add(monument);
-                    return listOfFindedMonuments;
-
-
-                } else {
-                    for (Monument monument : listOfMonument) {
-                        for (Monument findMon : listOfFindedMonuments) {
-                            if (monument.equals(findMon)) {
-                                isEqual = true;
-                                break;
-                            }
-                        }
-                        if (!isEqual) {
+                showMonuments = null;
+                if (listOfMonument != null) {
+                    if (listOfFindedMonuments.isEmpty()) {
+                        for (Monument monument : listOfMonument)
                             listOfFindedMonuments.add(monument);
-                            resultMon.add(monument);
-                        }
-                        isEqual = false;
-                    }
-                    if (!resultMon.isEmpty())
-                        return resultMon;
-                    else return null;
-                }
-            } else return null;
+                        showMonuments = listOfFindedMonuments;
+                        showNotification();
 
+
+                    } else {
+                        for (Monument monument : listOfMonument) {
+                            for (Monument findMon : listOfFindedMonuments) {
+                                if (monument.equals(findMon)) {
+                                    isEqual = true;
+                                    break;
+                                }
+                            }
+                            if (!isEqual) {
+                                listOfFindedMonuments.add(monument);
+                                showMonuments.add(monument);
+                            }
+                            isEqual = false;
+                        }
+                        if (showMonuments != null) {
+                            showNotification();
+                        }
+                    }
+                }
+
+            }
+        });
+        thread.run();
+    }
+
+    private void showNotification() {
+        for (Monument monument : showMonuments) {
+            mBuilder = new NotificationCompat.Builder(this);
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LocationService.this);
+            if(sharedPreferences.getBoolean(SettingsActivity.KEY_OF_VIBRATE,false))
+                mBuilder.setVibrate(mVibrateTime);
+            Log.d("Log_Tag",sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE,""));
+            if(sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE,"")!=""){
+                mBuilder.setSound(Uri.parse(sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE,"")));}
+            mBuilder.setContentTitle("Theare is Monument").setSmallIcon(R.mipmap.brush_icon).setContentText(monument.getName() + " is finded near you.").setWhen(System.currentTimeMillis()).setAutoCancel(true);
+            monumentIntent = new Intent(LocationService.this, MainActivity.class);
+            monumentIntent.putExtra(SHOWING_MONUMENT, monument);
+            monumentPendingIntent = PendingIntent.getActivity(LocationService.this, 0, monumentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            mBuilder.setContentIntent(monumentPendingIntent);
+            monumentNotification = mBuilder.build();
+            mNotManager.notify(notifID, monumentNotification);
+            notifID++;
         }
     }
 

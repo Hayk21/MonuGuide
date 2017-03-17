@@ -12,12 +12,16 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.activities.MainActivity;
+import blue_team.com.monuguide.models.Monument;
 
 public class DetailsFragment extends Fragment {
 
     LinearLayout mLinearHeart,mLinearComment;
+    TextView mShortDesc;
 
 
     private OnFragmentInteractionListener mListener;
@@ -49,6 +53,12 @@ public class DetailsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
        mLinearHeart = (LinearLayout)view.findViewById(R.id.linear_heart);
        mLinearComment = (LinearLayout)view.findViewById(R.id.linear_comment);
+        mShortDesc = (TextView)view.findViewById(R.id.short_desc);
+        if(this.getArguments() != null){
+            if(this.getArguments().getParcelable(MainActivity.ARGUMENT_WITH_MONUMENT)!= null){
+                mShortDesc.setText(((Monument) this.getArguments().getParcelable(MainActivity.ARGUMENT_WITH_MONUMENT)).getName());
+            }
+        }
     }
 
     public void onButtonPressed(Uri uri) {

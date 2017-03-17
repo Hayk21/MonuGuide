@@ -22,11 +22,9 @@
         android:layout_width="match_parent"
         android:maxLines="4"
         android:layout_height="wrap_content"
-        android:text="TITTLE OF TE IMG JBJJKJ GIIITKK RKGJGMGKBK BJJBJH
-MBJHM BMJBJ H MHMJNMBMG G GMGMGG  GG MN G
-MBJNG NNGJBHJHJHJHJH JJGNJBIKMGN JGJTJVFGNH"
         android:textColor="@color/paint_black"
         android:id="@+id/short_desc"
+        android:layout_margin="@dimen/small_brush"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
@@ -45,6 +43,7 @@ MBJNG NNGJBHJHJHJHJH JJGNJBIKMGN JGJTJVFGNH"
         android:layout_alignStart="@+id/short_desc">
 
         <ImageView
+            android:id="@+id/comment_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -53,7 +52,7 @@ MBJNG NNGJBHJHJHJHJH JJGNJBIKMGN JGJTJVFGNH"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/paint_black"
-            android:text="Notes"
+            android:text="@string/comment_text"
             android:textSize="20sp"
             android:layout_weight="3"
             android:layout_gravity="center_vertical"/>
@@ -72,19 +71,16 @@ MBJNG NNGJBHJHJHJHJH JJGNJBIKMGN JGJTJVFGNH"
         android:layout_alignEnd="@+id/short_desc">
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/heart_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/short_desc"
-            android:layout_alignRight="@+id/short_desc"
-            android:layout_below="@+id/short_desc"
             app:srcCompat="@mipmap/heart_icon" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@color/paint_black"
-            android:text="Add to Favorites"
+            android:text="@string/favorites_text"
             android:textSize="20sp"
             android:layout_weight="3"
             android:layout_gravity="center_vertical"/>

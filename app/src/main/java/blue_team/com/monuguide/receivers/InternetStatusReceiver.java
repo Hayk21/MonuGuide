@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import blue_team.com.monuguide.Services.LocationService;
 import blue_team.com.monuguide.activities.SettingsActivity;
 
+import static android.content.Context.MODE_PRIVATE;
 import static blue_team.com.monuguide.activities.MainActivity.NAME_OF_PREFERENCE;
 
 public class InternetStatusReceiver extends BroadcastReceiver {
@@ -22,8 +23,8 @@ public class InternetStatusReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         this.context = context;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean answer = sharedPreferences.getBoolean(SettingsActivity.KEY_OF_FUNCTION, false);
         boolean answer_two = sharedPreferences.getBoolean(NAME_OF_PREFERENCE, false);
+        boolean answer = sharedPreferences.getBoolean(SettingsActivity.KEY_OF_FUNCTION, false);
         Intent intent_for_service = new Intent(context, LocationService.class);
         if (answer) {
             if (isConnect()) {
