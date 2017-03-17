@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -36,6 +37,13 @@ public class MainActivity extends AppCompatActivity
     FragmentTransaction fragmentTransaction;
     Bundle args;
     public static ActionBarDrawerToggle toggle;
+    public static DrawerLayout drawer;
+    public static Toolbar toolbar;
+
+    public void setToll(Toolbar toolbar){
+        this.setSupportActionBar(toolbar);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +51,15 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         mActivityIntent = getIntent();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return false;
+            }
+        });
 
         fragmentManager = getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
@@ -56,7 +71,7 @@ public class MainActivity extends AppCompatActivity
                 args = new Bundle();
                 args.putParcelable(ARGUMENT_WITH_MONUMENT, monument);
                 mDetailsFragment.setArguments(args);
-                fragmentTransaction.add(R.id.container, mDetailsFragment);
+                fragmentTransaction.add(R.id.container, mDetailsFragment,"DetailsFragment");
 
                 this.getIntent().removeExtra(LocationService.SHOWING_MONUMENT);
             } else {
@@ -79,7 +94,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -111,7 +126,11 @@ public class MainActivity extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
+        if(item.getItemId() == android.R.id.home){
+            Log.d("Log_Tag","ayoooooooooooooooooooooo");
+        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
@@ -148,9 +167,21 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
     @Override
-    public void onFragmentInteraction(Uri uri) {
-
+    public void onFragmentInteraction(final Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.remove(fragmentManager.findFragmentByTag("DetailsFragment"));
+                fragmentTransaction.add(R.id.container,mMapStatueFragment,"MapFragment");
+                toolbar.getNavigationIcon().setVisible(false,true);
+                toggle.setDrawerIndicatorEnabled(true);
+                toggle.syncState();
+                fragmentTransaction.commit();
+            }
+        });
     }
-
 }

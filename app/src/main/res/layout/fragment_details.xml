@@ -6,28 +6,47 @@
     android:background="@color/paint_view_back"
     tools:context="blue_team.com.monuguide.fragments.DetailsFragment">
 
+    <TextView
+        android:id="@+id/title_of_monument"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:textColor="@color/paint_black"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
+        android:text="TITLE" />
 
     <ImageView
         android:id="@+id/monument_img"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_margin="@dimen/small_brush"
-        android:scaleType="fitStart"
-        android:src="@drawable/nyc_1"
         android:adjustViewBounds="true"
-        android:layout_above="@+id/short_desc"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/title_of_monument"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="@dimen/small_brush"
+        android:layout_marginRight="@dimen/small_brush"
+        android:layout_marginBottom="@dimen/small_brush"/>
 
     <TextView
         android:layout_width="match_parent"
         android:maxLines="4"
+        android:textSize="16sp"
         android:layout_height="wrap_content"
         android:textColor="@color/paint_black"
         android:id="@+id/short_desc"
         android:layout_margin="@dimen/small_brush"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/monument_img"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:text="jthguitrhjrtihjtrhjntrgubnrtjkbngrkjnbrkjnbrtnbrnbkrnbjkrnbrtnbrkjnbkjrtbrbtrjkbtbjkebnjknbkjnbjkntjkbjkbnkjetnbkjebjketbjkebjkenjkbnekjbnkjenbekjnjknejkbnejkbnekjbnjetbbjebnejkbnejkekjbekjnekjnejkbnjkbnejkbnekjbnekjbnjekbnekjbnejbnjbejkjejek"
+        />
 
 
     <LinearLayout
@@ -35,19 +54,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginLeft="23dp"
-        android:layout_marginStart="23dp"
-        android:layout_marginTop="23dp"
-        android:layout_below="@+id/short_desc"
+        android:layout_alignTop="@+id/linear_heart"
+        android:layout_alignStart="@+id/short_desc"
         android:layout_alignLeft="@+id/short_desc"
-        android:layout_alignStart="@+id/short_desc">
+        android:layout_marginLeft="@dimen/small_brush"
+        >
 
         <ImageView
             android:id="@+id/comment_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@mipmap/comment_icon"/>
+            android:layout_weight="0"
+            android:src="@mipmap/comment_icon" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,15 +84,14 @@
         android:orientation="horizontal"
         android:layout_below="@+id/short_desc"
         android:layout_alignRight="@+id/short_desc"
-        android:layout_marginTop="23dp"
-        android:layout_marginRight="23dp"
-        android:layout_marginEnd="23dp"
-        android:layout_alignEnd="@+id/short_desc">
+        android:layout_alignEnd="@+id/short_desc"
+        android:layout_margin="@dimen/small_brush">
 
         <ImageView
             android:id="@+id/heart_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="0"
             app:srcCompat="@mipmap/heart_icon" />
 
         <TextView
@@ -85,4 +103,14 @@
             android:layout_weight="3"
             android:layout_gravity="center_vertical"/>
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="65dp"
+        android:layout_alignTop="@+id/monument_img"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
