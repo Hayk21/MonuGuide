@@ -17,13 +17,20 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
+import blue_team.com.monuguide.models.Monument;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String NAME_OF_PREFERENCE = "Service_runing";
+    public final ArrayList<Monument> monList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +112,17 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
-
+            FireHelper fireHelper = new FireHelper();
+            FireHelper.IOnSuccessListener onSuccessListener = new FireHelper.IOnSuccessListener() {
+                @Override
+                public void onSuccess(HashMap<String, Monument> mMap) {
+                    monList.clear();
+                    monList.addAll(mMap.values());
+                    //mon listi het anel en inch uzum eq
+                }
+            };
+            fireHelper.setOnSuccessListener(onSuccessListener);
+            fireHelper.getMonuments(40.7,44.7,1);
         } else if (id == R.id.nav_manage) {
             Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
             startActivity(intent);

@@ -2,6 +2,7 @@ package blue_team.com.monuguide.activities;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.LinearLayout;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.custom_views.PaintView;
+import blue_team.com.monuguide.firebase.FireHelper;
 
 public class DrawingActivity extends AppCompatActivity {
 
@@ -120,12 +122,17 @@ public class DrawingActivity extends AppCompatActivity {
                     alertDialog.show();
                     break;
                 case R.id.save_button:
-                    AlertDialog.Builder builder2 = new AlertDialog.Builder(DrawingActivity.this);
+                    //AlertDialog.Builder builder2 = new AlertDialog.Builder(DrawingActivity.this);
                     paintView.setDrawingCacheEnabled(true);
-                    builder2.setTitle("Save drawing");
-                    builder2.setMessage("Save drawing to device Gallery?");
-                    alertDialog = builder2.create();
-                    alertDialog.show();
+                    paintView.buildDrawingCache();
+                    Bitmap bitmap = paintView.getDrawingCache();
+                    FireHelper fh = new FireHelper();
+                    fh.addNote(bitmap);
+
+                    //builder2.setTitle("Save drawing");
+                    //builder2.setMessage("Save drawing to device Gallery?");
+                    //alertDialog = builder2.create();
+                    //alertDialog.show();
 
             }
         }

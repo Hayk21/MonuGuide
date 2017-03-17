@@ -49,7 +49,7 @@
         <activity android:name=".activities.DrawingActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".activities.SettingsActivity"/>
-        <service android:name=".Services.LocationService"
+        <service android:name=".services.LocationService"
             android:enabled="true"
             android:exported="true"/>
         <receiver android:name=".receivers.RebootReceiver">
