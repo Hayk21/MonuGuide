@@ -33,7 +33,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.firebase.FireHelper;
+import blue_team.com.monuguide.models.Monument;
 
 public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
@@ -45,19 +50,37 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     private double mLatitude;
     private double mLongitude;
     private Marker mMarker;
-
+    private FireHelper fireHelper = new FireHelper();
+    List<Monument> showMonuments;
+    private static View view;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_map, container, false);
-        return view;
+       // View view = inflater.inflate(R.layout.fragment_map, container, false);
+        //return view;
+
+
+
+
+            if (view != null) {
+                ViewGroup parent = (ViewGroup) view.getParent();
+                if (parent != null)
+                    parent.removeView(view);
+            }
+            try {
+                view = inflater.inflate(R.layout.fragment_map, container, false);
+            } catch (InflateException e) {
+        /* map is already there, just return view as it is */
+            }
+            return view;
+
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
        
         mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
-        System.out.println("Location manager = " + mLocationManager);
+        showMonuments = new ArrayList<>();
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED &&
@@ -68,15 +91,16 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             return;
         }
 
-        mLocationManager.requestLocationUpdates(mLocationManager.GPS_PROVIDER,
-                1000,
-                1,
-                locationListener);
+        mLocationManager.requestLocationUpdates(mLocationManager.GPS_PROVIDER, 1000, 1, locationListener);
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 10, 10, locationListener);
 
 
-        mLocationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
-                locationListener);
+        if (savedInstanceState != null) {
+            // Restore last state
+            //mMap = savedInstanceState.getString("time_key");
+        } else {
+            //mTime = "" + Calendar.getInstance().getTimeInMillis();
+        }
 
 
         getMapFragment().getMapAsync(new OnMapReadyCallback() {
@@ -94,11 +118,17 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                     return;
                 }
                 mMap.setMyLocationEnabled(true);
-                initMarkers();
+
             }
 
         });
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //outState.putBundle("Map", mMap);
     }
 
     private void setMyLocation(Location location){
@@ -106,8 +136,6 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
         mMap.addMarker(new MarkerOptions().position(currentLL).title("Marker in Armenia"));
         float zoomLevel = (float) 16.0; //This goes up to 21
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLL, zoomLevel));
-
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLL) );
     }
 
 
@@ -129,7 +157,9 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     }
 
     private void initMarkers(){
-        mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(mLatitude + 0.1, mLongitude + 0.1))
+        //mMap.clear();
+
+        mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(mLatitude+0.1, mLongitude+0.1))
                 .title("Hello world").snippet("Additional text").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher))));
       /* mMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(40, 40)).icon(
                 BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));*/
@@ -143,6 +173,9 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             //mLongitude = location.getLongitude();
             //mLatitude = location.getLatitude();
             setMyLocation(location);
+            showMonuments = fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), 1.5);
+            initMarkers();
+            System.out.println("showMonuments = " + fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), 3));
         }
 
         @Override

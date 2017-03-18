@@ -3,21 +3,30 @@
 
     <item
         is-multidex="true"
-        jar="C:\AndroidStudioProjects\MonuGuide\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jar="C:\Users\user\AndroidStudioProjects\MonuGuide\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="35bbc5f12da15ce16f2e206d843467a750e7f0fb">
+        <dex dex="C:\Users\user\AndroidStudioProjects\MonuGuide\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_5c1be2e0a2fb98c19500f8aeba49450bfdb81d85\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\user\AndroidStudioProjects\MonuGuide\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
         sha1="c82741bc129dd5f99f11a4ab8666ae24262053b6">
-        <dex dex="C:\AndroidStudioProjects\MonuGuide\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_6302eeb2a9ca22363ed798f21f73ffc387792479\classes.dex" />
+        <dex dex="C:\Users\user\AndroidStudioProjects\MonuGuide\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_85debca0d23124cbacf32714345535c98b7017d9\classes.dex" />
     </item>
     <item
         is-multidex="true"
-        jar="C:\AndroidStudioProjects\MonuGuide\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jar="C:\Users\user\.gradle\caches\modules-2\files-2.1\com.squareup.picasso\picasso\2.5.2\7446d06ec8d4f7ffcc53f1da37c95f200dcb9387\picasso-2.5.2.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
-        sha1="e5279742e3479fdaa5e9a278ecbbd5182346dbeb">
-        <dex dex="C:\AndroidStudioProjects\MonuGuide\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_06c31e2d848c33ad8c0731de8f4c9206e8a4e717\classes.dex" />
+        sha1="7446d06ec8d4f7ffcc53f1da37c95f200dcb9387">
+        <dex dex="C:\Users\user\AndroidStudioProjects\MonuGuide\app\build\intermediates\transforms\dex\debug\folders\1000\10\picasso-2.5.2_a69735fb31405abb6c5b972e1b2bb4f918f620e8\classes.dex" />
     </item>
 
 </items>
