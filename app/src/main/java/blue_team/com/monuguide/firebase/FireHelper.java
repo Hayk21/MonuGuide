@@ -119,7 +119,7 @@ public class FireHelper {
         bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
         byte[] data = baos.toByteArray();
 
-        UploadTask uploadTask = mStorageRef.child("noteImages/").putBytes(data);
+        UploadTask uploadTask = mStorageRef.child("noteImages/bbb").putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {

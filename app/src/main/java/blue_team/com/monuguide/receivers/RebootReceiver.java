@@ -9,7 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 
-import blue_team.com.monuguide.services.LocationService;
+import blue_team.com.monuguide.Services.LocationService;
 import blue_team.com.monuguide.activities.SettingsActivity;
 
 import static android.content.Context.CONNECTIVITY_SERVICE;

@@ -20,7 +20,7 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.services.LocationService;
+import blue_team.com.monuguide.Services.LocationService;
 
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements Preference.OnPreferenceChangeListener, SharedPreferences.OnSharedPreferenceChangeListener {

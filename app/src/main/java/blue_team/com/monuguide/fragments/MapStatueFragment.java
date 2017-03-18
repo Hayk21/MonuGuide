@@ -45,11 +45,21 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     private double mLatitude;
     private double mLongitude;
     private Marker mMarker;
+    private static View view;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_map, container, false);
+        if (view != null) {
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != null)
+                parent.removeView(view);
+        }
+        try {
+            view = inflater.inflate(R.layout.fragment_map, container, false);
+        } catch (InflateException e) {
+/* map is already there, just return view as it is */
+        }
         return view;
     }
 
@@ -134,6 +144,15 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
       /* mMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(40, 40)).icon(
                 BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));*/
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        MapFragment f = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+        if (f != null)
+            getActivity().getFragmentManager().beginTransaction().remove(f).commit();
     }
 
 
