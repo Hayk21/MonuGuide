@@ -101,7 +101,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             this.finish();
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
@@ -143,9 +143,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
     @Override
     public void onBackPressed() {
-        intent = new Intent(this,MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+        this.finish();
     }
 }
 

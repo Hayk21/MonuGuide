@@ -23,6 +23,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import blue_team.com.monuguide.R;
@@ -49,7 +50,17 @@ public class LocationService extends Service {
     boolean isEqual = false;
     Thread thread;
     int notifID;
-    long[] mVibrateTime = {300,200,300,200,300};
+    long[] mVibrateTime = {300, 200, 300, 200, 300};
+
+    private FireHelper.IOnSuccessListener onSuccessListener = new FireHelper.IOnSuccessListener() {
+        @Override
+        public void onSuccess(HashMap<String, Monument> mMap) {
+            listOfMonument.clear();
+            listOfMonument.addAll(mMap.values());
+            testForNotification();
+            // listi het gorcoxutyunner@ anel aystex
+        }
+    };
 
 
     LocationListener locationListener = new LocationListener() {
@@ -57,7 +68,7 @@ public class LocationService extends Service {
         public void onLocationChanged(final Location location) {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LocationService.this);
             Log.d("Log_Tag2", sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0"));
-            listOfMonument = fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), Double.valueOf(sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0")));
+            fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), Double.valueOf(sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0")));
 
             testForNotification();
 
@@ -125,6 +136,8 @@ public class LocationService extends Service {
     }
 
     private void startServiceOperation() {
+        fireHelper.setOnSuccessListener(onSuccessListener);
+        listOfMonument = new ArrayList<>();
         mNotManager = (NotificationManager) getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
         mBuilder = new NotificationCompat.Builder(getApplicationContext());
         showMonuments = new ArrayList<>();
@@ -159,7 +172,7 @@ public class LocationService extends Service {
             public void run() {
 
                 showMonuments = null;
-                if (listOfMonument != null) {
+                if (!listOfMonument.isEmpty()) {
                     if (listOfFindedMonuments.isEmpty()) {
                         for (Monument monument : listOfMonument)
                             listOfFindedMonuments.add(monument);
@@ -170,13 +183,15 @@ public class LocationService extends Service {
                     } else {
                         for (Monument monument : listOfMonument) {
                             for (Monument findMon : listOfFindedMonuments) {
-                                if (monument.equals(findMon)) {
+                                if (monument.getId().equals(findMon.getId())) {
                                     isEqual = true;
                                     break;
                                 }
                             }
                             if (!isEqual) {
                                 listOfFindedMonuments.add(monument);
+                                if (showMonuments == null)
+                                    showMonuments = new ArrayList<>();
                                 showMonuments.add(monument);
                             }
                             isEqual = false;
@@ -196,11 +211,12 @@ public class LocationService extends Service {
         for (Monument monument : showMonuments) {
             mBuilder = new NotificationCompat.Builder(this);
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LocationService.this);
-            if(sharedPreferences.getBoolean(SettingsActivity.KEY_OF_VIBRATE,false))
+            if (sharedPreferences.getBoolean(SettingsActivity.KEY_OF_VIBRATE, false))
                 mBuilder.setVibrate(mVibrateTime);
-            Log.d("Log_Tag",sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE,""));
-            if(sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE,"")!=""){
-                mBuilder.setSound(Uri.parse(sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE,"")));}
+            Log.d("Log_Tag", sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE, ""));
+            if (sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE, "") != "") {
+                mBuilder.setSound(Uri.parse(sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE, "")));
+            }
             mBuilder.setContentTitle("Theare is Monument").setSmallIcon(R.mipmap.brush_icon).setContentText(monument.getName() + " is finded near you.").setWhen(System.currentTimeMillis()).setAutoCancel(true);
             monumentIntent = new Intent(LocationService.this, StartActivity.class);
             monumentIntent.putExtra(SHOWING_MONUMENT, monument);

@@ -2,13 +2,12 @@ package blue_team.com.monuguide.fragments;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +27,7 @@ import blue_team.com.monuguide.models.Monument;
 public class DetailsFragment extends Fragment {
 
     private static final int MESSAGE_FOR_HANDLER = 18;
-    LinearLayout mLinearHeart, mLinearComment;
+    LinearLayout mLinearHeart, mLinearComment, mLinearWiki;
     TextView mShortDesc, mNameMonument;
     ImageView mHeaderImage;
     FragmentManager fragmentManager;
@@ -37,13 +36,20 @@ public class DetailsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Toolbar toolbar);
+        void onFragmentInteraction(int ID);
     }
+
+    View.OnClickListener onLinearClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            mListener.onFragmentInteraction(view.getId());
+        }
+    };
 
     Handler handler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message message) {
-            if(message.what == MESSAGE_FOR_HANDLER)
+            if (message.what == MESSAGE_FOR_HANDLER)
                 progressBar.setVisibility(View.INVISIBLE);
             return false;
         }
@@ -68,6 +74,10 @@ public class DetailsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mLinearHeart = (LinearLayout) view.findViewById(R.id.linear_heart);
         mLinearComment = (LinearLayout) view.findViewById(R.id.linear_comment);
+        mLinearWiki = (LinearLayout) view.findViewById(R.id.linear_wiki);
+        mLinearHeart.setOnClickListener(onLinearClickListener);
+        mLinearComment.setOnClickListener(onLinearClickListener);
+        mLinearWiki.setOnClickListener(onLinearClickListener);
         mNameMonument = (TextView) view.findViewById(R.id.title_of_monument);
         mHeaderImage = (ImageView) view.findViewById(R.id.monument_img);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
@@ -80,7 +90,7 @@ public class DetailsFragment extends Fragment {
                 final Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        while (mHeaderImage.getDrawable() == null){
+                        while (mHeaderImage.getDrawable() == null) {
 
                         }
                         handler.sendEmptyMessage(MESSAGE_FOR_HANDLER);
@@ -91,22 +101,16 @@ public class DetailsFragment extends Fragment {
         }
     }
 
-    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
     }
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
 
     @Override
     public void onDetach() {
@@ -115,10 +119,9 @@ public class DetailsFragment extends Fragment {
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(getActivity(), MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);

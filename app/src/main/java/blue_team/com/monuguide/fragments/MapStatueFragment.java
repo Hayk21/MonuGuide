@@ -41,6 +41,7 @@ import blue_team.com.monuguide.activities.MainActivity;
 
 public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
 
+    private static View view;
     private MapFragment mapFragment;
     private GoogleMap mMap;
 
@@ -59,7 +60,15 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_map, container, false);
+        if (view != null) {
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != null)
+                parent.removeView(view);
+        }
+        try {
+            view = inflater.inflate(R.layout.fragment_map, container, false);
+        } catch (InflateException e) {
+        }
         return view;
     }
 
