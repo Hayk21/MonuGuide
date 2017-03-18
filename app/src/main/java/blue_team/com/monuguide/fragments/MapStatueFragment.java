@@ -12,9 +12,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -34,8 +37,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.activities.MainActivity;
 
-public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
+public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
 
     private MapFragment mapFragment;
     private GoogleMap mMap;
@@ -46,6 +50,12 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     private double mLongitude;
     private Marker mMarker;
 
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,7 +65,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-       
+
         mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
         System.out.println("Location manager = " + mLocationManager);
 
@@ -101,7 +111,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
     }
 
-    private void setMyLocation(Location location){
+    private void setMyLocation(Location location) {
         LatLng currentLL = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.addMarker(new MarkerOptions().position(currentLL).title("Marker in Armenia"));
         float zoomLevel = (float) 16.0; //This goes up to 21
@@ -128,7 +138,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
         mMap = googleMap;
     }
 
-    private void initMarkers(){
+    private void initMarkers() {
         mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(mLatitude + 0.1, mLongitude + 0.1))
                 .title("Hello world").snippet("Additional text").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher))));
       /* mMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(40, 40)).icon(
@@ -160,4 +170,5 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
         }
     };
+
 }

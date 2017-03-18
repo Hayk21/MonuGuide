@@ -1,7 +1,6 @@
 package blue_team.com.monuguide.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
@@ -19,69 +18,30 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.Services.LocationService;
-import blue_team.com.monuguide.fragments.DetailsFragment;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
-import blue_team.com.monuguide.models.Monument;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, DetailsFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String NAME_OF_PREFERENCE = "Service_runing";
-    public static final String ARGUMENT_WITH_MONUMENT = "CurrentMonument";
-    public static final String HEADER_BACKSTACK = "HeaderBackStack";
-    Fragment mDetailsFragment, mMapStatueFragment;
-    Monument monument;
-    Intent mActivityIntent;
+    Fragment mMapStatueFragment;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-    Bundle args;
-    public static ActionBarDrawerToggle toggle;
-    public static DrawerLayout drawer;
-    public static Toolbar toolbar;
-
-    public void setToll(Toolbar toolbar){
-        this.setSupportActionBar(toolbar);
-    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mActivityIntent = getIntent();
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return false;
-            }
-        });
 
         fragmentManager = getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
         mMapStatueFragment = new MapStatueFragment();
-        mDetailsFragment = new DetailsFragment();
-        if (mActivityIntent.getExtras() != null) {
-            if (mActivityIntent.getParcelableExtra(LocationService.SHOWING_MONUMENT) != null) {
-                monument = mActivityIntent.getExtras().getParcelable(LocationService.SHOWING_MONUMENT);
-                args = new Bundle();
-                args.putParcelable(ARGUMENT_WITH_MONUMENT, monument);
-                mDetailsFragment.setArguments(args);
-                fragmentTransaction.add(R.id.container, mDetailsFragment,"DetailsFragment");
-
-                this.getIntent().removeExtra(LocationService.SHOWING_MONUMENT);
-            } else {
-                fragmentTransaction.add(R.id.container, mMapStatueFragment, "MapFragment");
-                fragmentTransaction.addToBackStack(HEADER_BACKSTACK);
-            }
-        } else {
-            fragmentTransaction.add(R.id.container, mMapStatueFragment, "MapFragment");
-            fragmentTransaction.addToBackStack(HEADER_BACKSTACK);
-        }
+        fragmentTransaction.add(R.id.container, mMapStatueFragment, "MapFragment");
         fragmentTransaction.commit();
 
 
@@ -94,8 +54,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        toggle = new ActionBarDrawerToggle(
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
@@ -128,9 +88,6 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
 
         int id = item.getItemId();
-        if(item.getItemId() == android.R.id.home){
-            Log.d("Log_Tag","ayoooooooooooooooooooooo");
-        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
@@ -168,20 +125,4 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @Override
-    public void onFragmentInteraction(final Toolbar toolbar) {
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.remove(fragmentManager.findFragmentByTag("DetailsFragment"));
-                fragmentTransaction.add(R.id.container,mMapStatueFragment,"MapFragment");
-                toolbar.getNavigationIcon().setVisible(false,true);
-                toggle.setDrawerIndicatorEnabled(true);
-                toggle.syncState();
-                fragmentTransaction.commit();
-            }
-        });
-    }
 }

@@ -12,7 +12,6 @@ import android.preference.PreferenceManager;
 import blue_team.com.monuguide.Services.LocationService;
 import blue_team.com.monuguide.activities.SettingsActivity;
 
-import static android.content.Context.MODE_PRIVATE;
 import static blue_team.com.monuguide.activities.MainActivity.NAME_OF_PREFERENCE;
 
 public class InternetStatusReceiver extends BroadcastReceiver {

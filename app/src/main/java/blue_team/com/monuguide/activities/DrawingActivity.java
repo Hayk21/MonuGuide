@@ -2,6 +2,8 @@ package blue_team.com.monuguide.activities;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
+import android.os.PersistableBundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -167,4 +169,5 @@ public class DrawingActivity extends AppCompatActivity {
             ListOfTools.getChildAt(i).setOnClickListener(OnToolsItemClickListenner);
         }
     }
+
 }

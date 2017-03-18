@@ -17,7 +17,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
@@ -27,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.activities.MainActivity;
 import blue_team.com.monuguide.activities.SettingsActivity;
+import blue_team.com.monuguide.activities.StartActivity;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.models.Monument;
 
@@ -203,7 +202,7 @@ public class LocationService extends Service {
             if(sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE,"")!=""){
                 mBuilder.setSound(Uri.parse(sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE,"")));}
             mBuilder.setContentTitle("Theare is Monument").setSmallIcon(R.mipmap.brush_icon).setContentText(monument.getName() + " is finded near you.").setWhen(System.currentTimeMillis()).setAutoCancel(true);
-            monumentIntent = new Intent(LocationService.this, MainActivity.class);
+            monumentIntent = new Intent(LocationService.this, StartActivity.class);
             monumentIntent.putExtra(SHOWING_MONUMENT, monument);
             monumentPendingIntent = PendingIntent.getActivity(LocationService.this, 0, monumentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             mBuilder.setContentIntent(monumentPendingIntent);
