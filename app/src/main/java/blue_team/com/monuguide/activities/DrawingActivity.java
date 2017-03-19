@@ -3,6 +3,7 @@ package blue_team.com.monuguide.activities;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.os.PersistableBundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -15,6 +16,8 @@ import android.widget.LinearLayout;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.custom_views.PaintView;
+import blue_team.com.monuguide.firebase.FireHelper;
+import blue_team.com.monuguide.models.Monument;
 
 public class DrawingActivity extends AppCompatActivity {
 
@@ -132,9 +135,14 @@ public class DrawingActivity extends AppCompatActivity {
                     AlertDialog.Builder builder2 = new AlertDialog.Builder(DrawingActivity.this);
                     paintView.setDrawingCacheEnabled(true);
                     builder2.setTitle("Save drawing");
-                    builder2.setMessage("Save drawing to device Gallery?");
                     alertDialog = builder2.create();
                     alertDialog.show();
+                    paintView.buildDrawingCache();
+                    Bitmap bitmap = paintView.getDrawingCache();
+                    FireHelper fh = new FireHelper();
+                    Monument monument = null; // nulli tex@ tvyal monument@
+                    fh.addNote(bitmap, monument);
+                    DrawingActivity.this.finish();
 
             }
         }

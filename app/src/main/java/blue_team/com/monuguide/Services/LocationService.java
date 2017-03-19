@@ -31,6 +31,7 @@ import blue_team.com.monuguide.activities.SettingsActivity;
 import blue_team.com.monuguide.activities.StartActivity;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.models.Monument;
+import blue_team.com.monuguide.models.Note;
 
 import static blue_team.com.monuguide.activities.MainActivity.NAME_OF_PREFERENCE;
 

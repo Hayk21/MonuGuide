@@ -7,7 +7,7 @@ package blue_team.com.monuguide.models;
 public class Note {
     private String id;
     private String image;
-    private int likeCount;
+    private double likeCount;
 
     public Note() {
 
@@ -29,7 +29,11 @@ public class Note {
         this.image = image;
     }
 
-    public int getLikeCount() {
+    public double getLikeCount() {
         return likeCount;
+    }
+
+    public void setLikeCount(double likeCount) {
+        this.likeCount = likeCount;
     }
 }
