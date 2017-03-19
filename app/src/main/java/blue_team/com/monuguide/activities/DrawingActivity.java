@@ -134,15 +134,27 @@ public class DrawingActivity extends AppCompatActivity {
                 case R.id.save_button:
                     AlertDialog.Builder builder2 = new AlertDialog.Builder(DrawingActivity.this);
                     paintView.setDrawingCacheEnabled(true);
-                    builder2.setTitle("Save drawing");
+                    builder2.setTitle("Save drawing?");
+                    builder2.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User clicked OK button
+                            paintView.buildDrawingCache();
+                            Bitmap bitmap = paintView.getDrawingCache();
+                            FireHelper fh = new FireHelper();
+                            Monument monument = null; // nulli tex@ tvyal monument@
+                            fh.addNote(bitmap, monument);
+                            DrawingActivity.this.finish();
+                        }
+                    });
+                    builder2.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                            DrawingActivity.this.finish();
+                        }
+                    });
                     alertDialog = builder2.create();
                     alertDialog.show();
-                    paintView.buildDrawingCache();
-                    Bitmap bitmap = paintView.getDrawingCache();
-                    FireHelper fh = new FireHelper();
-                    Monument monument = null; // nulli tex@ tvyal monument@
-                    fh.addNote(bitmap, monument);
-                    DrawingActivity.this.finish();
+
 
             }
         }
