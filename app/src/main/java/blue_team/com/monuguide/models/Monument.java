@@ -30,6 +30,7 @@ public class Monument implements Parcelable {
         urlMon = in.readString();
         latitude = in.readDouble();
         longitude = in.readDouble();
+
     }
 
     public static final Creator<Monument> CREATOR = new Creator<Monument>() {

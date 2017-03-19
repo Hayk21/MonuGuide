@@ -8,6 +8,7 @@
     android:orientation="vertical"
     tools:context="blue_team.com.monuguide.fragments.DetailsFragment">
 
+
     <TextView
         android:id="@+id/title_of_monument"
         android:layout_width="wrap_content"
@@ -44,7 +45,7 @@
     <TextView
         android:layout_width="match_parent"
         android:maxLines="4"
-        android:textSize="16sp"
+        android:textSize="13sp"
         android:layout_height="wrap_content"
         android:textColor="@color/paint_black"
         android:id="@+id/short_desc"

@@ -37,9 +37,9 @@
 
         <activity
             android:name=".activities.MainActivity"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:configChanges="orientation|keyboardHidden">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -48,8 +48,8 @@
         </activity>
         <activity
             android:name=".activities.DrawingActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.SettingsActivity" />
 
         <service
@@ -73,7 +73,10 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activities.StartActivity"
+        <activity
+            android:name=".activities.StartActivity"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".activities.PagerActivity"
             android:theme="@style/AppTheme"></activity>
     </application>
 

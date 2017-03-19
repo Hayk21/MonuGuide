@@ -27,22 +27,24 @@ import blue_team.com.monuguide.models.Monument;
 public class DetailsFragment extends Fragment {
 
     private static final int MESSAGE_FOR_HANDLER = 18;
+    public static final String SAVED_MONUMENT = "SavedMonument";
     LinearLayout mLinearHeart, mLinearComment, mLinearWiki;
     TextView mShortDesc, mNameMonument;
     ImageView mHeaderImage;
     FragmentManager fragmentManager;
     ProgressBar progressBar;
+    Monument mMonument;
 
     private OnFragmentInteractionListener mListener;
 
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(int ID);
+        void onFragmentInteraction(int ID,Monument monument);
     }
 
     View.OnClickListener onLinearClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            mListener.onFragmentInteraction(view.getId());
+            mListener.onFragmentInteraction(view.getId(),mMonument);
         }
     };
 
@@ -61,6 +63,13 @@ public class DetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         fragmentManager = getActivity().getFragmentManager();
+        if (savedInstanceState != null) {
+                mMonument = savedInstanceState.getParcelable(SAVED_MONUMENT);
+        } else if (this.getArguments() != null) {
+            if (this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT) != null) {
+                mMonument = this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT);
+            }
+        }
     }
 
 
@@ -72,33 +81,7 @@ public class DetailsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mLinearHeart = (LinearLayout) view.findViewById(R.id.linear_heart);
-        mLinearComment = (LinearLayout) view.findViewById(R.id.linear_comment);
-        mLinearWiki = (LinearLayout) view.findViewById(R.id.linear_wiki);
-        mLinearHeart.setOnClickListener(onLinearClickListener);
-        mLinearComment.setOnClickListener(onLinearClickListener);
-        mLinearWiki.setOnClickListener(onLinearClickListener);
-        mNameMonument = (TextView) view.findViewById(R.id.title_of_monument);
-        mHeaderImage = (ImageView) view.findViewById(R.id.monument_img);
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        mShortDesc = (TextView) view.findViewById(R.id.short_desc);
-        if (this.getArguments() != null) {
-            if (this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT) != null) {
-                mShortDesc.setText(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getDesc());
-                mNameMonument.setText(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getName());
-                Picasso.with(getActivity()).load(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getImage()).into(mHeaderImage);
-                final Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (mHeaderImage.getDrawable() == null) {
-
-                        }
-                        handler.sendEmptyMessage(MESSAGE_FOR_HANDLER);
-                    }
-                });
-                thread.start();
-            }
-        }
+        startFragmentOperation(view);
     }
 
     @Override
@@ -118,6 +101,33 @@ public class DetailsFragment extends Fragment {
         mListener = null;
     }
 
+    public void startFragmentOperation(View view) {
+        mLinearHeart = (LinearLayout) view.findViewById(R.id.linear_heart);
+        mLinearComment = (LinearLayout) view.findViewById(R.id.linear_comment);
+        mLinearWiki = (LinearLayout) view.findViewById(R.id.linear_wiki);
+        mLinearHeart.setOnClickListener(onLinearClickListener);
+        mLinearComment.setOnClickListener(onLinearClickListener);
+        mLinearWiki.setOnClickListener(onLinearClickListener);
+        mNameMonument = (TextView) view.findViewById(R.id.title_of_monument);
+        mHeaderImage = (ImageView) view.findViewById(R.id.monument_img);
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        mShortDesc = (TextView) view.findViewById(R.id.short_desc);
+        if (mMonument != null) {
+            mShortDesc.setText(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getDesc());
+            mNameMonument.setText(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getName());
+            Picasso.with(getActivity()).load(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getImage()).into(mHeaderImage);
+            final Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (mHeaderImage.getDrawable() == null) {
+
+                    }
+                    handler.sendEmptyMessage(MESSAGE_FOR_HANDLER);
+                }
+            });
+            thread.start();
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -127,5 +137,10 @@ public class DetailsFragment extends Fragment {
             startActivity(intent);
         }
         return true;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(SAVED_MONUMENT, mMonument);
     }
 }

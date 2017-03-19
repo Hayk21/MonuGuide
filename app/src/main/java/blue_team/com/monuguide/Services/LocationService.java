@@ -37,6 +37,7 @@ import static blue_team.com.monuguide.activities.MainActivity.NAME_OF_PREFERENCE
 public class LocationService extends Service {
     private static final int ID_FOR_FOREGROUND = 127;
     public static final String SHOWING_MONUMENT = "ShowingMonument";
+    public static final String ACTION = "action";
 
     LocationManager locationManager;
     NotificationManager mNotManager;
@@ -219,8 +220,9 @@ public class LocationService extends Service {
             }
             mBuilder.setContentTitle("Theare is Monument").setSmallIcon(R.mipmap.brush_icon).setContentText(monument.getName() + " is finded near you.").setWhen(System.currentTimeMillis()).setAutoCancel(true);
             monumentIntent = new Intent(LocationService.this, StartActivity.class);
+            monumentIntent.setAction(ACTION + notifID);
             monumentIntent.putExtra(SHOWING_MONUMENT, monument);
-            monumentPendingIntent = PendingIntent.getActivity(LocationService.this, 0, monumentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            monumentPendingIntent = PendingIntent.getActivity(LocationService.this, notifID, monumentIntent, 0);
             mBuilder.setContentIntent(monumentPendingIntent);
             monumentNotification = mBuilder.build();
             mNotManager.notify(notifID, monumentNotification);

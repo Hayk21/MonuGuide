@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/paint_view_back"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/image_page"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="8" />
+
+    <LinearLayout
+        android:id="@+id/linear_tools"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="@dimen/small_brush"
+        android:orientation="horizontal">
+
+
+        <ImageView
+            android:id="@+id/like_img"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@mipmap/like_icon" />
+
+        <TextView
+            android:id="@+id/like_count"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="6"
+            android:layout_marginLeft="@dimen/small_brush"
+            android:text="4"
+            android:textColor="@color/paint_black"
+            android:textSize="40sp" />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -49,8 +49,6 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, DrawingActivity.class);
-                startActivity(intent);
             }
         });
 

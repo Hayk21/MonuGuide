@@ -1,7 +1,6 @@
 package blue_team.com.monuguide.fragments;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -9,9 +8,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.activities.MainActivity;
 import blue_team.com.monuguide.activities.StartActivity;
 import blue_team.com.monuguide.models.Monument;
 
@@ -21,13 +20,15 @@ import blue_team.com.monuguide.models.Monument;
 
 public class WebFragment extends Fragment {
 
-    WebView webView;
+    public WebView webView;
     String URL;
+    MyWebClient myWebClient;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        myWebClient = new MyWebClient();
         if(getArguments() != null) {
             if (this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT) != null) {
                 URL = ((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getUrlMon();
@@ -45,14 +46,32 @@ public class WebFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         webView = (WebView)view.findViewById(R.id.web_view);
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.setWebViewClient(myWebClient);
         webView.loadUrl(URL);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home){
+            if(webView.canGoBack())
+                webView.goBack();
+            else
             getActivity().getFragmentManager().popBackStack();
         }
         return true;
+    }
+
+    public WebView getWebView() {
+        return webView;
+    }
+
+    public class MyWebClient extends WebViewClient{
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+
     }
 }

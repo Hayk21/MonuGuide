@@ -16,10 +16,19 @@
         android:layout_marginTop="@dimen/small_brush"
         android:layout_centerHorizontal="true">
 
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@mipmap/red_back_icon"
+            android:paddingLeft="7dp"
+            android:paddingRight="7dp"/>
+
         <ImageButton
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:id="@+id/create_button"
             android:background="@color/paint_view_back"
             android:paddingLeft="7dp"
@@ -29,7 +38,7 @@
         <ImageButton
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:id="@+id/brush_button"
             android:background="@color/paint_view_back"
             android:paddingLeft="7dp"
@@ -39,7 +48,7 @@
         <ImageButton
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:id="@+id/eraser_button"
             android:background="@color/paint_view_back"
             android:paddingLeft="7dp"
@@ -49,7 +58,7 @@
         <ImageButton
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:id="@+id/save_button"
             android:background="@color/paint_view_back"
             android:paddingLeft="7dp"
