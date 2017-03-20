@@ -17,4 +17,5 @@
     <color name="paint_dark_fiolet">#9128b4</color>
     <color name="paint_view_back">#F3E5F5</color>
     <color name="pager_color">#c5a6ca</color>
+    <color name="main_color">#ded8d8</color>
 </resources>

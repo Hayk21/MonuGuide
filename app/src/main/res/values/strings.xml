@@ -13,19 +13,19 @@
     <string name="action_search">Search</string>
 
     <string-array name="list_of_radius_titles">
-        <item>50m</item>
         <item>100m</item>
+        <item>150m</item>
         <item>200m</item>
     </string-array>
     <string-array name="list_of_radius_values">
+        <item>0.0001</item>
+        <item>0.00015</item>
         <item>1</item>
-        <item>0.2</item>
-        <item>0.4</item>
     </string-array>
 
     <string name="pref_header_notifications">Notifications</string>
 
-    <string name="pref_title_new_message_notifications">New message notifications</string>
+    <string name="pref_title_new_message_notifications">Find Monuments Near</string>
 
     <string name="pref_title_ringtone">Ringtone</string>
     <string name="pref_ringtone_silent">Silent</string>

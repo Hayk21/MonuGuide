@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -112,8 +113,8 @@ public class LocationService extends Service {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
         } else if (isConnect()) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5, 5, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 5, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10, 20, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 20, locationListener);
             Toast.makeText(this, "Location Service Run", Toast.LENGTH_SHORT).show();
         }
         return START_STICKY;
@@ -149,7 +150,7 @@ public class LocationService extends Service {
         foregroundIntent = new Intent(this, SettingsActivity.class);
         foregroundPendingIntent = PendingIntent.getActivity(this, 0, foregroundIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder = new NotificationCompat.Builder(this);
-        mBuilder.setSmallIcon(R.mipmap.ic_launcher).setContentText("Location Service is run").setContentTitle("MonuGuide").setAutoCancel(true).setWhen(System.currentTimeMillis()).setDefaults(Notification.DEFAULT_SOUND).setContentIntent(foregroundPendingIntent);
+        mBuilder.setSmallIcon(R.drawable.header_notif_icon).setContentText("AutoFind Is Run").setContentTitle("MonuGuide").setAutoCancel(true).setWhen(System.currentTimeMillis()).setDefaults(Notification.DEFAULT_SOUND).setContentIntent(foregroundPendingIntent);
         foregroundNotification = mBuilder.build();
         startForeground(ID_FOR_FOREGROUND, foregroundNotification);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -216,10 +217,10 @@ public class LocationService extends Service {
             if (sharedPreferences.getBoolean(SettingsActivity.KEY_OF_VIBRATE, false))
                 mBuilder.setVibrate(mVibrateTime);
             Log.d("Log_Tag", sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE, ""));
-            if (sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE, "") != "") {
+            if (!sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE, "").equals("")) {
                 mBuilder.setSound(Uri.parse(sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE, "")));
             }
-            mBuilder.setContentTitle("Theare is Monument").setSmallIcon(R.mipmap.brush_icon).setContentText(monument.getName() + " is finded near you.").setWhen(System.currentTimeMillis()).setAutoCancel(true);
+            mBuilder.setContentTitle("Theare is Monument").setSmallIcon(R.drawable.notif_icon).setContentText(monument.getName() + " is finded near you.").setWhen(System.currentTimeMillis()).setAutoCancel(true);
             monumentIntent = new Intent(LocationService.this, StartActivity.class);
             monumentIntent.setAction(ACTION + notifID);
             monumentIntent.putExtra(SHOWING_MONUMENT, monument);
