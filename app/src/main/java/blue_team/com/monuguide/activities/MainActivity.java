@@ -17,8 +17,14 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
+import blue_team.com.monuguide.models.Note;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -27,7 +33,17 @@ public class MainActivity extends AppCompatActivity
     Fragment mMapStatueFragment;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-
+//    FireHelper fh = new FireHelper();
+//    List<Note> listOfNote = new ArrayList<>();
+//    private FireHelper.IOnNoteSuccessListener iOnNoteSuccessListener = new FireHelper.IOnNoteSuccessListener() {
+//        @Override
+//        public void onSuccess(HashMap<String, Note> mMap) {
+//            listOfNote.clear();
+//            listOfNote.addAll(mMap.values());
+//
+//            //anel gorcoxutyunner@
+//        }
+//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +52,7 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        //fh.setOnNoteSuccessListener(iOnNoteSuccessListener);
 
         fragmentManager = getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
@@ -106,7 +122,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
-
+            //fh.getNotesList("mon1");
         } else if (id == R.id.nav_manage) {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);

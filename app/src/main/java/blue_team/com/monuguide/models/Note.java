@@ -10,7 +10,7 @@ import android.os.Parcelable;
 public class Note implements Parcelable {
     private String id;
     private String image;
-    private int likeCount;
+    private double likeCount;
 
     public Note() {
 
@@ -50,10 +50,11 @@ public class Note implements Parcelable {
         this.image = image;
     }
 
-    public int getLikeCount() {
+    public double getLikeCount() {
         return likeCount;
     }
 
+<<<<<<< HEAD
     @Override
     public int describeContents() {
         return 0;
@@ -64,5 +65,9 @@ public class Note implements Parcelable {
         parcel.writeString(id);
         parcel.writeString(image);
         parcel.writeInt(likeCount);
+=======
+    public void setLikeCount(double likeCount) {
+        this.likeCount = likeCount;
+>>>>>>> refs/remotes/origin/master
     }
 }

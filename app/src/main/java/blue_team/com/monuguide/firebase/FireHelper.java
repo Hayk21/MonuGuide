@@ -1,5 +1,6 @@
 package blue_team.com.monuguide.firebase;
 
+
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -21,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 
 import blue_team.com.monuguide.models.Monument;
+import blue_team.com.monuguide.models.Note;
 
 public class FireHelper {
 
@@ -28,14 +30,20 @@ public class FireHelper {
     private double mLat;
     private double mLon;
     private double mRad;
+    private String imageUrl;
+    private Monument mMonument;
+    private Note note;
     private Query mQuery1;
     private Query mQuery2;
+    private Query mQuery3;
     private DatabaseReference mDatabase;
     private DatabaseReference mDatabase1;
     private FirebaseStorage mStorage;
     private StorageReference mStorageRef;
     private IOnSuccessListener mOnSuccessListener;
+    private IOnNoteSuccessListener mOnNoteSuccessListener;
     private HashMap<String,Monument> mMon = new HashMap<>();
+    private HashMap<String,Note> mNote = new HashMap<>();
 
 
 
@@ -80,6 +88,23 @@ public class FireHelper {
         }
     };
 
+    private ValueEventListener noteValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            for (DataSnapshot mySnapshot: dataSnapshot.getChildren()) {
+                Note addVal = mySnapshot.getValue(Note.class);
+                String key = mySnapshot.getKey();
+                mNote.put(key,addVal);
+            }
+            mOnNoteSuccessListener.onSuccess(mNote);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
     public void getMonuments(double pLatitude, double pLongitude, double pRadius)
     {
         if(count == 0) {
@@ -112,31 +137,84 @@ public class FireHelper {
         }
     }
 
-    public void addNote(Bitmap bitmap)
+    public void addNote(Bitmap bitmap, Monument monument)
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
-        byte[] data = baos.toByteArray();
-
-        UploadTask uploadTask = mStorageRef.child("noteImages/bbb").putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                @SuppressWarnings("VisibleForTests")
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-            }
-        });
+        mMonument = monument;
+        AddNote sn = new AddNote();
+        sn.execute(bitmap);
     }
+
+    private class AddNote extends AsyncTask<Bitmap,Void,Void>
+    {
+        Bitmap bitmap;
+        @Override
+        protected Void doInBackground(Bitmap... params) {
+            for(Bitmap b : params)
+            {
+                bitmap = b;
+            }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
+            byte[] data = baos.toByteArray();
+            String s = mMonument.getId()+"Note";
+            s+=(mMonument.getNotes().size()+1);
+            note = new Note();
+            note.setId(s);
+            UploadTask uploadTask = mStorageRef.child("noteImages/"+s).putBytes(data);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    @SuppressWarnings("VisibleForTests")
+                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    imageUrl=downloadUrl.toString();
+                    note.setImage(imageUrl);
+                    note.setLikeCount(0);
+                    mDatabase.child("models").child("monuments").child(mMonument.getId()).child("notes").child(note.getId()).setValue(note);
+
+                }
+            });
+
+            return null;
+        }
+    }
+
+    public void getNotesList(String monId)
+    {
+        GetNotes gn = new GetNotes();
+        gn.execute(monId);
+    }
+    private class GetNotes extends AsyncTask<String,Void,Void> {
+        String monId;
+
+        @Override
+        protected Void doInBackground(String... params) {
+            for (String b : params) {
+                monId = b;
+            }
+            mQuery3 = mDatabase.child("models").child("monuments").child(monId).child("notes");
+            mQuery3.addValueEventListener(noteValueEventListener);
+            return null;
+        }
+    }
+
     public void setOnSuccessListener(IOnSuccessListener onSuccessListener) {
         mOnSuccessListener = onSuccessListener;
     }
 
     public interface IOnSuccessListener {
         void onSuccess(HashMap<String,Monument> mMap);
+    }
+
+    public void setOnNoteSuccessListener(IOnNoteSuccessListener onNoteSuccessListener){
+        mOnNoteSuccessListener = onNoteSuccessListener;
+    }
+
+    public interface IOnNoteSuccessListener {
+        void onSuccess(HashMap<String,Note> mMap);
     }
 }
