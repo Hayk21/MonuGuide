@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity
     Fragment mMapStatueFragment;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +59,6 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.add(R.id.container, mMapStatueFragment, "MapFragment");
         fragmentTransaction.commit();
 
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -135,7 +129,6 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 
     private void getConnections(){
         ConnectivityManager cm =
