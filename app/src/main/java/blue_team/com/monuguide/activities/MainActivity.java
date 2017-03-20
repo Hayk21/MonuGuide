@@ -33,17 +33,6 @@ public class MainActivity extends AppCompatActivity
     Fragment mMapStatueFragment;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-//    FireHelper fh = new FireHelper();
-//    List<Note> listOfNote = new ArrayList<>();
-//    private FireHelper.IOnNoteSuccessListener iOnNoteSuccessListener = new FireHelper.IOnNoteSuccessListener() {
-//        @Override
-//        public void onSuccess(HashMap<String, Note> mMap) {
-//            listOfNote.clear();
-//            listOfNote.addAll(mMap.values());
-//
-//            //anel gorcoxutyunner@
-//        }
-//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

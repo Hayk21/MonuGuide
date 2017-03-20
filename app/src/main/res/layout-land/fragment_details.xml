@@ -60,7 +60,7 @@
         android:maxLines="4"
         android:text="jthguitrhjrtihjtrhjntrgubnrtjkbngrkjnbrkjnbrtnbrnbkrnbjkrnbrtnbrkjnbkjrtbrbtrjkbtbjkebnjknbkjnbjkntjkbjkbnkjetnbkjebjketbjkebjkenjkbnekjbnkjenbekjnjknejkbnejkbnekjbnjetbbjebnejkbnejkekjbekjnekjnejkbnjkbnejkbnekjbnekjbnjekbnekjbnejbnjbejkjejek"
         android:textColor="@color/paint_black"
-        android:textSize="16sp" />
+        android:textSize="13sp" />
 
     <LinearLayout
         android:layout_width="match_parent"

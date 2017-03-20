@@ -26,7 +26,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:src="@mipmap/back_icon" />
+                android:src="@drawable/back_icon" />
 
             <TextView
                 android:id="@+id/name_of_monument"
@@ -34,8 +34,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="3"
                 android:gravity="center"
-                android:text="Davit"
-                android:textColor="@color/paint_black"
+                android:textColor="@android:color/white"
                 android:textSize="20sp" />
 
 
@@ -44,10 +43,21 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:src="@mipmap/draw_icon" />
+                android:src="@drawable/draw_icon" />
 
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/nothing_id"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="12"
+            android:textSize="30sp"
+            android:textColor="@color/paint_black"
+            android:text="@string/nothing_text"
+            android:gravity="center"
+            android:visibility="gone"/>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/view_pager"
@@ -60,7 +70,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/small_brush"
-                android:background="@color/paint_view_back"></android.support.v4.view.PagerTabStrip>
+                android:background="@color/paint_view_back">
+            </android.support.v4.view.PagerTabStrip>
 
         </android.support.v4.view.ViewPager>
 

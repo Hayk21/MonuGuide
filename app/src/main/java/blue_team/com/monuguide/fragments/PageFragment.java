@@ -26,11 +26,11 @@ public class PageFragment extends Fragment {
     String URL;
     ImageView mCurrentImage;
 
-    public static PageFragment newInstance(int page,String url){
+    public static PageFragment newInstance(int page,Note note){
         PageFragment pageFragment = new PageFragment();
         Bundle args = new Bundle();
         args.putInt(PAGE_NUMBER,page);
-        args.putString(PAGE_URL,url);
+        args.putString(PAGE_URL,note.getImage());
         pageFragment.setArguments(args);
         return pageFragment;
 

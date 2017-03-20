@@ -40,4 +40,5 @@
     <string name="wiki_text">More Inforamtion</string>
     <string name="ok">ok</string>
     <string name="cancel">cancel</string>
+    <string name="nothing_text">There are no notes here,You can be FISRT!!!</string>
 </resources>

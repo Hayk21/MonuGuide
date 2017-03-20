@@ -2,6 +2,7 @@ package blue_team.com.monuguide.activities;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.PersistableBundle;
@@ -22,6 +23,9 @@ import blue_team.com.monuguide.models.Monument;
 public class DrawingActivity extends AppCompatActivity {
 
 
+    Intent mActivityIntent;
+    Monument monument;
+    int mSize;
     PaintView paintView;
     LinearLayout FirstListOfColors, SecondListOfColors, ListOfTools;
     ImageButton currentCollor;
@@ -141,8 +145,9 @@ public class DrawingActivity extends AppCompatActivity {
                             paintView.buildDrawingCache();
                             Bitmap bitmap = paintView.getDrawingCache();
                             FireHelper fh = new FireHelper();
-                            Monument monument = null; // nulli tex@ tvyal monument@
-                            fh.addNote(bitmap, monument);
+                            if(monument != null)
+                            fh.addNote(bitmap, monument,mSize);
+                            PagerActivity.setFirstCommit(true);
                             DrawingActivity.this.finish();
                         }
                     });
@@ -154,6 +159,10 @@ public class DrawingActivity extends AppCompatActivity {
                     });
                     alertDialog = builder2.create();
                     alertDialog.show();
+                    break;
+                case R.id.back_button:
+                    DrawingActivity.this.finish();
+                    break;
 
 
             }
@@ -166,6 +175,11 @@ public class DrawingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_drawing);
         setupActionBar();
 
+        mActivityIntent = this.getIntent();
+        if(mActivityIntent.getParcelableExtra(PagerActivity.EXTRA_WITH_MONUMENT) != null){
+            monument = mActivityIntent.getParcelableExtra(PagerActivity.EXTRA_WITH_MONUMENT);
+            mSize = mActivityIntent.getIntExtra(PagerActivity.EXTRA_WITH_SIZE,0);
+        }
         paintView = (PaintView) findViewById(R.id.paintView);
         FirstListOfColors = (LinearLayout) findViewById(R.id.list_of_colors_1);
         SecondListOfColors = (LinearLayout) findViewById(R.id.list_of_colors_2);
@@ -185,7 +199,7 @@ public class DrawingActivity extends AppCompatActivity {
         for (int i = 0; i < 6; i++) {
             SecondListOfColors.getChildAt(i).setOnClickListener(OnColorItemClickListtener);
         }
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             ListOfTools.getChildAt(i).setOnClickListener(OnToolsItemClickListenner);
         }
     }

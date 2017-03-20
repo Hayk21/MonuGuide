@@ -35,7 +35,7 @@
             android:layout_weight="6"
             android:layout_marginLeft="@dimen/small_brush"
             android:text="4"
-            android:textColor="@color/paint_black"
+            android:textColor="@color/paint_grey"
             android:textSize="40sp" />
 
 

@@ -27,6 +27,7 @@ import blue_team.com.monuguide.models.Note;
 public class FireHelper {
 
     private static int count = 0;
+    private int NotesListSize;
     private double mLat;
     private double mLon;
     private double mRad;
@@ -137,9 +138,10 @@ public class FireHelper {
         }
     }
 
-    public void addNote(Bitmap bitmap, Monument monument)
+    public void addNote(Bitmap bitmap, Monument monument,int size)
     {
         mMonument = monument;
+        NotesListSize = size;
         AddNote sn = new AddNote();
         sn.execute(bitmap);
     }
@@ -157,7 +159,7 @@ public class FireHelper {
             bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
             byte[] data = baos.toByteArray();
             String s = mMonument.getId()+"Note";
-            s+=(mMonument.getNotes().size()+1);
+            s+=(NotesListSize+1);
             note = new Note();
             note.setId(s);
             UploadTask uploadTask = mStorageRef.child("noteImages/"+s).putBytes(data);

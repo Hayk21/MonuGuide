@@ -44,7 +44,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:maxLines="4"
+        android:maxLines="6"
         android:textSize="13sp"
         android:layout_height="wrap_content"
         android:textColor="@color/paint_black"
