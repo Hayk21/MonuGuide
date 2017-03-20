@@ -1,6 +1,12 @@
 package blue_team.com.monuguide.activities;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
@@ -41,11 +47,14 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        context = this;
         //fh.setOnNoteSuccessListener(iOnNoteSuccessListener);
 
         fragmentManager = getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
         mMapStatueFragment = new MapStatueFragment();
+        getLocation();
         fragmentTransaction.add(R.id.container, mMapStatueFragment, "MapFragment");
         fragmentTransaction.commit();
 
@@ -93,7 +102,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_search) {
             return true;
         }
 
@@ -128,4 +137,57 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    private void getConnections(){
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        System.out.println("inGetConnection = " + cm.getActiveNetworkInfo());
+
+        if (cm.getActiveNetworkInfo() == null){
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage("Please connect with internet")
+                    .setPositiveButton("CONNECT", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+                            if (!wifiManager.isWifiEnabled())
+                                wifiManager.setWifiEnabled(true);
+                            else
+                                wifiManager.setWifiEnabled(true);
+                        }
+                    })
+                    .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            builder.create();
+            builder.show();
+
+        }
+
+    }
+
+    private void getLocation(){
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+            buildAlertMessageNoGps();
+        }
+    }
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
 }
