@@ -5,11 +5,13 @@ import android.Manifest;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
@@ -36,8 +38,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.Services.LocationService;
 import blue_team.com.monuguide.activities.MainActivity;
+import blue_team.com.monuguide.activities.SettingsActivity;
+import blue_team.com.monuguide.firebase.FireHelper;
+import blue_team.com.monuguide.models.Monument;
 
 public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
 
@@ -50,7 +60,35 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
     private double mLatitude;
     private double mLongitude;
     private Marker mMarker;
+    private FireHelper fireHelper = new FireHelper();
+    List<Monument> listOfMonument, listOfFindedMonuments, showMonuments;
 
+    private FireHelper.IOnSuccessListener onSuccessListener = new FireHelper.IOnSuccessListener() {
+        @Override
+        public void onSuccess(HashMap<String, Monument> mMap) {
+            listOfMonument.clear();
+            listOfMonument.addAll(mMap.values());
+            getMonumentList();
+            //testForNotification();
+            // listi het gorcoxutyunner@ anel aystex
+        }
+    };
+
+    private void getMonumentList(){
+        for (Monument monument : listOfMonument) {
+            System.out.println("YYYYYYYYYYYYYYYYYYYY = " + monument.getName());
+            mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(monument.getLatitude(), monument.getLongitude()))
+                    .title(monument.getName()).snippet(monument.getDesc()).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_monument_marker))));
+        }
+    }
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        listOfMonument = new ArrayList<>();
+        fireHelper.setOnSuccessListener(onSuccessListener);
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -76,26 +114,17 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(View view, Bundle savedInstanceState) {
 
         mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
-        System.out.println("Location manager = " + mLocationManager);
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
-
             System.out.println("oyoy");
             return;
         }
 
-        mLocationManager.requestLocationUpdates(mLocationManager.GPS_PROVIDER,
-                1000,
-                1,
-                locationListener);
-
-
-        mLocationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
-                locationListener);
+        mLocationManager.requestLocationUpdates(mLocationManager.GPS_PROVIDER, 1000, 1, locationListener);
+        mLocationManager.requestLocationUpdates(mLocationManager.NETWORK_PROVIDER, 1000 * 10, 10, locationListener);
 
 
         getMapFragment().getMapAsync(new OnMapReadyCallback() {
@@ -113,7 +142,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
                     return;
                 }
                 mMap.setMyLocationEnabled(true);
-                initMarkers();
+                //initMarkers();
             }
 
         });
@@ -121,6 +150,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void setMyLocation(Location location) {
+        mMap.clear();
         LatLng currentLL = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.addMarker(new MarkerOptions().position(currentLL).title("Marker in Armenia"));
         float zoomLevel = (float) 16.0; //This goes up to 21
@@ -148,20 +178,22 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void initMarkers() {
-        mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(mLatitude + 0.1, mLongitude + 0.1))
-                .title("Hello world").snippet("Additional text").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher))));
-      /* mMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(40, 40)).icon(
-                BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher)));*/
-
-    }
+        mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(mLatitude, mLongitude))
+                .title("Hello world").snippet("Additional text").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_monument_marker))));
+     }
 
 
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            //mLongitude = location.getLongitude();
-            //mLatitude = location.getLatitude();
+            mLongitude = location.getLongitude();
+            mLatitude = location.getLatitude();
+            //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LocationService.this);
+            fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), 50/*Double.valueOf(sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0"))*/);
+
             setMyLocation(location);
+            getMonumentList();
+            //initMarkers();
         }
 
         @Override

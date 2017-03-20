@@ -10,6 +10,7 @@
     <string name="choose_brush">Choose_brush</string>
     <string name="choose_erase">Choose_erase</string>
     <string name="save_note">Save</string>
+    <string name="action_search">Search</string>
 
     <string-array name="list_of_radius_titles">
         <item>50m</item>
