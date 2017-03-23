@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.applications.FireApp;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
 import blue_team.com.monuguide.models.Note;

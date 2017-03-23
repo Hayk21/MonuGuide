@@ -5,6 +5,7 @@
     android:id="@+id/start_activity_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="blue_team.com.monuguide.activities.StartActivity">
+    tools:context="blue_team.com.monuguide.activities.StartActivity"
+    android:background="@drawable/background4">
 
 </RelativeLayout>

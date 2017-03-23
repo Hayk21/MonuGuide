@@ -1,5 +1,7 @@
 package blue_team.com.monuguide.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -67,8 +69,9 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     public void onBackPressed() {
         if (fragmentManager.getBackStackEntryCount() == 1) {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            overridePendingTransition(R.anim.enter_go_left,R.anim.out_go_left);
         } else {
             if (fragmentManager.findFragmentByTag(WEB_FRAGMENT) != null) {
                 if (((WebFragment) fragmentManager.findFragmentByTag(WEB_FRAGMENT)).getWebView().canGoBack()) {
@@ -95,12 +98,14 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
                 Intent intent = new Intent(StartActivity.this,PagerActivity.class);
                 intent.putExtra(ARGUMENT_WITH_MONUMENT,monument);
                 startActivity(intent);
+                overridePendingTransition(R.anim.enter_go_right,R.anim.out_go_right);
                 break;
             case R.id.linear_wiki:
                 mWebFragment = new WebFragment();
                 args.putParcelable(ARGUMENT_WITH_MONUMENT, monument);
                 mWebFragment.setArguments(args);
                 fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 fragmentTransaction.replace(R.id.start_activity_container, mWebFragment, WEB_FRAGMENT);
                 fragmentTransaction.addToBackStack(HEADER_BACKSTACK);
                 fragmentTransaction.commit();

@@ -136,7 +136,7 @@ public class DrawingActivity extends AppCompatActivity {
                     alertDialog.show();
                     break;
                 case R.id.save_button:
-                    AlertDialog.Builder builder2 = new AlertDialog.Builder(DrawingActivity.this);
+                    final AlertDialog.Builder builder2 = new AlertDialog.Builder(DrawingActivity.this);
                     paintView.setDrawingCacheEnabled(true);
                     builder2.setTitle("Save drawing?");
                     builder2.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -154,7 +154,7 @@ public class DrawingActivity extends AppCompatActivity {
                     builder2.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User cancelled the dialog
-                            DrawingActivity.this.finish();
+                            alertDialog.cancel();
                         }
                     });
                     alertDialog = builder2.create();
@@ -162,12 +162,20 @@ public class DrawingActivity extends AppCompatActivity {
                     break;
                 case R.id.back_button:
                     DrawingActivity.this.finish();
+                    overridePendingTransition(R.anim.enter_go_left,R.anim.out_go_left);
                     break;
 
 
             }
         }
     };
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        DrawingActivity.this.finish();
+        overridePendingTransition(R.anim.enter_go_left,R.anim.out_go_left);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
