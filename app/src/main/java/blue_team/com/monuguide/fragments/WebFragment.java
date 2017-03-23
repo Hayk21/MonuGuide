@@ -14,9 +14,6 @@ import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.activities.StartActivity;
 import blue_team.com.monuguide.models.Monument;
 
-/**
- * Created by Hayk on 18.03.2017.
- */
 
 public class WebFragment extends Fragment {
 

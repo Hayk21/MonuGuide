@@ -30,7 +30,9 @@ android {
         }
     }
 }
-
+repositories {
+    mavenCentral()
+}
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -48,6 +50,8 @@ dependencies {
     compile 'com.android.support:support-v4:25.2.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:recyclerview-v7:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
+    compile 'com.facebook.android:facebook-android-sdk:4.14.0'
     testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.android.application'

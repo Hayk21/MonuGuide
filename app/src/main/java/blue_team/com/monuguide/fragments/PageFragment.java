@@ -14,9 +14,6 @@ import com.squareup.picasso.Picasso;
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.models.Note;
 
-/**
- * Created by Hayk on 19.03.2017.
- */
 
 public class PageFragment extends Fragment {
 

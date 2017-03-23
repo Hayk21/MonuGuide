@@ -8,9 +8,6 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -23,15 +20,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.applications.FireApp;
-import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
-import blue_team.com.monuguide.models.Note;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -110,12 +100,11 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
+        if (id == R.id.login) {
             //fh.getNotesList("mon1");
+            Intent intent = new Intent(MainActivity.this, FacebookLoginActivity.class);
+            startActivity(intent);
+
         } else if (id == R.id.nav_manage) {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);

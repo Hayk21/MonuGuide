@@ -45,6 +45,7 @@ public class Monument implements Parcelable {
         }
     };
 
+
     public String getId() {
             return id;
         }
