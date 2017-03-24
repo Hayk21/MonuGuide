@@ -8,9 +8,6 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -23,23 +20,19 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
-import blue_team.com.monuguide.models.Note;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String NAME_OF_PREFERENCE = "Service_runing";
     Fragment mMapStatueFragment;
+    Fragment mMonumentList;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     Context context;
+    private static final String MONUMENT_LIST_TYPE = "MONUMENT_LIST_TYPE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +90,9 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
+            Intent myIntent = new Intent(this, MonumentSearchActivity.class);
+            //myIntent.putExtra("key", value); //Optional parameters
+            this.startActivity(myIntent);
             return true;
         }
 

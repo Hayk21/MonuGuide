@@ -3,21 +3,21 @@
 
     <item
         is-multidex="true"
-        jar="D:\AndroidStudioProjects\MonuGuide\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="70dd4c4c6ad3628f49a4ad94ed72714d6f6f7263">
-        <dex dex="D:\AndroidStudioProjects\MonuGuide\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_8e14959445c5ec8c79747fab4d3f518a1fa23fbc\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="D:\AndroidStudioProjects\MonuGuide\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jar="C:\Users\user\AndroidStudioProjects\MonuGuide\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
         sha1="c82741bc129dd5f99f11a4ab8666ae24262053b6">
-        <dex dex="D:\AndroidStudioProjects\MonuGuide\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_22d2f184005825b0e9f082b6d32d907ba4038300\classes.dex" />
+        <dex dex="C:\Users\user\AndroidStudioProjects\MonuGuide\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_85debca0d23124cbacf32714345535c98b7017d9\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\user\AndroidStudioProjects\MonuGuide\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="4e1aecc9795a11bcdb4c6c16401c05a92c5ef535">
+        <dex dex="C:\Users\user\AndroidStudioProjects\MonuGuide\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_5c1be2e0a2fb98c19500f8aeba49450bfdb81d85\classes.dex" />
     </item>
 
 </items>

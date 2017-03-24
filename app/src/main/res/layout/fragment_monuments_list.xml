@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#df9595">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/monumentsListRecyclerView"
@@ -11,4 +12,4 @@
         android:scrollbars="vertical"
         />
 
-</FrameLayout>
+</RelativeLayout>

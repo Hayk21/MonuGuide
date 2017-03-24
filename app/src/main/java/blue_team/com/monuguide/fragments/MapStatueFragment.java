@@ -61,7 +61,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
     private double mLongitude;
     private Marker mMarker;
     private FireHelper fireHelper = new FireHelper();
-    List<Monument> listOfMonument, listOfFindedMonuments, showMonuments;
+    List<Monument> listOfMonument;
 
     private FireHelper.IOnSuccessListener onSuccessListener = new FireHelper.IOnSuccessListener() {
         @Override
@@ -88,6 +88,8 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         listOfMonument = new ArrayList<>();
         fireHelper.setOnSuccessListener(onSuccessListener);
+
+
     }
 
     @Override
