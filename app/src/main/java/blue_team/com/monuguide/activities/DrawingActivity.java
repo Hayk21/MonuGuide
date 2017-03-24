@@ -154,7 +154,7 @@ public class DrawingActivity extends AppCompatActivity {
                     builder2.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User cancelled the dialog
-                            DrawingActivity.this.finish();
+
                         }
                     });
                     alertDialog = builder2.create();

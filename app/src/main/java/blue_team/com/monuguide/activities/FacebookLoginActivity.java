@@ -21,6 +21,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.firebase.FireHelper;
+import blue_team.com.monuguide.models.User;
 
 public class FacebookLoginActivity extends AppCompatActivity {
     LoginButton loginButton;
@@ -41,27 +43,39 @@ public class FacebookLoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 handleFacebookAccessToken(loginResult.getAccessToken());
+                FacebookLoginActivity.this.finish();
             }
 
             @Override
             public void onCancel() {
-
+                FacebookLoginActivity.this.finish();
             }
 
             @Override
             public void onError(FacebookException error) {
-
+                FacebookLoginActivity.this.finish();
             }
         });
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
+                User myUser = new User();
                 if (user != null) {
                     // User is signed in
+//                    myUser.setuID(user.getUid());
+//                    myUser.setName(user.getDisplayName());
+//                    myUser.setEmail(user.getEmail());
+//                    myUser.setPhotoUrl(user.getPhotoUrl().toString());
+//                    myUser.setLogin(1);
+//                    FireHelper fh = new FireHelper();
+//                    fh.addUser(myUser);
+
 
                 } else {
                     // User is signed out
+                    myUser.setLogin(0);
+
                     
                 }
             }
@@ -72,6 +86,7 @@ public class FacebookLoginActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+
     }
 
     @Override
@@ -91,7 +106,6 @@ public class FacebookLoginActivity extends AppCompatActivity {
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
 

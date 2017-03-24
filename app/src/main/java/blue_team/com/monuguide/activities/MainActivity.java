@@ -20,8 +20,12 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
+import java.util.HashMap;
+
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
+import blue_team.com.monuguide.models.Monument;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -31,6 +35,8 @@ public class MainActivity extends AppCompatActivity
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     Context context;
+    FireHelper fh = new FireHelper();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +47,13 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         context = this;
-        //fh.setOnNoteSuccessListener(iOnNoteSuccessListener);
+        FireHelper.IOnSearchSuccessListener iOnSearchSuccessListener = new FireHelper.IOnSearchSuccessListener() {
+            @Override
+            public void onSuccess(HashMap<String, Monument> mMap) {
+
+            }
+        } ;
+        fh.setOnSearchSuccessListener(iOnSearchSuccessListener);
 
         fragmentManager = getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
@@ -101,7 +113,6 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.login) {
-            //fh.getNotesList("mon1");
             Intent intent = new Intent(MainActivity.this, FacebookLoginActivity.class);
             startActivity(intent);
 
@@ -112,7 +123,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-
+            fh.getSearchMonument("Ho");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
