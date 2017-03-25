@@ -20,8 +20,12 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
+import java.util.HashMap;
+
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
+import blue_team.com.monuguide.models.Monument;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity
     FragmentTransaction fragmentTransaction;
     Context context;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +46,6 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         context = this;
-        //fh.setOnNoteSuccessListener(iOnNoteSuccessListener);
 
         fragmentManager = getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
@@ -88,6 +92,9 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
+            Intent myIntent = new Intent(this, MonumentSearchActivity.class);
+            //myIntent.putExtra("key", value); //Optional parameters
+            this.startActivity(myIntent);
             return true;
         }
 
@@ -101,7 +108,6 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.login) {
-            //fh.getNotesList("mon1");
             Intent intent = new Intent(MainActivity.this, FacebookLoginActivity.class);
             startActivity(intent);
 
