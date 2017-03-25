@@ -88,6 +88,9 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
+            Intent myIntent = new Intent(this, MonumentSearchActivity.class);
+            //myIntent.putExtra("key", value); //Optional parameters
+            this.startActivity(myIntent);
             return true;
         }
 
