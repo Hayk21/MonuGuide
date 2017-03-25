@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     Context context;
-    FireHelper fh = new FireHelper();
 
 
     @Override
@@ -47,13 +46,6 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         context = this;
-        FireHelper.IOnSearchSuccessListener iOnSearchSuccessListener = new FireHelper.IOnSearchSuccessListener() {
-            @Override
-            public void onSuccess(HashMap<String, Monument> mMap) {
-
-            }
-        } ;
-        fh.setOnSearchSuccessListener(iOnSearchSuccessListener);
 
         fragmentManager = getFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
@@ -126,7 +118,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-            fh.getSearchMonument("Ho");
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

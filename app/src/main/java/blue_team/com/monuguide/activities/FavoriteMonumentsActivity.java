@@ -1,11 +1,12 @@
 package blue_team.com.monuguide.activities;
 
 import android.os.Bundle;
+
+import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.adapter.MonumentListAdapter;
