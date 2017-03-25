@@ -44,12 +44,8 @@
             android:name=".activities.MainActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activities.DrawingActivity"
@@ -84,6 +80,17 @@
         <activity
             android:name=".activities.PagerActivity"
             android:theme="@style/AppTheme" />
+        <activity android:name=".activities.SplashScreenActivity"
+            android:theme="@style/SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"></action>
+
+                <category android:name="android.intent.category.LAUNCHER"></category>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.PagerActivity"
+            android:theme="@style/AppTheme" />
 
         <provider
             android:name="com.facebook.FacebookContentProvider"
@@ -91,6 +98,8 @@
             android:exported="true" />
 
         <activity android:name=".activities.FacebookLoginActivity"></activity>
+        <activity android:name=".activities.MonumentSearchActivity" />
+        <activity android:name=".activities.FavoriteMonumentsActivity"></activity>
     </application>
 
 </manifest>

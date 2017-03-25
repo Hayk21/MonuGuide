@@ -99,7 +99,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         int id = item.getItemId();
         if (id == android.R.id.home) {
             this.finish();
-            return true;
+            overridePendingTransition(R.anim.first_alpha_up,R.anim.first_alpha_down);
         }
         return true;
     }
@@ -144,6 +144,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     @Override
     public void onBackPressed() {
         this.finish();
+        overridePendingTransition(R.anim.first_alpha_up,R.anim.first_alpha_down);
     }
 }
 
