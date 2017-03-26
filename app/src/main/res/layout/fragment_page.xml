@@ -25,18 +25,18 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_margin="@dimen/small_brush"
             android:src="@mipmap/like_icon" />
 
         <TextView
             android:id="@+id/like_count"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
+            android:gravity="center_vertical"
             android:layout_weight="6"
-            android:layout_marginLeft="@dimen/small_brush"
             android:text="4"
             android:textColor="@color/paint_grey"
-            android:textSize="40sp" />
+            android:textSize="30sp" />
 
 
     </LinearLayout>

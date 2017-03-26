@@ -21,13 +21,12 @@ import blue_team.com.monuguide.models.Monument;
 public class MonumentSearchActivity extends AppCompatActivity {
 
     private MonumentListAdapter mAdapter;
-    private Toolbar toolbar;
-
-    private EditText searchET;
-    private Button searchBtn;
     private RecyclerView recyclerView;
     private List<Monument> monumentList;
     private FireHelper fh;
+
+    private EditText searchET;
+    private Button searchBtn;
 
 
     @Override

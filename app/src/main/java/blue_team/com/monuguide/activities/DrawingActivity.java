@@ -138,10 +138,9 @@ public class DrawingActivity extends AppCompatActivity {
                 case R.id.save_button:
                     final AlertDialog.Builder builder2 = new AlertDialog.Builder(DrawingActivity.this);
                     paintView.setDrawingCacheEnabled(true);
-                    builder2.setTitle("Save drawing?");
+                    builder2.setTitle("Save Drawing?");
                     builder2.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            // User clicked OK button
                             paintView.buildDrawingCache();
                             Bitmap bitmap = paintView.getDrawingCache();
                             FireHelper fh = new FireHelper();
@@ -153,7 +152,6 @@ public class DrawingActivity extends AppCompatActivity {
                     });
                     builder2.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            // User cancelled the dialog
                             alertDialog.cancel();
                         }
                     });
@@ -162,7 +160,7 @@ public class DrawingActivity extends AppCompatActivity {
                     break;
                 case R.id.back_button:
                     DrawingActivity.this.finish();
-                    overridePendingTransition(R.anim.enter_go_left,R.anim.out_go_left);
+                    overridePendingTransition(R.anim.draw_alpha_up,R.anim.draw_close_anim);
                     break;
 
 
@@ -174,7 +172,7 @@ public class DrawingActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         DrawingActivity.this.finish();
-        overridePendingTransition(R.anim.enter_go_left,R.anim.out_go_left);
+        overridePendingTransition(R.anim.draw_alpha_up,R.anim.draw_close_anim);
     }
 
     @Override

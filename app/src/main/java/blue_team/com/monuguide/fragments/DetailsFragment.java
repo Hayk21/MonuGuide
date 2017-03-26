@@ -10,6 +10,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,8 +31,8 @@ public class DetailsFragment extends Fragment {
 
     private static final int MESSAGE_FOR_HANDLER = 18;
     public static final String SAVED_MONUMENT = "SavedMonument";
-    LinearLayout mLinearHeart, mLinearComment, mLinearWiki;
-    TextView mShortDesc, mNameMonument;
+    ImageView mNotes,mFavorites,mWiki;
+    TextView mShortDesc;
     ImageView mHeaderImage;
     FragmentManager fragmentManager;
     ProgressBar progressBar;
@@ -42,7 +44,7 @@ public class DetailsFragment extends Fragment {
         void onFragmentInteraction(int ID,Monument monument);
     }
 
-    View.OnClickListener onLinearClickListener = new View.OnClickListener() {
+    View.OnClickListener onIconClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             mListener.onFragmentInteraction(view.getId(),mMonument);
@@ -104,19 +106,17 @@ public class DetailsFragment extends Fragment {
     }
 
     public void startFragmentOperation(View view) {
-        mLinearHeart = (LinearLayout) view.findViewById(R.id.linear_heart);
-        mLinearComment = (LinearLayout) view.findViewById(R.id.linear_comment);
-        mLinearWiki = (LinearLayout) view.findViewById(R.id.linear_wiki);
-        mLinearHeart.setOnClickListener(onLinearClickListener);
-        mLinearComment.setOnClickListener(onLinearClickListener);
-        mLinearWiki.setOnClickListener(onLinearClickListener);
-        mNameMonument = (TextView) view.findViewById(R.id.title_of_monument);
+        mNotes = (ImageView)view.findViewById(R.id.comment_img);
+        mFavorites = (ImageView)view.findViewById(R.id.heart_img);
+        mWiki = (ImageView)view.findViewById(R.id.wiki_img);
         mHeaderImage = (ImageView) view.findViewById(R.id.monument_img);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         mShortDesc = (TextView) view.findViewById(R.id.short_desc);
+        mNotes.setOnClickListener(onIconClickListener);
+        mFavorites.setOnClickListener(onIconClickListener);
+        mWiki.setOnClickListener(onIconClickListener);
         if (mMonument != null) {
             mShortDesc.setText(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getDesc());
-            mNameMonument.setText(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getName());
             Picasso.with(getActivity()).load(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getImage()).into(mHeaderImage);
             final Thread thread = new Thread(new Runnable() {
                 @Override
@@ -137,7 +137,7 @@ public class DetailsFragment extends Fragment {
             Intent intent = new Intent(getActivity(), MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            getActivity().overridePendingTransition(R.anim.enter_go_left,R.anim.out_go_left);
+            getActivity().overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
         }
         return true;
     }

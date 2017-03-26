@@ -23,7 +23,6 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     public static final String HEADER_BACKSTACK = "HeaderBackStack";
     public static final String WEB_FRAGMENT = "WebFragment";
     public static final String DETAILS_FRAGMENT = "DeatilsFragment";
-    public static final String NOTES_FRAGMENT = "NotesFragment";
     Fragment mDetailsFragment, mWebFragment;
     Monument monument;
     Intent mActivityIntent;
@@ -59,6 +58,7 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
             mDetailsFragment.setArguments(args);
             fragmentTransaction.add(R.id.start_activity_container, mDetailsFragment, DETAILS_FRAGMENT);
             fragmentTransaction.addToBackStack(HEADER_BACKSTACK);
+            getSupportActionBar().setTitle(monument.getName());
 
             this.getIntent().removeExtra(LocationService.SHOWING_MONUMENT);
         }
@@ -71,7 +71,7 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            overridePendingTransition(R.anim.enter_go_left,R.anim.out_go_left);
+            overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
         } else {
             if (fragmentManager.findFragmentByTag(WEB_FRAGMENT) != null) {
                 if (((WebFragment) fragmentManager.findFragmentByTag(WEB_FRAGMENT)).getWebView().canGoBack()) {
@@ -92,15 +92,15 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     @Override
     public void onFragmentInteraction(int ID,Monument monument) {
         switch (ID) {
-            case R.id.linear_heart:
+            case R.id.heart_img:
                 break;
-            case R.id.linear_comment:
+            case R.id.comment_img:
                 Intent intent = new Intent(StartActivity.this,PagerActivity.class);
                 intent.putExtra(ARGUMENT_WITH_MONUMENT,monument);
                 startActivity(intent);
-                overridePendingTransition(R.anim.enter_go_right,R.anim.out_go_right);
+                overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
                 break;
-            case R.id.linear_wiki:
+            case R.id.wiki_img:
                 mWebFragment = new WebFragment();
                 args.putParcelable(ARGUMENT_WITH_MONUMENT, monument);
                 mWebFragment.setArguments(args);

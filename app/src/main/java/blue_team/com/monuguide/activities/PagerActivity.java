@@ -86,7 +86,7 @@ public class PagerActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 PagerActivity.this.finish();
-                overridePendingTransition(R.anim.enter_go_left,R.anim.out_go_left);
+                overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
             }
         });
 
@@ -97,7 +97,7 @@ public class PagerActivity extends FragmentActivity {
                 intent.putExtra(EXTRA_WITH_MONUMENT,monument);
                 intent.putExtra(EXTRA_WITH_SIZE,mSize);
                 startActivity(intent);
-                overridePendingTransition(R.anim.enter_go_right,R.anim.out_go_right);
+                overridePendingTransition(R.anim.draw_open_anim,R.anim.draw_alpha_down);
             }
         });
 
@@ -107,7 +107,7 @@ public class PagerActivity extends FragmentActivity {
     public void onBackPressed() {
         super.onBackPressed();
         PagerActivity.this.finish();
-        overridePendingTransition(R.anim.enter_go_left,R.anim.out_go_left);
+        overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
     }
 
     @Override

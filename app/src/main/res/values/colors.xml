@@ -18,4 +18,6 @@
     <color name="paint_view_back">#F3E5F5</color>
     <color name="pager_color">#c5a6ca</color>
     <color name="main_color">#ded8d8</color>
+    <color name="text_color">#414040</color>
+    <color name="card_color">#d2c8c8</color>
 </resources>

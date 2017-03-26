@@ -1,5 +1,6 @@
 package blue_team.com.monuguide.activities;
 
+import android.animation.LayoutTransition;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,7 +10,9 @@ import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.transition.TransitionManager;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,12 +22,22 @@ import android.view.MenuItem;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SearchView;
 
 import java.util.HashMap;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
+import blue_team.com.monuguide.fragments.SearchFragment;
 import blue_team.com.monuguide.models.Monument;
 
 public class MainActivity extends AppCompatActivity
@@ -35,6 +48,11 @@ public class MainActivity extends AppCompatActivity
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     Context context;
+    Toolbar toolbar;
+    EditText search;
+    FrameLayout frameLayout;
+    LinearLayout linear;
+    ImageView closeSearch;
 
 
     @Override
@@ -42,7 +60,11 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        search = (EditText) toolbar.findViewById(R.id.search_edit);
+        closeSearch = (ImageView) toolbar.findViewById(R.id.cancel_search);
+        linear = (LinearLayout) findViewById(R.id.search_linear);
+        frameLayout = (FrameLayout) findViewById(R.id.search_container);
         setSupportActionBar(toolbar);
 
         context = this;
@@ -92,10 +114,42 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
-            Intent myIntent = new Intent(this, MonumentSearchActivity.class);
-            //myIntent.putExtra("key", value); //Optional parameters
-            this.startActivity(myIntent);
-            return true;
+//            Intent myIntent = new Intent(this, MonumentSearchActivity.class);
+//            //myIntent.putExtra("key", value); //Optional parameters
+//            this.startActivity(myIntent);
+//            return true;
+
+            return  true;
+
+//            if (linear.getVisibility() == View.INVISIBLE) {
+//                Animation animation = AnimationUtils.loadAnimation(this, R.anim.open_to_left);
+//                Animation animation2 = AnimationUtils.loadAnimation(this, R.anim.open_down);
+//                SearchFragment searchFragment = new SearchFragment();
+//                FragmentTransaction transaction = fragmentManager.beginTransaction();
+//                linear.setVisibility(View.VISIBLE);
+//                linear.startAnimation(animation);
+//                frameLayout.setVisibility(View.VISIBLE);
+//                frameLayout.startAnimation(animation2);
+//                transaction.add(R.id.search_container,searchFragment,"search");
+//                transaction.commit();
+//                closeSearch.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        Animation animation3 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.close_up);
+//                        Animation animation4 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.close_to_right);
+//                        FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
+//                        fragmentTransaction1.remove(fragmentManager.findFragmentByTag("search"));
+//                        fragmentTransaction1.commit();
+//                        frameLayout.setVisibility(View.INVISIBLE);
+//                        frameLayout.startAnimation(animation3);
+//                        linear.setVisibility(View.INVISIBLE);
+//                        linear.startAnimation(animation4);
+//                    }
+//                });
+//            } else {
+//                ((SearchFragment) fragmentManager.findFragmentByTag("search")).getFh().getSearchMonument(search.getText().toString());
+//            }
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -114,6 +168,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_manage) {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
 
         } else if (id == R.id.nav_share) {
 
@@ -126,12 +181,12 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void getConnections(){
+    private void getConnections() {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         System.out.println("inGetConnection = " + cm.getActiveNetworkInfo());
 
-        if (cm.getActiveNetworkInfo() == null){
+        if (cm.getActiveNetworkInfo() == null) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setMessage("Please connect with internet")
@@ -156,12 +211,13 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void getLocation(){
+    private void getLocation() {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
         }
     }
+
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
