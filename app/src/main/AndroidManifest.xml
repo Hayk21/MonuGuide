@@ -94,7 +94,9 @@
             android:exported="true" />
 
         <activity android:name=".activities.FacebookLoginActivity"></activity>
-        <activity android:name=".activities.MonumentSearchActivity" />
+        <activity android:name=".activities.MonumentSearchActivity" >
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable" /></activity>
         <activity android:name=".activities.FavoriteMonumentsActivity"></activity>
     </application>
 

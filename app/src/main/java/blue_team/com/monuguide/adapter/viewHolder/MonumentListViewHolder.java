@@ -16,7 +16,7 @@ public class MonumentListViewHolder extends RecyclerView.ViewHolder{
 
     private ImageView mMonumnetImageVH;
     private TextView mMonumentNameVH;
-    private TextView mMonumentDescVH;
+    //private TextView mMonumentDescVH;
     public IOnClickListener mOnClickListener;
     private Context context;
 
@@ -34,13 +34,14 @@ public class MonumentListViewHolder extends RecyclerView.ViewHolder{
         });
         mMonumnetImageVH = (ImageView) itemView.findViewById(R.id.monument_image_rv);
         mMonumentNameVH = (TextView) itemView.findViewById(R.id.monument_name_rv);
-        mMonumentDescVH = (TextView) itemView.findViewById(R.id.monument_desc_rv);
+        //mMonumentDescVH = (TextView) itemView.findViewById(R.id.monument_desc_rv);
     }
 
     public void setDataSource(Monument monument){
         Picasso.with(context).load(monument.getImage()).into(mMonumnetImageVH);
         mMonumentNameVH.setText(monument.getName());
-        mMonumentDescVH.setText(monument.getDesc());
+        //mMonumentDescVH.setText(monument.getDesc());
+        System.out.println("in view holder = " + monument.getName());
     }
 
     public interface IOnClickListener{

@@ -16,27 +16,26 @@ import blue_team.com.monuguide.models.Monument;
 
 public class MonumentListAdapter extends RecyclerView.Adapter<MonumentListViewHolder> {
 
-    private List<Monument> monumentList;
+    public List<Monument> monumentList;
     public IOnItemSelectedListener mOnItemSelectedListener;
     public Context context;
+    public Monument monument;
 
     public MonumentListAdapter(Context context) {
         monumentList = new ArrayList<>();
         this.context = context;
+        System.out.println("MonumentListAdapter ");
     }
 
     @Override
     public MonumentListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rv_monuments_list, parent, false);
         MonumentListViewHolder monumentListViewHolder = new MonumentListViewHolder(view, context);
-
-
         monumentListViewHolder.setOnClickListener(new MonumentListViewHolder.IOnClickListener() {
             @Override
             public void onItemClick(int position) {
                 if (mOnItemSelectedListener != null){
-
-                    //mOnItemSelectedListener.onItemSelected(monumentList.get(position).getId());
+                    mOnItemSelectedListener.onItemSelected(monumentList.get(position));
                 }
             }
         });
@@ -61,10 +60,11 @@ public class MonumentListAdapter extends RecyclerView.Adapter<MonumentListViewHo
 
     public void setMonumentList(List<Monument> monumentList) {
         this.monumentList = monumentList;
+        this.notifyDataSetChanged();
     }
 
     public interface IOnItemSelectedListener{
-        public void onItemSelected(long id);
+        public void onItemSelected(Monument monument);
     }
 
     public void setOnItemSelectedListener(IOnItemSelectedListener onItemSelectedListener){
