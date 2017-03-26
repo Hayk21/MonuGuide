@@ -1,7 +1,7 @@
 package blue_team.com.monuguide.activities;
 
-import android.animation.LayoutTransition;
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,49 +10,41 @@ import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.transition.TransitionManager;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.SearchView;
 
-import java.util.HashMap;
 
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
 import blue_team.com.monuguide.fragments.SearchFragment;
-import blue_team.com.monuguide.models.Monument;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String NAME_OF_PREFERENCE = "Service_runing";
+    public static final String SEARCH_FRAGMENT = "SearchFragment";
     Fragment mMapStatueFragment;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     Context context;
     Toolbar toolbar;
-    EditText search;
     FrameLayout frameLayout;
-    LinearLayout linear;
-    ImageView closeSearch;
+    Animation animation_open;
+    Animation animation_close;
 
 
     @Override
@@ -61,11 +53,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        search = (EditText) toolbar.findViewById(R.id.search_edit);
-        closeSearch = (ImageView) toolbar.findViewById(R.id.cancel_search);
-        linear = (LinearLayout) findViewById(R.id.search_linear);
         frameLayout = (FrameLayout) findViewById(R.id.search_container);
         setSupportActionBar(toolbar);
+        animation_open = AnimationUtils.loadAnimation(this, R.anim.open_down);
+        animation_close = AnimationUtils.loadAnimation(this, R.anim.close_up);
 
         context = this;
 
@@ -100,8 +91,52 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_search, menu);
+        MenuItem item = menu.findItem(R.id.menuSearch);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        final SearchView searchView = (SearchView) item.getActionView();
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                frameLayout.setVisibility(View.INVISIBLE);
+                FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
+                        fragmentTransaction1.remove(fragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
+                        fragmentTransaction1.commit();
+                        frameLayout.setVisibility(View.INVISIBLE);
+                frameLayout.startAnimation(animation_close);
+
+                return false;
+            }
+        });
+
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SearchFragment searchFragment = new SearchFragment();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.add(R.id.search_container,searchFragment,SEARCH_FRAGMENT);
+                transaction.commit();
+                frameLayout.setVisibility(View.VISIBLE);
+                frameLayout.startAnimation(animation_open);
+            }
+        });
+
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ((SearchFragment) fragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).getFh().getSearchMonument(newText);
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -113,47 +148,12 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_search) {
-//            Intent myIntent = new Intent(this, MonumentSearchActivity.class);
-//            //myIntent.putExtra("key", value); //Optional parameters
-//            this.startActivity(myIntent);
-//            return true;
 
-            return  true;
-
-//            if (linear.getVisibility() == View.INVISIBLE) {
-//                Animation animation = AnimationUtils.loadAnimation(this, R.anim.open_to_left);
-//                Animation animation2 = AnimationUtils.loadAnimation(this, R.anim.open_down);
-//                SearchFragment searchFragment = new SearchFragment();
-//                FragmentTransaction transaction = fragmentManager.beginTransaction();
-//                linear.setVisibility(View.VISIBLE);
-//                linear.startAnimation(animation);
-//                frameLayout.setVisibility(View.VISIBLE);
-//                frameLayout.startAnimation(animation2);
-//                transaction.add(R.id.search_container,searchFragment,"search");
-//                transaction.commit();
-//                closeSearch.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        Animation animation3 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.close_up);
-//                        Animation animation4 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.close_to_right);
-//                        FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
-//                        fragmentTransaction1.remove(fragmentManager.findFragmentByTag("search"));
-//                        fragmentTransaction1.commit();
-//                        frameLayout.setVisibility(View.INVISIBLE);
-//                        frameLayout.startAnimation(animation3);
-//                        linear.setVisibility(View.INVISIBLE);
-//                        linear.startAnimation(animation4);
-//                    }
-//                });
-//            } else {
-//                ((SearchFragment) fragmentManager.findFragmentByTag("search")).getFh().getSearchMonument(search.getText().toString());
-//            }
-
-        }
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

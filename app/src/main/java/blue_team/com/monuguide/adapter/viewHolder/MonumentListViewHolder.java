@@ -32,8 +32,8 @@ public class MonumentListViewHolder extends RecyclerView.ViewHolder{
                 }
             }
         });
-        mMonumnetImageVH = (ImageView) itemView.findViewById(R.id.monument_image_rv);
-        mMonumentNameVH = (TextView) itemView.findViewById(R.id.monument_name_rv);
+        mMonumnetImageVH = (ImageView) itemView.findViewById(R.id.card_img);
+        mMonumentNameVH = (TextView) itemView.findViewById(R.id.card_text);
         //mMonumentDescVH = (TextView) itemView.findViewById(R.id.monument_desc_rv);
     }
 

@@ -29,7 +29,7 @@ public class MonumentListAdapter extends RecyclerView.Adapter<MonumentListViewHo
 
     @Override
     public MonumentListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rv_monuments_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.moument_card, parent, false);
         MonumentListViewHolder monumentListViewHolder = new MonumentListViewHolder(view, context);
         monumentListViewHolder.setOnClickListener(new MonumentListViewHolder.IOnClickListener() {
             @Override
@@ -64,7 +64,7 @@ public class MonumentListAdapter extends RecyclerView.Adapter<MonumentListViewHo
     }
 
     public interface IOnItemSelectedListener{
-        public void onItemSelected(Monument monument);
+        void onItemSelected(Monument monument);
     }
 
     public void setOnItemSelectedListener(IOnItemSelectedListener onItemSelectedListener){

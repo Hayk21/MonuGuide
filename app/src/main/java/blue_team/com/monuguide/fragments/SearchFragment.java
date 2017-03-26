@@ -27,7 +27,6 @@ public class SearchFragment extends Fragment {
     private RecyclerView recyclerView;
     private List<Monument> monumentList;
     private FireHelper fh;
-    ImageView searchBtn;
 
     FireHelper.IOnSearchSuccessListener iOnSearchSuccessListener = new FireHelper.IOnSearchSuccessListener() {
         @Override
@@ -35,6 +34,7 @@ public class SearchFragment extends Fragment {
             monumentList.clear();
             monumentList.addAll(mMap.values());
             mAdapter.setMonumentList(monumentList);
+//            System.out.println("onSuccess = " + monumentList.get(0).getName());
             mAdapter.notifyDataSetChanged();
 
         }
@@ -56,7 +56,6 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        searchBtn = (ImageView) getActivity().findViewById(R.id.cancel_search);
         mAdapter = new MonumentListAdapter(getActivity());
         //mAdapter.setMonumentList(monumentList); //search result
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_id);
@@ -65,6 +64,8 @@ public class SearchFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(mAdapter);
     }
+
+
 
     public FireHelper getFh() {
         return fh;
