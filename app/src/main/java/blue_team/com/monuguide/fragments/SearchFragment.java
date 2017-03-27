@@ -2,6 +2,8 @@ package blue_team.com.monuguide.fragments;
 
 
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,7 +11,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -23,10 +28,16 @@ import blue_team.com.monuguide.models.Monument;
 
 public class SearchFragment extends Fragment {
 
-    private MonumentListAdapter mAdapter;
+    public static final String MAP_FRAGMENT = "MapFragment";
+    public static final String SEARCH_FRAGMENT = "SearchFragment";
+
+    public MonumentListAdapter mAdapter;
     private RecyclerView recyclerView;
-    private List<Monument> monumentList;
+    public List<Monument> monumentList;
     private FireHelper fh;
+    private FragmentManager fragmentManager;
+    private FrameLayout frameLayout;
+    private Animation animation_close;
 
     FireHelper.IOnSearchSuccessListener iOnSearchSuccessListener = new FireHelper.IOnSearchSuccessListener() {
         @Override
@@ -34,7 +45,6 @@ public class SearchFragment extends Fragment {
             monumentList.clear();
             monumentList.addAll(mMap.values());
             mAdapter.setMonumentList(monumentList);
-//            System.out.println("onSuccess = " + monumentList.get(0).getName());
             mAdapter.notifyDataSetChanged();
 
         }
@@ -46,6 +56,7 @@ public class SearchFragment extends Fragment {
         monumentList = new ArrayList<>();
         fh = new FireHelper();
         fh.setOnSearchSuccessListener(iOnSearchSuccessListener);
+        animation_close = AnimationUtils.loadAnimation(getActivity(), R.anim.close_up);
     }
 
     @Nullable
@@ -56,16 +67,32 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        frameLayout = (FrameLayout) getActivity().findViewById(R.id.search_container);
+
         mAdapter = new MonumentListAdapter(getActivity());
-        //mAdapter.setMonumentList(monumentList); //search result
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_id);
         RecyclerView.LayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(manager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(mAdapter);
+
+        mAdapter.setOnItemSelectedListener(new MonumentListAdapter.IOnItemSelectedListener() {
+            @Override
+            public void onItemSelected(Monument monument) {
+
+                System.out.println("Item click");
+                fragmentManager = getFragmentManager();
+                ((MapStatueFragment) fragmentManager.findFragmentByTag(MAP_FRAGMENT)).setMonumentFromSearch(monument);
+
+                frameLayout.setVisibility(View.INVISIBLE);
+                FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
+                fragmentTransaction1.remove(fragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
+                fragmentTransaction1.commit();
+                frameLayout.setVisibility(View.INVISIBLE);
+                frameLayout.startAnimation(animation_close);
+            }
+        });
     }
-
-
 
     public FireHelper getFh() {
         return fh;

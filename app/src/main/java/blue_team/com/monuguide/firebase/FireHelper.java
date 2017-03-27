@@ -175,6 +175,7 @@ public class FireHelper {
             }
             mQuery3 = mDatabase.child("models").child("monuments").orderByChild("name").startAt(monName).endAt(monName+"\uf8ff");
             mQuery3.addValueEventListener(monValueEventListener2);
+            mMon.clear();
             return null;
         }
     }

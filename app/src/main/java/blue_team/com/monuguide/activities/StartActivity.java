@@ -59,8 +59,6 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
             fragmentTransaction.add(R.id.start_activity_container, mDetailsFragment, DETAILS_FRAGMENT);
             fragmentTransaction.addToBackStack(HEADER_BACKSTACK);
             getSupportActionBar().setTitle(monument.getName());
-
-            this.getIntent().removeExtra(LocationService.SHOWING_MONUMENT);
         }
         fragmentTransaction.commit();
     }

@@ -4,7 +4,9 @@ package blue_team.com.monuguide.fragments;
 import android.Manifest;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -25,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import android.location.LocationListener;
+import android.widget.FrameLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,10 +49,11 @@ import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.Services.LocationService;
 import blue_team.com.monuguide.activities.MainActivity;
 import blue_team.com.monuguide.activities.SettingsActivity;
+import blue_team.com.monuguide.activities.StartActivity;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.models.Monument;
 
-public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
+public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
     private static View view;
     private MapFragment mapFragment;
@@ -61,7 +65,11 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
     private double mLongitude;
     private Marker mMarker;
     private FireHelper fireHelper = new FireHelper();
+    private DetailsFragment mDetailsFragment;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
     List<Monument> listOfMonument, listOfFindedMonuments, showMonuments;
+
 
     private FireHelper.IOnSuccessListener onSuccessListener = new FireHelper.IOnSuccessListener() {
         @Override
@@ -76,11 +84,13 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
 
     private void getMonumentList(){
         for (Monument monument : listOfMonument) {
-            System.out.println("YYYYYYYYYYYYYYYYYYYY = " + monument.getName());
             mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(monument.getLatitude(), monument.getLongitude()))
                     .title(monument.getName()).snippet(monument.getDesc()).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_monument_marker))));
+
+            mMarker.setTag(monument);
         }
     }
+
 
 
     @Override
@@ -88,10 +98,6 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         listOfMonument = new ArrayList<>();
         fireHelper.setOnSuccessListener(onSuccessListener);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     }
 
 
@@ -112,7 +118,8 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-
+        fragmentManager = getFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
         mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -142,12 +149,35 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
                     return;
                 }
                 mMap.setMyLocationEnabled(true);
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        Monument monument = (Monument) marker.getTag();
+                        Intent intent = new Intent(getActivity(), StartActivity.class);
+                        intent.putExtra(LocationService.SHOWING_MONUMENT,monument);
+                        startActivity(intent);
+
+                        return false;
+                    }
+                });
                 //initMarkers();
             }
 
         });
 
+
+
+        /*mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                System.out.println("marker = " + marker);
+                return false;
+            }
+        });*/
+
     }
+
+
 
     private void setMyLocation(Location location) {
         mMap.clear();
@@ -158,6 +188,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
 
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLL) );
     }
+
 
 
     private MapFragment getMapFragment() {
@@ -180,7 +211,9 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
     private void initMarkers() {
         mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(mLatitude, mLongitude))
                 .title("Hello world").snippet("Additional text").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_monument_marker))));
-     }
+    }
+
+
 
 
     LocationListener locationListener = new LocationListener() {
@@ -211,5 +244,15 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
 
         }
     };
+
+
+    public void setMonumentFromSearch(Monument monument){
+        System.out.println("setMonumentFromSearch");
+        mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(monument.getLatitude(), monument.getLongitude()))
+                .title(monument.getName()).snippet(monument.getDesc()).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_monument_marker))));
+        LatLng currentLL = new LatLng(monument.getLatitude(), monument.getLongitude());
+        float zoomLevel = (float) 16.0; //This goes up to 21
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLL, zoomLevel));
+    }
 
 }
