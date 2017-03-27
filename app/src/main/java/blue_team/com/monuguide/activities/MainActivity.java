@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity
 
     public static final String NAME_OF_PREFERENCE = "Service_runing";
     public static final String SEARCH_FRAGMENT = "SearchFragment";
+    public static final String MAP_FRAGMENT = "MapFragment";
     Fragment mMapStatueFragment;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction = fragmentManager.beginTransaction();
         mMapStatueFragment = new MapStatueFragment();
         getLocation();
-        fragmentTransaction.add(R.id.container, mMapStatueFragment, "MapFragment");
+        fragmentTransaction.add(R.id.container, mMapStatueFragment, MAP_FRAGMENT);
         fragmentTransaction.commit();
 
 
@@ -132,7 +133,15 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                ((SearchFragment) fragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).getFh().getSearchMonument(newText);
+                if (newText.isEmpty()){
+                    System.out.println("datark");
+                    ((SearchFragment) fragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).monumentList.clear();
+                    ((SearchFragment) fragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).mAdapter.setMonumentList(((SearchFragment) fragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).monumentList);
+                    ((SearchFragment) fragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).mAdapter.notifyDataSetChanged();
+                }else {
+                    System.out.println("baza");
+                    ((SearchFragment) fragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).getFh().getSearchMonument(newText);
+                }
                 return false;
             }
         });
