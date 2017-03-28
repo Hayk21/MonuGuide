@@ -2,12 +2,10 @@ package blue_team.com.monuguide.fragments;
 
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -65,18 +63,18 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     private double mLatitude;
     private double mLongitude;
     private Marker mMarker;
-    private FireHelper mFireHelper = new FireHelper();
+    private FireHelper fireHelper = new FireHelper();
     private DetailsFragment mDetailsFragment;
     private FragmentManager mFragmentManager;
     private FragmentTransaction mFragmentTransaction;
     List<Monument> listOfMonument;
-    FloatingActionButton mSetCurrentLocationBtn;
+    private FloatingActionButton mCurrentLocationBtn;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         listOfMonument = new ArrayList<>();
-        mFireHelper.setOnSuccessListener(onSuccessListener);
+        fireHelper.setOnSuccessListener(onSuccessListener);
     }
 
     @Nullable
@@ -96,9 +94,8 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-
-        mSetCurrentLocationBtn = (FloatingActionButton) view.findViewById(R.id.fab);
-        mSetCurrentLocationBtn.setOnClickListener(new View.OnClickListener() {
+        mCurrentLocationBtn = (FloatingActionButton) view.findViewById(R.id.fab);
+        mCurrentLocationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setMyLocation();
@@ -109,6 +106,13 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
         mFragmentTransaction = mFragmentManager.beginTransaction();
         mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
 
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
         mLocationManager.requestLocationUpdates(mLocationManager.GPS_PROVIDER, 1000, 1, locationListener);
         mLocationManager.requestLocationUpdates(mLocationManager.NETWORK_PROVIDER, 1000 * 10, 10, locationListener);
 
@@ -118,8 +122,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
 
-                if ( ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
                     // here to request the missing permissions, and then overriding
@@ -141,11 +144,12 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                     }
                 });
             }
+
         });
     }
 
     private void setMyLocation() {
-        mMap.clear();
+        //mMap.clear();
         LatLng currentLL = new LatLng(mLatitude, mLongitude);
         mMap.addMarker(new MarkerOptions().position(currentLL).title("Marker in Armenia"));
         float zoomLevel = (float) 16.0; //This goes up to 21
@@ -173,9 +177,11 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
+            System.out.println("location change");
             mLongitude = location.getLongitude();
-            mLatitude = location.getLatitude();
-            mFireHelper.getMonuments(location.getLatitude(), location.getLongitude(), 50);
+            mLatitude = location.getLatitude();setMyLocation();
+            //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LocationService.this);
+            fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), 50/*Double.valueOf(sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0"))*/);
             getMonumentList();
         }
 
@@ -206,6 +212,9 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     };
 
     private void getMonumentList(){
+        mMap.clear();
+        LatLng currentLL = new LatLng(mLatitude, mLongitude);
+        mMap.addMarker(new MarkerOptions().position(currentLL).title("Marker in Armenia"));
         for (Monument monument : listOfMonument) {
             mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(monument.getLatitude(), monument.getLongitude()))
                     .title(monument.getName()).snippet(monument.getDesc()).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_monument_marker))));
