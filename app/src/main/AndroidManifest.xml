@@ -76,7 +76,8 @@
 
         <activity
             android:name=".activities.StartActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.PagerActivity"
             android:theme="@style/AppTheme" />

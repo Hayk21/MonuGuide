@@ -37,12 +37,13 @@ public class MainActivity extends AppCompatActivity
 
     public static final String NAME_OF_PREFERENCE = "Service_runing";
     public static final String SEARCH_FRAGMENT = "SearchFragment";
+    public static final String MAP_FRAGMENT = "MapFragment";
     Fragment mMapStatueFragment;
-    FragmentManager fragmentManager;
-    FragmentTransaction fragmentTransaction;
-    Context context;
-    Toolbar toolbar;
-    FrameLayout frameLayout;
+    FragmentManager mFragmentManager;
+    FragmentTransaction mFragmentTransaction;
+    Context mContext;
+    Toolbar mToolbar;
+    FrameLayout mFrameLayout;
     Animation animation_open;
     Animation animation_close;
 
@@ -52,25 +53,25 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        frameLayout = (FrameLayout) findViewById(R.id.search_container);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mFrameLayout = (FrameLayout) findViewById(R.id.search_container);
+        setSupportActionBar(mToolbar);
         animation_open = AnimationUtils.loadAnimation(this, R.anim.open_down);
         animation_close = AnimationUtils.loadAnimation(this, R.anim.close_up);
 
-        context = this;
+        mContext = this;
 
-        fragmentManager = getFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
+        mFragmentManager = getFragmentManager();
+        mFragmentTransaction = mFragmentManager.beginTransaction();
         mMapStatueFragment = new MapStatueFragment();
         getLocation();
-        fragmentTransaction.add(R.id.container, mMapStatueFragment, "MapFragment");
-        fragmentTransaction.commit();
+        mFragmentTransaction.add(R.id.container, mMapStatueFragment, MAP_FRAGMENT);
+        mFragmentTransaction.commit();
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
@@ -100,12 +101,12 @@ public class MainActivity extends AppCompatActivity
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                frameLayout.setVisibility(View.INVISIBLE);
-                FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
-                        fragmentTransaction1.remove(fragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
+                mFrameLayout.setVisibility(View.INVISIBLE);
+                FragmentTransaction fragmentTransaction1 = mFragmentManager.beginTransaction();
+                        fragmentTransaction1.remove(mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
                         fragmentTransaction1.commit();
-                        frameLayout.setVisibility(View.INVISIBLE);
-                frameLayout.startAnimation(animation_close);
+                mFrameLayout.setVisibility(View.INVISIBLE);
+                mFrameLayout.startAnimation(animation_close);
 
                 return false;
             }
@@ -115,11 +116,11 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 SearchFragment searchFragment = new SearchFragment();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                FragmentTransaction transaction = mFragmentManager.beginTransaction();
                 transaction.add(R.id.search_container,searchFragment,SEARCH_FRAGMENT);
                 transaction.commit();
-                frameLayout.setVisibility(View.VISIBLE);
-                frameLayout.startAnimation(animation_open);
+                mFrameLayout.setVisibility(View.VISIBLE);
+                mFrameLayout.startAnimation(animation_open);
             }
         });
 
@@ -132,7 +133,15 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                ((SearchFragment) fragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).getFh().getSearchMonument(newText);
+                if (newText.isEmpty()){
+                    System.out.println("datark");
+                    ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).monumentList.clear();
+                    ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).mAdapter.setMonumentList(((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).monumentList);
+                    ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).mAdapter.notifyDataSetChanged();
+                }else {
+                    System.out.println("baza");
+                    ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).getFh().getSearchMonument(newText);
+                }
                 return false;
             }
         });
@@ -183,16 +192,16 @@ public class MainActivity extends AppCompatActivity
 
     private void getConnections() {
         ConnectivityManager cm =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         System.out.println("inGetConnection = " + cm.getActiveNetworkInfo());
 
         if (cm.getActiveNetworkInfo() == null) {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setMessage("Please connect with internet")
                     .setPositiveButton("CONNECT", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
+                            WifiManager wifiManager = (WifiManager) mContext.getSystemService(mContext.WIFI_SERVICE);
                             if (!wifiManager.isWifiEnabled())
                                 wifiManager.setWifiEnabled(true);
                             else
@@ -212,7 +221,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getLocation() {
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
         }

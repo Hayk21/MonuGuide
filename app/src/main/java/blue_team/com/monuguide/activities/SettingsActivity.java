@@ -98,6 +98,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
+            Intent intent = new Intent(SettingsActivity.this,MainActivity.class);
+            startActivity(intent);
             this.finish();
             overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
         }
@@ -143,6 +145,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
     @Override
     public void onBackPressed() {
+        Intent intent = new Intent(SettingsActivity.this,MainActivity.class);
+        startActivity(intent);
         this.finish();
         overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
     }

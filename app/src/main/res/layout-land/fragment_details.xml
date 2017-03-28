@@ -8,46 +8,74 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
         android:layout_marginTop="5dp"
+        android:layout_weight="2"
         android:orientation="horizontal">
 
 
-    <TextView
-        android:id="@+id/title_of_monument"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="TITLE"
-        android:textColor="@color/paint_black"
-        android:textSize="25sp" />
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2">
 
-    <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="2">
 
-        <ImageView
-            android:id="@+id/monument_img"
-            android:layout_width="match_parent"
-            android:layout_height="130dp"
-            android:layout_gravity="center"
+            <ImageView
+                android:id="@+id/monument_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/small_brush"
+                android:layout_marginRight="@dimen/small_brush"
+                android:scaleType="fitXY"
+                android:adjustViewBounds="true" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_marginBottom="@dimen/small_brush"
             android:layout_marginLeft="@dimen/small_brush"
             android:layout_marginRight="@dimen/small_brush"
-            android:layout_marginTop="8dp"
-            android:adjustViewBounds="true" />
+            android:orientation="vertical"
+            android:gravity="center">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center" />
 
-    </FrameLayout>
+            <ImageView
+                android:id="@+id/comment_id"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:src="@mipmap/comment_icon" />
+
+
+
+            <ImageView
+                android:id="@+id/heart_img"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:src="@mipmap/heart_icon" />
+
+
+
+
+            <ImageView
+                android:id="@+id/wiki_img"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:src="@mipmap/wiki_icon" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -55,93 +83,12 @@
         android:id="@+id/short_desc"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_margin="@dimen/small_brush"
+        android:layout_weight="1"
         android:maxLines="4"
         android:text="jthguitrhjrtihjtrhjntrgubnrtjkbngrkjnbrkjnbrtnbrnbkrnbjkrnbrtnbrkjnbkjrtbrbtrjkbtbjkebnjknbkjnbjkntjkbjkbnkjetnbkjebjketbjkebjkenjkbnekjbnkjenbekjnjknejkbnejkbnekjbnjetbbjebnejkbnejkekjbekjnekjnejkbnjkbnejkbnekjbnekjbnjekbnekjbnejbnjbejkjejek"
         android:textColor="@color/paint_black"
-        android:textSize="13sp" />
+        android:textSize="18sp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="@dimen/small_brush"
-        android:layout_marginLeft="@dimen/small_brush"
-        android:layout_marginRight="@dimen/small_brush"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:id="@+id/linear_comment"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/comment_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:src="@mipmap/comment_icon" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/comment_text"
-                android:textColor="@color/paint_black"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linear_heart"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/small_brush"
-            android:layout_weight="2"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/heart_img"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/heart_icon" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/favorites_text"
-                android:textColor="@color/paint_black"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linear_wiki"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/small_brush"
-            android:layout_weight="2"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/wiki_img"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/wiki_icon" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/wiki_text"
-                android:textColor="@color/paint_black"
-                android:textSize="20sp" />
-
-        </LinearLayout>
-    </LinearLayout>
 
 </LinearLayout>

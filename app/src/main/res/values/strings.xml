@@ -19,7 +19,7 @@
         <item>200m</item>
     </string-array>
     <string-array name="list_of_radius_values">
-        <item>0.0015</item>
+        <item>0.002</item>
         <item>0.00015</item>
         <item>1</item>
     </string-array>

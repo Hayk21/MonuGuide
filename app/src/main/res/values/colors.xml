@@ -20,4 +20,5 @@
     <color name="main_color">#ded8d8</color>
     <color name="text_color">#414040</color>
     <color name="card_color">#d2c8c8</color>
+    <color name="example_color">#edd2d2</color>
 </resources>
