@@ -8,7 +8,6 @@ public class User {
     private String name;
     private String email;
     private String photoUrl;
-    private double login;
     private HashMap<String,Monument> favoriteMon;
 
     public String getuID() {
@@ -42,14 +41,6 @@ public class User {
     public void setPhotoUrl(String photoUrl) {
 
         this.photoUrl = photoUrl;
-    }
-
-    public double getLogin() {
-        return login;
-    }
-
-    public void setLogin(double login) {
-        this.login = login;
     }
 
     public HashMap<String, Monument> getFavoriteMon() {
