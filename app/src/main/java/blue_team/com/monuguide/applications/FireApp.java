@@ -7,6 +7,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 
 public class FireApp extends Application {
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -14,5 +15,7 @@ public class FireApp extends Application {
         if(!FirebaseApp.getApps(this).isEmpty()) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         }
+
     }
+
 }

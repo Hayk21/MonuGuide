@@ -8,6 +8,8 @@ import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,7 +27,8 @@ import blue_team.com.monuguide.models.Monument;
 import blue_team.com.monuguide.models.Note;
 import blue_team.com.monuguide.models.User;
 
-public class FireHelper {
+public class
+FireHelper {
 
     private static int count = 0;
     private int NotesListSize;
@@ -33,6 +36,7 @@ public class FireHelper {
     private double mLon;
     private double mRad;
     private String imageUrl;
+    private String mUserID;
     private Monument mMonument;
     private Note note;
     private Query mQuery1;
@@ -43,6 +47,7 @@ public class FireHelper {
     private DatabaseReference mDatabase1;
     private FirebaseStorage mStorage;
     private StorageReference mStorageRef;
+    private FirebaseAuth mAuth;
     private IOnSuccessListener mOnSuccessListener;
     private IOnNoteSuccessListener mOnNoteSuccessListener;
     private IOnSearchSuccessListener mOnSearchSuccessListener;
@@ -53,10 +58,12 @@ public class FireHelper {
 
     public FireHelper()
     {
+        mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mStorage = FirebaseStorage.getInstance();
         mStorageRef = mStorage.getReference();
     }
+
     private ValueEventListener monValueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -126,6 +133,16 @@ public class FireHelper {
         }
     };
 
+    public String getCurrentUid() {
+        FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
+        if(u != null) {
+            return u.getUid();
+        }
+        else{
+            return null;
+        }
+    }
+
     public void getMonuments(double pLatitude, double pLongitude, double pRadius)
     {
         if(count == 0) {
@@ -188,7 +205,7 @@ public class FireHelper {
 
     private class AddUser extends AsyncTask<User,Void,Void>
     {
-        User user;
+        User user = new User();
 
         @Override
         protected Void doInBackground(User... params) {
@@ -202,8 +219,9 @@ public class FireHelper {
 
     }
 
-    public void addNote(Bitmap bitmap, Monument monument,int size)
+    public void addNote(Bitmap bitmap, Monument monument,String userID,int size)
     {
+        mUserID = userID;
         mMonument = monument;
         NotesListSize = size;
         AddNote sn = new AddNote();
@@ -226,6 +244,7 @@ public class FireHelper {
             s+=(NotesListSize+1);
             note = new Note();
             note.setId(s);
+            note.setUid(mUserID);
             UploadTask uploadTask = mStorageRef.child("noteImages/"+s).putBytes(data);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -240,6 +259,7 @@ public class FireHelper {
                     imageUrl=downloadUrl.toString();
                     note.setImage(imageUrl);
                     note.setLikeCount(0);
+
                     mDatabase.child("models").child("monuments").child(mMonument.getId()).child("notes").child(note.getId()).setValue(note);
 
                 }

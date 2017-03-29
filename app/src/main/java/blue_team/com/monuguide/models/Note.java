@@ -3,20 +3,23 @@ package blue_team.com.monuguide.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by seda on 3/12/17.
- */
+import java.util.HashMap;
+
 
 public class Note implements Parcelable {
+    private String uid;
     private String id;
     private String image;
     private int likeCount;
+    private boolean like;
 
     public Note() {
 
     }
 
     protected Note(Parcel in) {
+
+        uid = in.readString();
         id = in.readString();
         image = in.readString();
         likeCount = in.readInt();
@@ -33,6 +36,22 @@ public class Note implements Parcelable {
             return new Note[size];
         }
     };
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public boolean isLike() {
+        return like;
+    }
+
+    public void setLike(boolean like) {
+        this.like = like;
+    }
 
     public String getId() {
         return id;

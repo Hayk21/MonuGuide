@@ -140,8 +140,17 @@ public class DrawingActivity extends AppCompatActivity {
                             mPaintView.buildDrawingCache();
                             Bitmap bitmap = mPaintView.getDrawingCache();
                             FireHelper fh = new FireHelper();
-                            if (mMonument != null)
-                                fh.addNote(bitmap, mMonument, mSize);
+                            if(mMonument != null) {
+                                if(fh.getCurrentUid() != null){
+                                    String myuser = fh.getCurrentUid();
+                                    fh.addNote(bitmap, mMonument, myuser, mSize);
+                                }
+                                else
+                                {
+                                    fh.addNote(bitmap, mMonument, "", mSize);
+                                }
+
+                            }
                             PagerActivity.setFirstCommit(true);
                             DrawingActivity.this.finish();
                         }

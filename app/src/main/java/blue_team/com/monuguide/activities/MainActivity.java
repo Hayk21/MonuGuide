@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -29,6 +30,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.HashMap;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
@@ -49,7 +54,6 @@ public class MainActivity extends AppCompatActivity
     Animation animation_close;
     private SearchView searchView;
     private MenuItem item;
-
 
 
 
@@ -98,6 +102,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     @Override
