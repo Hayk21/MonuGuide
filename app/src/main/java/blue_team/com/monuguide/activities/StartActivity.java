@@ -1,8 +1,5 @@
 package blue_team.com.monuguide.activities;
 
-import android.animation.Animator;
-import android.animation.AnimatorInflater;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -23,12 +20,9 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     public static final String HEADER_BACKSTACK = "HeaderBackStack";
     public static final String WEB_FRAGMENT = "WebFragment";
     public static final String DETAILS_FRAGMENT = "DeatilsFragment";
-    Fragment mDetailsFragment, mWebFragment;
-    Monument monument;
-    Intent mActivityIntent;
-    Bundle args;
-    FragmentManager fragmentManager;
-    FragmentTransaction fragmentTransaction;
+    private Monument mMonument;
+    private FragmentManager mFragmentManager;
+    private FragmentTransaction mFragmentTransaction;
 
 
     @Override
@@ -41,42 +35,41 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         setupActionBar();
-        mActivityIntent = getIntent();
-        if (mActivityIntent != null) {
-            if(mActivityIntent.getParcelableExtra(LocationService.SHOWING_MONUMENT)!=null) {
-                monument = mActivityIntent.getParcelableExtra(LocationService.SHOWING_MONUMENT);
+        if (getIntent() != null) {
+            if (getIntent().getParcelableExtra(LocationService.SHOWING_MONUMENT) != null) {
+                mMonument = getIntent().getParcelableExtra(LocationService.SHOWING_MONUMENT);
             }
         }
-        fragmentManager = getFragmentManager();
+        mFragmentManager = getFragmentManager();
+        Bundle args = new Bundle();
         args = new Bundle();
-
-        fragmentTransaction = fragmentManager.beginTransaction();
-        mDetailsFragment = new DetailsFragment();
-        if (monument != null) {
-            monument = mActivityIntent.getExtras().getParcelable(LocationService.SHOWING_MONUMENT);
-            args.putParcelable(ARGUMENT_WITH_MONUMENT, monument);
-            mDetailsFragment.setArguments(args);
-            fragmentTransaction.add(R.id.start_activity_container, mDetailsFragment, DETAILS_FRAGMENT);
-            fragmentTransaction.addToBackStack(HEADER_BACKSTACK);
-            getSupportActionBar().setTitle(monument.getName());
+        mFragmentTransaction = mFragmentManager.beginTransaction();
+        DetailsFragment detailsFragment = new DetailsFragment();
+        if (mMonument != null) {
+            mMonument = getIntent().getExtras().getParcelable(LocationService.SHOWING_MONUMENT);
+            args.putParcelable(ARGUMENT_WITH_MONUMENT, mMonument);
+            detailsFragment.setArguments(args);
+            mFragmentTransaction.add(R.id.start_activity_container, detailsFragment, DETAILS_FRAGMENT);
+            mFragmentTransaction.addToBackStack(HEADER_BACKSTACK);
+            getSupportActionBar().setTitle(mMonument.getName());
         }
-        fragmentTransaction.commit();
+        mFragmentTransaction.commit();
     }
 
     @Override
     public void onBackPressed() {
-        if (fragmentManager.getBackStackEntryCount() == 1) {
+        if (mFragmentManager.getBackStackEntryCount() == 1) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
+            overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
         } else {
-            if (fragmentManager.findFragmentByTag(WEB_FRAGMENT) != null) {
-                if (((WebFragment) fragmentManager.findFragmentByTag(WEB_FRAGMENT)).getWebView().canGoBack()) {
-                    ((WebFragment) fragmentManager.findFragmentByTag(WEB_FRAGMENT)).getWebView().goBack();
-                } else fragmentManager.popBackStack();
+            if (mFragmentManager.findFragmentByTag(WEB_FRAGMENT) != null) {
+                if (((WebFragment) mFragmentManager.findFragmentByTag(WEB_FRAGMENT)).getWebView().canGoBack()) {
+                    ((WebFragment) mFragmentManager.findFragmentByTag(WEB_FRAGMENT)).getWebView().goBack();
+                } else mFragmentManager.popBackStack();
             } else
-                fragmentManager.popBackStack();
+                mFragmentManager.popBackStack();
         }
     }
 
@@ -88,25 +81,26 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     }
 
     @Override
-    public void onFragmentInteraction(int ID,Monument monument) {
+    public void onFragmentInteraction(int ID, Monument monument) {
         switch (ID) {
             case R.id.heart_img:
                 break;
             case R.id.comment_img:
-                Intent intent = new Intent(StartActivity.this,PagerActivity.class);
-                intent.putExtra(ARGUMENT_WITH_MONUMENT,monument);
+                Intent intent = new Intent(StartActivity.this, PagerActivity.class);
+                intent.putExtra(ARGUMENT_WITH_MONUMENT, monument);
                 startActivity(intent);
-                overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
+                overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
                 break;
             case R.id.wiki_img:
-                mWebFragment = new WebFragment();
+                WebFragment webFragment = new WebFragment();
+                Bundle args = new Bundle();
                 args.putParcelable(ARGUMENT_WITH_MONUMENT, monument);
-                mWebFragment.setArguments(args);
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                fragmentTransaction.replace(R.id.start_activity_container, mWebFragment, WEB_FRAGMENT);
-                fragmentTransaction.addToBackStack(HEADER_BACKSTACK);
-                fragmentTransaction.commit();
+                webFragment.setArguments(args);
+                mFragmentTransaction = mFragmentManager.beginTransaction();
+                mFragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                mFragmentTransaction.replace(R.id.start_activity_container, webFragment, WEB_FRAGMENT);
+                mFragmentTransaction.addToBackStack(HEADER_BACKSTACK);
+                mFragmentTransaction.commit();
         }
     }
 

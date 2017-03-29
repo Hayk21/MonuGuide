@@ -4,6 +4,7 @@ package blue_team.com.monuguide.fragments;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,15 +14,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.activities.MainActivity;
 import blue_team.com.monuguide.adapter.MonumentListAdapter;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.models.Monument;
@@ -38,6 +39,7 @@ public class SearchFragment extends Fragment {
     private FragmentManager fragmentManager;
     private FrameLayout frameLayout;
     private Animation animation_close;
+    onSearchViewChangeListener searchViewChangeListener;
 
     FireHelper.IOnSearchSuccessListener iOnSearchSuccessListener = new FireHelper.IOnSearchSuccessListener() {
         @Override
@@ -49,6 +51,16 @@ public class SearchFragment extends Fragment {
 
         }
     } ;
+
+    public interface onSearchViewChangeListener{
+        void ViewChanged();
+    }
+
+    public void setOnSearchViewChangeListener(onSearchViewChangeListener searchViewChangeListener){
+        this.searchViewChangeListener = searchViewChangeListener;
+    }
+
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,9 +96,9 @@ public class SearchFragment extends Fragment {
                 fragmentManager = getFragmentManager();
                 ((MapStatueFragment) fragmentManager.findFragmentByTag(MAP_FRAGMENT)).setMonumentFromSearch(monument);
 
-                frameLayout.setVisibility(View.INVISIBLE);
                 FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
                 fragmentTransaction1.remove(fragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
+                searchViewChangeListener.ViewChanged();
                 fragmentTransaction1.commit();
                 frameLayout.setVisibility(View.INVISIBLE);
                 frameLayout.startAnimation(animation_close);

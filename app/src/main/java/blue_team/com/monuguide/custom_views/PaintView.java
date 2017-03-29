@@ -13,17 +13,14 @@ import android.view.View;
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.activities.DrawingActivity;
 
-/**
- * Created by Hayk on 13.03.2017.
- */
 
-public class PaintView extends View{
-    private Path drawPath;
-    private Paint drawPaint, canvasPaint;
-    private int paintColor = getResources().getColor(R.color.paint_black);
-    private Canvas drawCanvas;
-    private Bitmap canvasBitmap;
-    private float brushSize = DrawingActivity.MEDIUM_BRUSH;
+public class PaintView extends View {
+    private Path mDrawPath;
+    private Paint mDrawPaint, mCanvasPaint;
+    private int mPaintColor = getResources().getColor(R.color.paint_black);
+    private Canvas mDrawCanvas;
+    private Bitmap mCanvasBitmap;
+    private float mBrushSize = DrawingActivity.MEDIUM_BRUSH;
     public static boolean isErased = false;
 
     public PaintView(Context context) {
@@ -40,30 +37,30 @@ public class PaintView extends View{
     }
 
     private void startDrawing() {
-        drawPath = new Path();
-        drawPaint = new Paint();
-        drawPaint.setColor(paintColor);
-        drawPaint.setAntiAlias(true);
-        drawPaint.setStrokeWidth(brushSize);
-        drawPaint.setStyle(Paint.Style.STROKE);
-        drawPaint.setStrokeJoin(Paint.Join.ROUND);
-        drawPaint.setStrokeCap(Paint.Cap.ROUND);
+        mDrawPath = new Path();
+        mDrawPaint = new Paint();
+        mDrawPaint.setColor(mPaintColor);
+        mDrawPaint.setAntiAlias(true);
+        mDrawPaint.setStrokeWidth(mBrushSize);
+        mDrawPaint.setStyle(Paint.Style.STROKE);
+        mDrawPaint.setStrokeJoin(Paint.Join.ROUND);
+        mDrawPaint.setStrokeCap(Paint.Cap.ROUND);
 
-        canvasPaint = new Paint(Paint.DITHER_FLAG);
+        mCanvasPaint = new Paint(Paint.DITHER_FLAG);
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        drawCanvas = new Canvas(canvasBitmap);
+        mCanvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        mDrawCanvas = new Canvas(mCanvasBitmap);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawBitmap(canvasBitmap, 0, 0, canvasPaint);
-        canvas.drawPath(drawPath, drawPaint);
+        canvas.drawBitmap(mCanvasBitmap, 0, 0, mCanvasPaint);
+        canvas.drawPath(mDrawPath, mDrawPaint);
     }
 
     @Override
@@ -73,13 +70,13 @@ public class PaintView extends View{
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                drawPath.moveTo(touchX, touchY);
+                mDrawPath.moveTo(touchX, touchY);
                 break;
             case MotionEvent.ACTION_MOVE:
-                drawPath.lineTo(touchX, touchY);
+                mDrawPath.lineTo(touchX, touchY);
                 break;
             case MotionEvent.ACTION_UP:
-                drawCanvas.drawPath(drawPath, drawPaint);
+                mDrawCanvas.drawPath(mDrawPath, mDrawPaint);
                 break;
             default:
                 return false;
@@ -91,39 +88,39 @@ public class PaintView extends View{
     }
 
     public void setColor(String newColor) {
-        paintColor = Color.parseColor(newColor);
+        mPaintColor = Color.parseColor(newColor);
         if (!isErased) {
-            drawPath.reset();
-            drawPaint.setColor(paintColor);
+            mDrawPath.reset();
+            mDrawPaint.setColor(mPaintColor);
         }
         invalidate();
     }
 
     public void setBrushSize(float brushSize) {
-        this.brushSize = brushSize;
-        drawPath.reset();
-        drawPaint.setStrokeWidth(this.brushSize);
-        drawPaint.setColor(paintColor);
+        this.mBrushSize = brushSize;
+        mDrawPath.reset();
+        mDrawPaint.setStrokeWidth(this.mBrushSize);
+        mDrawPaint.setColor(mPaintColor);
         isErased = false;
         invalidate();
     }
 
     public void setErased(float eraseSize) {
-        drawPath.reset();
+        mDrawPath.reset();
         isErased = true;
-        drawPaint.setColor(Color.WHITE);
-        drawPaint.setStrokeWidth(eraseSize);
+        mDrawPaint.setColor(Color.WHITE);
+        mDrawPaint.setStrokeWidth(eraseSize);
         invalidate();
     }
 
     public void newPage() {
-        drawCanvas.drawColor(Color.WHITE);
-        drawPaint.setColor(Color.WHITE);
+        mDrawCanvas.drawColor(Color.WHITE);
+        mDrawPaint.setColor(Color.WHITE);
         invalidate();
-        drawPath.reset();
-        drawPaint.setColor(paintColor);
+        mDrawPath.reset();
+        mDrawPaint.setColor(mPaintColor);
         isErased = false;
-        drawPaint.setStrokeWidth(brushSize);
+        mDrawPaint.setStrokeWidth(mBrushSize);
         invalidate();
     }
 }

@@ -2,21 +2,16 @@ package blue_team.com.monuguide.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -31,12 +26,9 @@ public class DetailsFragment extends Fragment {
 
     private static final int MESSAGE_FOR_HANDLER = 18;
     public static final String SAVED_MONUMENT = "SavedMonument";
-    ImageView mNotes,mFavorites,mWiki;
-    TextView mShortDesc;
-    ImageView mHeaderImage;
-    FragmentManager fragmentManager;
-    ProgressBar progressBar;
-    Monument mMonument;
+    private ImageView mHeaderImage;
+    private ProgressBar mProgressBar;
+    private Monument mMonument;
 
     private OnFragmentInteractionListener mListener;
 
@@ -55,7 +47,7 @@ public class DetailsFragment extends Fragment {
         @Override
         public boolean handleMessage(Message message) {
             if (message.what == MESSAGE_FOR_HANDLER)
-                progressBar.setVisibility(View.INVISIBLE);
+                mProgressBar.setVisibility(View.INVISIBLE);
             return false;
         }
     });
@@ -65,7 +57,6 @@ public class DetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        fragmentManager = getActivity().getFragmentManager();
         if (savedInstanceState != null) {
                 mMonument = savedInstanceState.getParcelable(SAVED_MONUMENT);
         } else if (this.getArguments() != null) {
@@ -106,17 +97,19 @@ public class DetailsFragment extends Fragment {
     }
 
     public void startFragmentOperation(View view) {
-        mNotes = (ImageView)view.findViewById(R.id.comment_img);
-        mFavorites = (ImageView)view.findViewById(R.id.heart_img);
-        mWiki = (ImageView)view.findViewById(R.id.wiki_img);
+        ImageView notes,favorites,wiki;
+        TextView shortDesc;
+        notes = (ImageView)view.findViewById(R.id.comment_img);
+        favorites = (ImageView)view.findViewById(R.id.heart_img);
+        wiki = (ImageView)view.findViewById(R.id.wiki_img);
         mHeaderImage = (ImageView) view.findViewById(R.id.monument_img);
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        mShortDesc = (TextView) view.findViewById(R.id.short_desc);
-        mNotes.setOnClickListener(onIconClickListener);
-        mFavorites.setOnClickListener(onIconClickListener);
-        mWiki.setOnClickListener(onIconClickListener);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        shortDesc = (TextView) view.findViewById(R.id.short_desc);
+        notes.setOnClickListener(onIconClickListener);
+        favorites.setOnClickListener(onIconClickListener);
+        wiki.setOnClickListener(onIconClickListener);
         if (mMonument != null) {
-            mShortDesc.setText(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getDesc());
+            shortDesc.setText(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getDesc());
             Picasso.with(getActivity()).load(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getImage()).into(mHeaderImage);
             final Thread thread = new Thread(new Runnable() {
                 @Override

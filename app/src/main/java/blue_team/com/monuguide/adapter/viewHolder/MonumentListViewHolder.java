@@ -45,7 +45,7 @@ public class MonumentListViewHolder extends RecyclerView.ViewHolder{
     }
 
     public interface IOnClickListener{
-        public void onItemClick(int position);
+        void onItemClick(int position);
     }
 
     public void setOnClickListener(IOnClickListener onClickListener){

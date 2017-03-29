@@ -17,18 +17,18 @@ import blue_team.com.monuguide.models.Monument;
 
 public class WebFragment extends Fragment {
 
-    public WebView webView;
-    String URL;
-    MyWebClient myWebClient;
+    private WebView mWebView;
+    private String mURL;
+    private MyWebClient mMyWebClient;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        myWebClient = new MyWebClient();
-        if(getArguments() != null) {
+        mMyWebClient = new MyWebClient();
+        if (getArguments() != null) {
             if (this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT) != null) {
-                URL = ((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getUrlMon();
+                mURL = ((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getUrlMon();
             }
         }
     }
@@ -36,34 +36,34 @@ public class WebFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_web,container,false);
+        return inflater.inflate(R.layout.fragment_web, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        webView = (WebView)view.findViewById(R.id.web_view);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.setWebViewClient(myWebClient);
-        webView.loadUrl(URL);
+        mWebView = (WebView) view.findViewById(R.id.web_view);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.setWebViewClient(mMyWebClient);
+        mWebView.loadUrl(mURL);
     }
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home){
-            if(webView.canGoBack())
-                webView.goBack();
+        if (item.getItemId() == android.R.id.home) {
+            if (mWebView.canGoBack())
+                mWebView.goBack();
             else
-            getActivity().getFragmentManager().popBackStack();
+                getActivity().getFragmentManager().popBackStack();
         }
         return true;
     }
 
     public WebView getWebView() {
-        return webView;
+        return mWebView;
     }
 
-    public class MyWebClient extends WebViewClient{
+    public class MyWebClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);

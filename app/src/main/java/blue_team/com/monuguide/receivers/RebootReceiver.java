@@ -15,24 +15,24 @@ import blue_team.com.monuguide.activities.SettingsActivity;
 import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class RebootReceiver extends BroadcastReceiver {
-    Context context;
-    LocationManager locationManager;
+    private Context context;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         this.context = context;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         boolean answer = sharedPreferences.getBoolean(SettingsActivity.KEY_OF_FUNCTION, false);
         if (answer && isConnect()) {
-            Intent intent_for_service = new Intent(context, LocationService.class);
-            context.startService(intent_for_service);
+            Intent serviceIntent = new Intent(context, LocationService.class);
+            context.startService(serviceIntent);
         }
     }
 
     private boolean isConnect() {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED || locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        if ((connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             return true;
         } else
             return false;
