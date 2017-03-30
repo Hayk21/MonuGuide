@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.location.LocationListener;
 import android.widget.FrameLayout;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -38,6 +39,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -59,6 +61,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     private static View view;
     private GoogleMap mMap;
     private LocationManager mLocationManager;
+    private LocationListener mLocationListener;
     private Location mLocation;
     private double mLatitude;
     private double mLongitude;
@@ -113,47 +116,22 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             return;
         }
 
-        mLocationManager.requestLocationUpdates(mLocationManager.GPS_PROVIDER, 1000, 1, locationListener);
-        mLocationManager.requestLocationUpdates(mLocationManager.NETWORK_PROVIDER, 1000 * 10, 10, locationListener);
+        setLocationListener();
+        mLocationManager.requestLocationUpdates(mLocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
+        mLocationManager.requestLocationUpdates(mLocationManager.NETWORK_PROVIDER, 1000 * 10, 10, mLocationListener);
+        System.out.println("Latitude = " + mLatitude);
+        initMap();
 
-
-        getMapFragment().getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                mMap = googleMap;
-
-                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(Marker marker) {
-                        Monument monument = (Monument) marker.getTag();
-                        Intent intent = new Intent(getActivity(), StartActivity.class);
-                        intent.putExtra(LocationService.SHOWING_MONUMENT,monument);
-                        startActivity(intent);
-
-                        return false;
-                    }
-                });
-            }
-
-        });
     }
 
     private void setMyLocation() {
-        //mMap.clear();
         LatLng currentLL = new LatLng(mLatitude, mLongitude);
-        mMap.addMarker(new MarkerOptions().position(currentLL).title("Marker in Armenia"));
+        CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
+        mMap.addMarker(new MarkerOptions().position(currentLL).title("My loaction"));
         float zoomLevel = (float) 16.0; //This goes up to 21
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLL, zoomLevel));
+        CameraUpdate zoom=CameraUpdateFactory.zoomTo(zoomLevel);
+        mMap.moveCamera(center);
+        mMap.animateCamera(zoom, 4000, null);
     }
 
     private MapFragment getMapFragment() {
@@ -164,8 +142,48 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
         } else {
             fm = getChildFragmentManager();
         }
-
         return (MapFragment) fm.findFragmentById(R.id.map);
+    }
+
+
+
+    private void initMap(){
+        getMapFragment().getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                mMap = googleMap;
+
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                    @Override
+                    public void onMapLoaded() {
+                        //setMyLocation();
+                    }
+                });
+                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        Monument monument = (Monument) marker.getTag();
+                        Intent intent = new Intent(getActivity(), StartActivity.class);
+                        intent.putExtra(LocationService.SHOWING_MONUMENT,monument);
+                        startActivity(intent);
+
+                    }
+                });
+            }
+
+        });
+
     }
 
     @Override
@@ -173,33 +191,65 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
         mMap = googleMap;
     }
 
+    private void setLocationListener() {
+        mLocationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                mLongitude = location.getLongitude();
+                mLatitude = location.getLatitude();
+                setMyLocation();
+                fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), 50);
+                getMonumentList();
+                mapMove();
+            }
 
-    LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            System.out.println("location change");
-            mLongitude = location.getLongitude();
-            mLatitude = location.getLatitude();setMyLocation();
-            //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LocationService.this);
-            fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), 50/*Double.valueOf(sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0"))*/);
-            getMonumentList();
-        }
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
 
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
 
-        }
+            @Override
+            public void onProviderEnabled(String provider) {
 
-        @Override
-        public void onProviderEnabled(String provider) {
+            }
 
-        }
+            @Override
+            public void onProviderDisabled(String provider) {
 
-        @Override
-        public void onProviderDisabled(String provider) {
+            }
+        };
+    }
 
-        }
-    };
+    private void mapMove(){
+
+        mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+            @Override
+            public void onCameraMoveStarted(int i) {
+                System.out.println("camera move started = " + mMap.getCameraPosition().zoom);
+            }
+        });
+        mMap.setOnCameraMoveCanceledListener(new GoogleMap.OnCameraMoveCanceledListener() {
+            @Override
+            public void onCameraMoveCanceled() {
+                System.out.println("camera move canceled");
+            }
+        });
+        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+            @Override
+            public void onCameraMove() {
+                System.out.println("onCameraMove = " + mMap);
+            }
+        });
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                System.out.println("onMapClickListener = " + latLng.latitude);
+            }
+        });
+
+        
+    }
 
 
     private FireHelper.IOnSuccessListener onSuccessListener = new FireHelper.IOnSuccessListener() {
@@ -225,12 +275,14 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
 
     public void setMonumentFromSearch(Monument monument){
-        System.out.println("setMonumentFromSearch");
+        LatLng currentLL = new LatLng(monument.getLatitude(), monument.getLongitude());
+        CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
         mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(monument.getLatitude(), monument.getLongitude()))
                 .title(monument.getName()).snippet(monument.getDesc()).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_monument_marker))));
-        LatLng currentLL = new LatLng(monument.getLatitude(), monument.getLongitude());
         float zoomLevel = (float) 16.0; //This goes up to 21
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLL, zoomLevel));
+        CameraUpdate zoom=CameraUpdateFactory.zoomTo(zoomLevel);
+        mMap.moveCamera(center);
+        mMap.animateCamera(zoom, 9000, null);
     }
 
 }
