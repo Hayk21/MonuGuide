@@ -56,6 +56,10 @@ import blue_team.com.monuguide.activities.StartActivity;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.models.Monument;
 
+import static android.content.Context.LOCATION_SERVICE;
+import static android.location.LocationManager.GPS_PROVIDER;
+import static android.location.LocationManager.NETWORK_PROVIDER;
+
 public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
     private static View view;
@@ -68,10 +72,10 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     private Marker mMarker;
     private FireHelper fireHelper = new FireHelper();
     private DetailsFragment mDetailsFragment;
-    private FragmentManager mFragmentManager;
-    private FragmentTransaction mFragmentTransaction;
     List<Monument> listOfMonument;
     private FloatingActionButton mCurrentLocationBtn;
+    public static boolean mMapIsTouched = false;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,9 +109,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             }
         });
 
-        mFragmentManager = getFragmentManager();
-        mFragmentTransaction = mFragmentManager.beginTransaction();
-        mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
+        mLocationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED &&
@@ -117,8 +119,8 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
         }
 
         setLocationListener();
-        mLocationManager.requestLocationUpdates(mLocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
-        mLocationManager.requestLocationUpdates(mLocationManager.NETWORK_PROVIDER, 1000 * 10, 10, mLocationListener);
+        mLocationManager.requestLocationUpdates(GPS_PROVIDER, 1000, 1, mLocationListener);
+        mLocationManager.requestLocationUpdates(NETWORK_PROVIDER, 1000 * 10, 10, mLocationListener);
         System.out.println("Latitude = " + mLatitude);
         initMap();
 
@@ -221,11 +223,16 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     }
 
     private void mapMove(){
-
         mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
             @Override
             public void onCameraMoveStarted(int i) {
                 System.out.println("camera move started = " + mMap.getCameraPosition().zoom);
+            }
+        });
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                System.out.println("IdleListener = " + mMap.getCameraPosition().target.latitude);
             }
         });
         mMap.setOnCameraMoveCanceledListener(new GoogleMap.OnCameraMoveCanceledListener() {
@@ -237,9 +244,12 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
         mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
             @Override
             public void onCameraMove() {
-                System.out.println("onCameraMove = " + mMap);
+
+                System.out.println("onCameraMove = " + mMap.getCameraPosition().target);
             }
         });
+
+
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -248,7 +258,6 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             }
         });
 
-        
     }
 
 
@@ -279,6 +288,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
         CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
         mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(monument.getLatitude(), monument.getLongitude()))
                 .title(monument.getName()).snippet(monument.getDesc()).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_monument_marker))));
+        mMarker.setTag(monument);
         float zoomLevel = (float) 16.0; //This goes up to 21
         CameraUpdate zoom=CameraUpdateFactory.zoomTo(zoomLevel);
         mMap.moveCamera(center);

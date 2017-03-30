@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     Animation animation_open;
     Animation animation_close;
     private SearchView searchView;
+    private MenuItem item;
 
 
 
@@ -62,6 +63,22 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(mToolbar);
         animation_open = AnimationUtils.loadAnimation(this, R.anim.open_down);
         animation_close = AnimationUtils.loadAnimation(this, R.anim.close_up);
+        animation_close.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mFrameLayout.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
 
         mContext = this;
 
@@ -98,7 +115,7 @@ public class MainActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_search, menu);
-        MenuItem item = menu.findItem(R.id.menuSearch);
+        item = menu.findItem(R.id.menuSearch);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView = (SearchView) item.getActionView();
 
@@ -106,12 +123,12 @@ public class MainActivity extends AppCompatActivity
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                mFrameLayout.setVisibility(View.INVISIBLE);
-                FragmentTransaction fragmentTransaction1 = mFragmentManager.beginTransaction();
-                        fragmentTransaction1.remove(mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
-                        fragmentTransaction1.commit();
-                mFrameLayout.setVisibility(View.INVISIBLE);
-                mFrameLayout.startAnimation(animation_close);
+                if (mFrameLayout.getVisibility() == View.VISIBLE) {
+                    FragmentTransaction fragmentTransaction1 = mFragmentManager.beginTransaction();
+                    fragmentTransaction1.remove(mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
+                    fragmentTransaction1.commit();
+                    mFrameLayout.startAnimation(animation_close);
+                }
 
                 return false;
             }
@@ -131,6 +148,10 @@ public class MainActivity extends AppCompatActivity
                         if (view != null) {
                             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            item.collapseActionView();
+                            searchView.setIconified(true);
+                            searchView.clearFocus();
+                            invalidateOptionsMenu();
                         }
                     }
                 });
