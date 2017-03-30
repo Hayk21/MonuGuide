@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,6 +25,7 @@ import android.app.FragmentTransaction;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
 
@@ -35,7 +37,6 @@ import blue_team.com.monuguide.fragments.SearchFragment;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final String NAME_OF_PREFERENCE = "Service_runing";
     public static final String SEARCH_FRAGMENT = "SearchFragment";
     public static final String MAP_FRAGMENT = "MapFragment";
     Fragment mMapStatueFragment;
@@ -46,6 +47,9 @@ public class MainActivity extends AppCompatActivity
     FrameLayout mFrameLayout;
     Animation animation_open;
     Animation animation_close;
+    private SearchView searchView;
+
+
 
 
     @Override
@@ -90,13 +94,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_search, menu);
         MenuItem item = menu.findItem(R.id.menuSearch);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        final SearchView searchView = (SearchView) item.getActionView();
+        searchView = (SearchView) item.getActionView();
+
 
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
@@ -112,10 +117,23 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+
         searchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Animation animation_open_left = AnimationUtils.loadAnimation(MainActivity.this, R.anim.open_to_left);
+                searchView.startAnimation(animation_open_left);
                 SearchFragment searchFragment = new SearchFragment();
+                searchFragment.setOnSearchViewChangeListener(new SearchFragment.onSearchViewChangeListener() {
+                    @Override
+                    public void ViewChanged() {
+                        View view = MainActivity.this.getCurrentFocus();
+                        if (view != null) {
+                            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
+                    }
+                });
                 FragmentTransaction transaction = mFragmentManager.beginTransaction();
                 transaction.add(R.id.search_container,searchFragment,SEARCH_FRAGMENT);
                 transaction.commit();
@@ -128,6 +146,7 @@ public class MainActivity extends AppCompatActivity
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                searchView.onActionViewCollapsed();
                 return false;
             }
 
@@ -244,4 +263,5 @@ public class MainActivity extends AppCompatActivity
         final AlertDialog alert = builder.create();
         alert.show();
     }
+
 }

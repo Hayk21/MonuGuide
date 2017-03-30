@@ -9,24 +9,20 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.models.Note;
 
-import static android.R.attr.animation;
-
 
 public class PageFragment extends Fragment {
 
     public static final String PAGE_NUMBER = "PageNumber";
     public static final String PAGE_URL = "PageURL";
-    int mPageNumber;
-    String URL;
-    ImageView mCurrentImage,mLike;
-    Animation open,close,close2;
+    private String mURL;
+    private ImageView mLike;
+    private Animation open, close, close2;
 
 
     View.OnClickListener OnLikeClickListener = new View.OnClickListener() {
@@ -68,21 +64,21 @@ public class PageFragment extends Fragment {
 
                 }
             });
-            if(mLike.getTag().toString().equals("default")){
+            if (mLike.getTag().toString().equals("default")) {
                 mLike.setTag("pressed");
                 mLike.startAnimation(close2);
-            }else {
+            } else {
                 mLike.setTag("default");
                 mLike.startAnimation(close);
             }
         }
     };
 
-    public static PageFragment newInstance(int page,Note note){
+    public static PageFragment newInstance(int page, Note note) {
         PageFragment pageFragment = new PageFragment();
         Bundle args = new Bundle();
-        args.putInt(PAGE_NUMBER,page);
-        args.putString(PAGE_URL,note.getImage());
+        args.putInt(PAGE_NUMBER, page);
+        args.putString(PAGE_URL, note.getImage());
         pageFragment.setArguments(args);
         return pageFragment;
 
@@ -94,21 +90,20 @@ public class PageFragment extends Fragment {
         open = AnimationUtils.loadAnimation(getActivity(), R.anim.push_effect);
         close = AnimationUtils.loadAnimation(getActivity(), R.anim.pull_effect);
         close2 = AnimationUtils.loadAnimation(getActivity(), R.anim.pull_effect);
-        mPageNumber = this.getArguments().getInt(PAGE_NUMBER);
-        URL = this.getArguments().getString(PAGE_URL);
+        mURL = this.getArguments().getString(PAGE_URL);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_page,container,false);
+        return inflater.inflate(R.layout.fragment_page, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mCurrentImage = (ImageView)view.findViewById(R.id.image_page);
-        mLike = (ImageView)view.findViewById(R.id.like_img);
+        ImageView mCurrentImage = (ImageView) view.findViewById(R.id.image_page);
+        mLike = (ImageView) view.findViewById(R.id.like_img);
         mLike.setOnClickListener(OnLikeClickListener);
-        Picasso.with(getActivity()).load(URL).into(mCurrentImage);
+        Picasso.with(getActivity()).load(mURL).into(mCurrentImage);
     }
 }

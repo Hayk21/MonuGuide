@@ -3,9 +3,7 @@ package blue_team.com.monuguide.activities;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.os.PersistableBundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -22,16 +20,15 @@ import blue_team.com.monuguide.models.Monument;
 
 public class DrawingActivity extends AppCompatActivity {
 
+    public static final int SMALL_BRUSH = 10, MEDIUM_BRUSH = 30, BIG_BRUSH = 50;
+    public static final int SMALL_ERASER = 30, MEDIUM_ERASER = 60, BIG_ERASER = 90;
+    private Monument mMonument;
+    private int mSize;
+    private PaintView mPaintView;
+    private LinearLayout mFirstListOfColors, mSecondListOfColors, mListOfTools;
+    private ImageButton mCurrentCollor;
+    private AlertDialog mAlertDialog;
 
-    Intent mActivityIntent;
-    Monument monument;
-    int mSize;
-    PaintView paintView;
-    LinearLayout FirstListOfColors, SecondListOfColors, ListOfTools;
-    ImageButton currentCollor;
-    AlertDialog alertDialog;
-    final static public int SMALL_BRUSH = 10, MEDIUM_BRUSH = 30, BIG_BRUSH = 50;
-    final static public int SMALL_ERASER = 30, MEDIUM_ERASER = 60, BIG_ERASER = 90;
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -44,13 +41,12 @@ public class DrawingActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             String color = view.getTag().toString();
-            paintView.setColor(color);
-            currentCollor.setImageDrawable(getResources().getDrawable(R.drawable.paint));
-            currentCollor = (ImageButton) view;
-            currentCollor.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
+            mPaintView.setColor(color);
+            mCurrentCollor.setImageDrawable(getResources().getDrawable(R.drawable.paint));
+            mCurrentCollor = (ImageButton) view;
+            mCurrentCollor.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
         }
     };
-
 
 
     View.OnClickListener OnToolsItemClickListenner = new View.OnClickListener() {
@@ -65,15 +61,15 @@ public class DrawingActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             switch (view.getId()) {
                                 case R.id.small_brush:
-                                    paintView.setBrushSize(SMALL_BRUSH);
+                                    mPaintView.setBrushSize(SMALL_BRUSH);
                                     brushDialog.dismiss();
                                     break;
                                 case R.id.medium_brush:
-                                    paintView.setBrushSize(MEDIUM_BRUSH);
+                                    mPaintView.setBrushSize(MEDIUM_BRUSH);
                                     brushDialog.dismiss();
                                     break;
                                 case R.id.big_brush:
-                                    paintView.setBrushSize(BIG_BRUSH);
+                                    mPaintView.setBrushSize(BIG_BRUSH);
                                     brushDialog.dismiss();
                                     break;
                             }
@@ -96,15 +92,15 @@ public class DrawingActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             switch (view.getId()) {
                                 case R.id.small_brush:
-                                    paintView.setErased(SMALL_ERASER);
+                                    mPaintView.setErased(SMALL_ERASER);
                                     brushDialog2.dismiss();
                                     break;
                                 case R.id.medium_brush:
-                                    paintView.setErased(MEDIUM_ERASER);
+                                    mPaintView.setErased(MEDIUM_ERASER);
                                     brushDialog2.dismiss();
                                     break;
                                 case R.id.big_brush:
-                                    paintView.setErased(BIG_ERASER);
+                                    mPaintView.setErased(BIG_ERASER);
                                     brushDialog2.dismiss();
                                     break;
                             }
@@ -125,42 +121,42 @@ public class DrawingActivity extends AppCompatActivity {
                     builder.setTitle("Create new page for paint?").setCancelable(true).setNegativeButton("Create", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            paintView.newPage();
+                            mPaintView.newPage();
                         }
                     }).setPositiveButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                         }
                     });
-                    alertDialog = builder.create();
-                    alertDialog.show();
+                    mAlertDialog = builder.create();
+                    mAlertDialog.show();
                     break;
                 case R.id.save_button:
                     final AlertDialog.Builder builder2 = new AlertDialog.Builder(DrawingActivity.this);
-                    paintView.setDrawingCacheEnabled(true);
+                    mPaintView.setDrawingCacheEnabled(true);
                     builder2.setTitle("Save Drawing?");
                     builder2.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            paintView.buildDrawingCache();
-                            Bitmap bitmap = paintView.getDrawingCache();
+                            mPaintView.buildDrawingCache();
+                            Bitmap bitmap = mPaintView.getDrawingCache();
                             FireHelper fh = new FireHelper();
-                            if(monument != null)
-                            fh.addNote(bitmap, monument,mSize);
+                            if (mMonument != null)
+                                fh.addNote(bitmap, mMonument, mSize);
                             PagerActivity.setFirstCommit(true);
                             DrawingActivity.this.finish();
                         }
                     });
                     builder2.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            alertDialog.cancel();
+                            mAlertDialog.cancel();
                         }
                     });
-                    alertDialog = builder2.create();
-                    alertDialog.show();
+                    mAlertDialog = builder2.create();
+                    mAlertDialog.show();
                     break;
                 case R.id.back_button:
                     DrawingActivity.this.finish();
-                    overridePendingTransition(R.anim.draw_alpha_up,R.anim.draw_close_anim);
+                    overridePendingTransition(R.anim.draw_alpha_up, R.anim.draw_close_anim);
                     break;
 
 
@@ -172,7 +168,7 @@ public class DrawingActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         DrawingActivity.this.finish();
-        overridePendingTransition(R.anim.draw_alpha_up,R.anim.draw_close_anim);
+        overridePendingTransition(R.anim.draw_alpha_up, R.anim.draw_close_anim);
     }
 
     @Override
@@ -181,17 +177,17 @@ public class DrawingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_drawing);
         setupActionBar();
 
-        mActivityIntent = this.getIntent();
-        if(mActivityIntent.getParcelableExtra(PagerActivity.EXTRA_WITH_MONUMENT) != null){
-            monument = mActivityIntent.getParcelableExtra(PagerActivity.EXTRA_WITH_MONUMENT);
-            mSize = mActivityIntent.getIntExtra(PagerActivity.EXTRA_WITH_SIZE,0);
+        Intent activityIntent = this.getIntent();
+        if (activityIntent.getParcelableExtra(PagerActivity.EXTRA_WITH_MONUMENT) != null) {
+            mMonument = activityIntent.getParcelableExtra(PagerActivity.EXTRA_WITH_MONUMENT);
+            mSize = activityIntent.getIntExtra(PagerActivity.EXTRA_WITH_SIZE, 0);
         }
-        paintView = (PaintView) findViewById(R.id.paintView);
-        FirstListOfColors = (LinearLayout) findViewById(R.id.list_of_colors_1);
-        SecondListOfColors = (LinearLayout) findViewById(R.id.list_of_colors_2);
-        ListOfTools = (LinearLayout) findViewById(R.id.list_of_res);
-        currentCollor = (ImageButton) FirstListOfColors.getChildAt(0);
-        currentCollor.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
+        mPaintView = (PaintView) findViewById(R.id.paintView);
+        mFirstListOfColors = (LinearLayout) findViewById(R.id.list_of_colors_1);
+        mSecondListOfColors = (LinearLayout) findViewById(R.id.list_of_colors_2);
+        mListOfTools = (LinearLayout) findViewById(R.id.list_of_res);
+        mCurrentCollor = (ImageButton) mFirstListOfColors.getChildAt(0);
+        mCurrentCollor.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
 
         setItemsOnClickListenners();
 
@@ -200,13 +196,13 @@ public class DrawingActivity extends AppCompatActivity {
 
     private void setItemsOnClickListenners() {
         for (int i = 0; i < 6; i++) {
-            FirstListOfColors.getChildAt(i).setOnClickListener(OnColorItemClickListtener);
+            mFirstListOfColors.getChildAt(i).setOnClickListener(OnColorItemClickListtener);
         }
         for (int i = 0; i < 6; i++) {
-            SecondListOfColors.getChildAt(i).setOnClickListener(OnColorItemClickListtener);
+            mSecondListOfColors.getChildAt(i).setOnClickListener(OnColorItemClickListtener);
         }
         for (int i = 0; i < 5; i++) {
-            ListOfTools.getChildAt(i).setOnClickListener(OnToolsItemClickListenner);
+            mListOfTools.getChildAt(i).setOnClickListener(OnToolsItemClickListenner);
         }
     }
 

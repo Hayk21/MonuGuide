@@ -20,7 +20,6 @@ import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.Services.LocationService;
 
 
-
 public class SettingsActivity extends AppCompatPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 17;
@@ -28,9 +27,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public static final String KEY_OF_FUNCTION = "notifications_new_message";
     public static final String KEY_OF_VIBRATE = "notifications_new_message_vibrate";
     public static final String KEY_OF_RINGTONE = "notifications_new_message_ringtone";
-    Intent intent;
-    SwitchPreference switchPreference;
-
+    private Intent mIntent;
+    private SwitchPreference mSwitchPreference;
 
 
     private static boolean isXLargeTablet(Context context) {
@@ -43,7 +41,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         super.onCreate(savedInstanceState);
         setupActionBar();
         addPreferencesFromResource(R.xml.pref_notification);
-        switchPreference = (SwitchPreference)findPreference(KEY_OF_FUNCTION);
+        mSwitchPreference = (SwitchPreference) findPreference(KEY_OF_FUNCTION);
     }
 
     @Override
@@ -51,21 +49,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         super.onResume();
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
-        switchPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        mSwitchPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object o) {
                 if (ActivityCompat.checkSelfPermission(SettingsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(SettingsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     SharedPreferences.Editor editor = preference.getSharedPreferences().edit();
-                    editor.putBoolean(KEY_OF_FUNCTION,false);
+                    editor.putBoolean(KEY_OF_FUNCTION, false);
                     ((SwitchPreference) preference).setChecked(false);
                     editor.apply();
                     ActivityCompat.requestPermissions(SettingsActivity.this,
                             new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                             MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                }else {
-                    if(((boolean) o)){
+                } else {
+                    if (((boolean) o)) {
                         ((SwitchPreference) preference).setChecked(true);
-                    }else if(!((boolean) o)){
+                    } else if (!((boolean) o)) {
                         ((SwitchPreference) preference).setChecked(false);
                     }
                 }
@@ -98,10 +96,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            Intent intent = new Intent(SettingsActivity.this,MainActivity.class);
+            Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
             startActivity(intent);
             this.finish();
-            overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
+            overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
         }
         return true;
     }
@@ -110,33 +108,33 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         } else {
-            Log.d("Log_Tag",s);
-            intent = new Intent(SettingsActivity.this, LocationService.class);
+            Log.d("Log_Tag", s);
+            mIntent = new Intent(SettingsActivity.this, LocationService.class);
             if (s.equals(KEY_OF_FUNCTION)) {
                 if (sharedPreferences.getBoolean(s, false)) {
-                    startService(intent);
-                } else stopService(intent);
-            }else if(s.equals(KEY_OF_LIST_RADIUS)){
-                Log.d("Log_Tag1",sharedPreferences.getString(s,"1"));
+                    startService(mIntent);
+                } else stopService(mIntent);
+            } else if (s.equals(KEY_OF_LIST_RADIUS)) {
+                Log.d("Log_Tag1", sharedPreferences.getString(s, "1"));
             }
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION){
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Preference preference = findPreference(KEY_OF_FUNCTION);
                 SharedPreferences.Editor editor = preference.getSharedPreferences().edit();
-                editor.putBoolean(KEY_OF_FUNCTION,true);
+                editor.putBoolean(KEY_OF_FUNCTION, true);
                 ((SwitchPreference) preference).setChecked(true);
                 editor.apply();
-                intent = new Intent(SettingsActivity.this, LocationService.class);
-                startService(intent);
-            }else {
+                mIntent = new Intent(SettingsActivity.this, LocationService.class);
+                startService(mIntent);
+            } else {
                 Preference preference = findPreference(KEY_OF_FUNCTION);
                 SharedPreferences.Editor editor = preference.getSharedPreferences().edit();
-                editor.putBoolean(KEY_OF_FUNCTION,false);
+                editor.putBoolean(KEY_OF_FUNCTION, false);
                 ((SwitchPreference) preference).setChecked(false);
                 editor.apply();
             }
@@ -145,10 +143,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(SettingsActivity.this,MainActivity.class);
+        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
         startActivity(intent);
         this.finish();
-        overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
+        overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
     }
 }
 

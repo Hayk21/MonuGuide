@@ -28,12 +28,11 @@ public class PagerActivity extends FragmentActivity {
     public static final String EXTRA_WITH_SIZE = "ExtraListSize";
     int mSize;
     public static boolean mFirstCommit = false;
-    ViewPager viewPager;
-    PagerAdapter pagerAdapter;
-    Monument monument;
-    TextView mName,mNothing;
-    ImageView mBack,mDraw;
-    FireHelper fireHelper = new FireHelper();
+    private ViewPager mViewPager;
+    private PagerAdapter mPagerAdapter;
+    private Monument mMonument;
+    private TextView mNothingText;
+    private FireHelper mFireHelper = new FireHelper();
 
     List<Note> mListOfNote;
     private FireHelper.IOnNoteSuccessListener iOnNoteSuccessListener = new FireHelper.IOnNoteSuccessListener() {
@@ -41,63 +40,55 @@ public class PagerActivity extends FragmentActivity {
         public void onSuccess(HashMap<String, Note> mMap) {
             mListOfNote.clear();
             mListOfNote.addAll(mMap.values());
-            if(!mListOfNote.isEmpty()){
-                viewPager.setAdapter(pagerAdapter);
+            if (!mListOfNote.isEmpty()) {
+                mViewPager.setAdapter(mPagerAdapter);
                 mSize = mListOfNote.size();
+            } else {
+                mViewPager.setVisibility(View.GONE);
+                mNothingText.setVisibility(View.VISIBLE);
             }
-            else {
-                viewPager.setVisibility(View.GONE);
-                mNothing.setVisibility(View.VISIBLE);
-            }
-            //anel gorcoxutyunner@
         }
     };
-
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pager);
-        fireHelper.setOnNoteSuccessListener(iOnNoteSuccessListener);
+        mFireHelper.setOnNoteSuccessListener(iOnNoteSuccessListener);
 
-        viewPager = (ViewPager)findViewById(R.id.view_pager);
-        mName = (TextView)findViewById(R.id.name_of_monument);
-        mNothing = (TextView)findViewById(R.id.nothing_id);
-        mBack = (ImageView)findViewById(R.id.home_img);
-        mDraw = (ImageView)findViewById(R.id.draw_img);
-        pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mNothingText = (TextView) findViewById(R.id.nothing_id);
+        TextView name = (TextView) findViewById(R.id.name_of_monument);
+        ImageView back = (ImageView) findViewById(R.id.home_img);
+        ImageView draw = (ImageView) findViewById(R.id.draw_img);
+        mPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
 
-        if(this.getIntent() != null){
-            if(this.getIntent().getParcelableExtra(StartActivity.ARGUMENT_WITH_MONUMENT) != null) {
-                monument = this.getIntent().getParcelableExtra(StartActivity.ARGUMENT_WITH_MONUMENT);
-                mName.setText(monument.getName());
+        if (this.getIntent() != null) {
+            if (this.getIntent().getParcelableExtra(StartActivity.ARGUMENT_WITH_MONUMENT) != null) {
+                mMonument = this.getIntent().getParcelableExtra(StartActivity.ARGUMENT_WITH_MONUMENT);
+                name.setText(mMonument.getName());
                 mListOfNote = new ArrayList<>();
-                fireHelper.getNotesList(monument.getId());
-//                    list.add("https://www.iposters.co.uk/media/catalog/product/cache/1/small_image/300x400/9df78eab33525d08d6e5fb8d27136e95/0/3/0359CH_3.jpg");
-//                    list.add("https://s-media-cache-ak0.pinimg.com/originals/c4/74/bd/c474bd3b777ac3b7bf59fedac4d7d8d7.jpg");
-//                    list.add("https://www.iposters.co.uk/media/catalog/product/cache/1/small_image/300x400/9df78eab33525d08d6e5fb8d27136e95/0/5/0583CH_3.jpg");
-
-
+                mFireHelper.getNotesList(mMonument.getId());
             }
         }
 
-        mBack.setOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 PagerActivity.this.finish();
-                overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
+                overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
             }
         });
 
-        mDraw.setOnClickListener(new View.OnClickListener() {
+        draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(PagerActivity.this,DrawingActivity.class);
-                intent.putExtra(EXTRA_WITH_MONUMENT,monument);
-                intent.putExtra(EXTRA_WITH_SIZE,mSize);
+                Intent intent = new Intent(PagerActivity.this, DrawingActivity.class);
+                intent.putExtra(EXTRA_WITH_MONUMENT, mMonument);
+                intent.putExtra(EXTRA_WITH_SIZE, mSize);
                 startActivity(intent);
-                overridePendingTransition(R.anim.draw_open_anim,R.anim.draw_alpha_down);
+                overridePendingTransition(R.anim.draw_open_anim, R.anim.draw_alpha_down);
             }
         });
 
@@ -107,20 +98,20 @@ public class PagerActivity extends FragmentActivity {
     public void onBackPressed() {
         super.onBackPressed();
         PagerActivity.this.finish();
-        overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
+        overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(mFirstCommit  && viewPager.getVisibility() == View.GONE) {
-            mNothing.setVisibility(View.GONE);
-            viewPager.setVisibility(View.VISIBLE);
-            pagerAdapter.notifyDataSetChanged();
+        if (mFirstCommit && mViewPager.getVisibility() == View.GONE) {
+            mNothingText.setVisibility(View.GONE);
+            mViewPager.setVisibility(View.VISIBLE);
+            mPagerAdapter.notifyDataSetChanged();
         }
     }
 
-    public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter{
+    public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
         public MyFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -128,7 +119,7 @@ public class PagerActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return PageFragment.newInstance(position,mListOfNote.get(position));
+            return PageFragment.newInstance(position, mListOfNote.get(position));
         }
 
         @Override

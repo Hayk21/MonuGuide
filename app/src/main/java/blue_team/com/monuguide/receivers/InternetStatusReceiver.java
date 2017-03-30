@@ -12,34 +12,34 @@ import android.preference.PreferenceManager;
 import blue_team.com.monuguide.Services.LocationService;
 import blue_team.com.monuguide.activities.SettingsActivity;
 
-import static blue_team.com.monuguide.activities.MainActivity.NAME_OF_PREFERENCE;
+import static android.content.Context.CONNECTIVITY_SERVICE;
+
 
 public class InternetStatusReceiver extends BroadcastReceiver {
-    Context context;
-    LocationManager locationManager;
+    private Context context;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         this.context = context;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean answer_two = sharedPreferences.getBoolean(NAME_OF_PREFERENCE, false);
-        boolean answer = sharedPreferences.getBoolean(SettingsActivity.KEY_OF_FUNCTION, false);
-        Intent intent_for_service = new Intent(context, LocationService.class);
-        if (answer) {
+        boolean condition2 = sharedPreferences.getBoolean(LocationService.SERVICE_CONNECTION, false);
+        boolean condtion1 = sharedPreferences.getBoolean(SettingsActivity.KEY_OF_FUNCTION, false);
+        Intent serviceIntent = new Intent(context, LocationService.class);
+        if (condtion1) {
             if (isConnect()) {
-                if (!answer_two) {
-                    context.startService(intent_for_service);
+                if (!condition2) {
+                    context.startService(serviceIntent);
                 }
-            } else context.stopService(intent_for_service);
+            } else context.stopService(serviceIntent);
 
         }
     }
 
     private boolean isConnect() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED || locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        if ((connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             return true;
         } else
             return false;
