@@ -74,7 +74,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     private DetailsFragment mDetailsFragment;
     List<Monument> listOfMonument;
     private FloatingActionButton mCurrentLocationBtn;
-    public static boolean mMapIsTouched = false;
+    public boolean mSetMyLocation = false;
 
 
     @Override
@@ -199,7 +199,10 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             public void onLocationChanged(Location location) {
                 mLongitude = location.getLongitude();
                 mLatitude = location.getLatitude();
-                setMyLocation();
+                if(!mSetMyLocation){
+                    setMyLocation();
+                    mSetMyLocation = true;
+                }
                 fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), 50);
                 getMonumentList();
                 mapMove();
