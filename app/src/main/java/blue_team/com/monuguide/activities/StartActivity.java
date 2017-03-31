@@ -2,14 +2,17 @@ package blue_team.com.monuguide.activities;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.Services.LocationService;
+import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.DetailsFragment;
 import blue_team.com.monuguide.fragments.WebFragment;
 import blue_team.com.monuguide.models.Monument;
@@ -23,6 +26,8 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     private Monument mMonument;
     private FragmentManager mFragmentManager;
     private FragmentTransaction mFragmentTransaction;
+    private FireHelper mFireHalper = new FireHelper();
+    private AlertDialog mAlertDialog;
 
 
     @Override
@@ -84,6 +89,31 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     public void onFragmentInteraction(int ID, Monument monument) {
         switch (ID) {
             case R.id.heart_img:
+                String myuser = mFireHalper.getCurrentUid();
+                if(myuser != null)
+                {
+                    mFireHalper.addFavoriteMon(monument, myuser);
+                }
+                else
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(StartActivity.this);
+                    builder.setTitle("If you wish add monument in your favorite monuments list you will be login in facebook\n continue...?");
+                    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(StartActivity.this, FacebookLoginActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                    builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            mAlertDialog.cancel();
+                        }
+                    });
+                    mAlertDialog = builder.create();
+                    mAlertDialog.show();
+                }
+
                 break;
             case R.id.comment_img:
                 Intent intent = new Intent(StartActivity.this, PagerActivity.class);

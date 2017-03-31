@@ -132,7 +132,7 @@ public class DrawingActivity extends AppCompatActivity {
                     mAlertDialog.show();
                     break;
                 case R.id.save_button:
-                    final AlertDialog.Builder builder2 = new AlertDialog.Builder(DrawingActivity.this);
+                    AlertDialog.Builder builder2 = new AlertDialog.Builder(DrawingActivity.this);
                     mPaintView.setDrawingCacheEnabled(true);
                     builder2.setTitle("Save Drawing?");
                     builder2.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -141,17 +141,10 @@ public class DrawingActivity extends AppCompatActivity {
                             Bitmap bitmap = mPaintView.getDrawingCache();
                             FireHelper fh = new FireHelper();
                             if(mMonument != null) {
-                                if(fh.getCurrentUid() != null){
-                                    String myuser = fh.getCurrentUid();
-                                    fh.addNote(bitmap, mMonument, myuser, mSize);
-                                }
-                                else
-                                {
-                                    fh.addNote(bitmap, mMonument, "", mSize);
-                                }
-
+                                String myuser = fh.getCurrentUid();
+                                fh.addNote(bitmap, mMonument, myuser, mSize);
+                                PagerActivity.setFirstCommit(true);
                             }
-                            PagerActivity.setFirstCommit(true);
                             DrawingActivity.this.finish();
                         }
                     });

@@ -8,7 +8,7 @@ public class User {
     private String name;
     private String email;
     private String photoUrl;
-    private HashMap<String,Monument> favoriteMon;
+    private HashMap<String,Monument> favoriteMon = new HashMap<>();
 
     public String getuID() {
         return uID;

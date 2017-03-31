@@ -9,6 +9,10 @@
             android:icon="@drawable/facebook_icon"
             android:title="Log in with Facebook" />
         <item
+            android:id="@+id/fav_mon"
+            android:icon="@drawable/facebook_icon"
+            android:title="Favorite monuments" />
+        <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
             android:title="Tools" />

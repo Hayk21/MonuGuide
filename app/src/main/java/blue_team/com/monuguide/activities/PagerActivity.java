@@ -1,5 +1,6 @@
 package blue_team.com.monuguide.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -8,6 +9,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,6 +35,7 @@ public class PagerActivity extends FragmentActivity {
     private Monument mMonument;
     private TextView mNothingText;
     private FireHelper mFireHelper = new FireHelper();
+    private AlertDialog mAlertDialog;
 
     List<Note> mListOfNote;
     private FireHelper.IOnNoteSuccessListener iOnNoteSuccessListener = new FireHelper.IOnNoteSuccessListener() {
@@ -84,11 +87,31 @@ public class PagerActivity extends FragmentActivity {
         draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(PagerActivity.this, DrawingActivity.class);
-                intent.putExtra(EXTRA_WITH_MONUMENT, mMonument);
-                intent.putExtra(EXTRA_WITH_SIZE, mSize);
-                startActivity(intent);
-                overridePendingTransition(R.anim.draw_open_anim, R.anim.draw_alpha_down);
+                if(mFireHelper.getCurrentUid() != null) {
+                    Intent intent = new Intent(PagerActivity.this, DrawingActivity.class);
+                    intent.putExtra(EXTRA_WITH_MONUMENT, mMonument);
+                    intent.putExtra(EXTRA_WITH_SIZE, mSize);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.draw_open_anim, R.anim.draw_alpha_down);
+                }
+                else{
+                    AlertDialog.Builder builder = new AlertDialog.Builder(PagerActivity.this);
+                    builder.setTitle("If you wish paint note you will be login in facebook\n continue...?");
+                    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(PagerActivity.this, FacebookLoginActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                    builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            mAlertDialog.cancel();
+                        }
+                    });
+                    mAlertDialog = builder.create();
+                    mAlertDialog.show();
+                }
             }
         });
 

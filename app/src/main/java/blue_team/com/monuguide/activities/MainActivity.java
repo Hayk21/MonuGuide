@@ -218,6 +218,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.login) {
             Intent intent = new Intent(MainActivity.this, FacebookLoginActivity.class);
             startActivity(intent);
+        } else if (id == R.id.fav_mon){
 
         } else if (id == R.id.nav_manage) {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
