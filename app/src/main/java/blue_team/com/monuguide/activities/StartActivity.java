@@ -144,6 +144,7 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
                         view.setTag("pressed");
                         view.startAnimation(close2);
                     } else {
+                        mFireHalper.removeFavoriteMon(monument, myuser);
                         view.setTag("default");
                         view.startAnimation(close);
                     }

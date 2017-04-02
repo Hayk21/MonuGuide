@@ -44,6 +44,7 @@ FireHelper {
     private Query mQuery3;
     private Query mQuery4;
     private Query mQuery5;
+    private Query mQuery6;
     private DatabaseReference mDatabase;
     private DatabaseReference mDatabase1;
     private FirebaseStorage mStorage;
@@ -53,8 +54,10 @@ FireHelper {
     private IOnNoteSuccessListener mOnNoteSuccessListener;
     private IOnSearchSuccessListener mOnSearchSuccessListener;
     private IOnFavMonSuccessListener mOnFavMonValueEventListener;
+    private IOnFindUserSuccessListener mOnFindUserValueEventListener;
     private HashMap<String,Monument> mMon = new HashMap<>();
     private HashMap<String,Note> mNote = new HashMap<>();
+    private HashMap<String,User> mUser = new HashMap<>();
 
 
 
@@ -156,6 +159,25 @@ FireHelper {
         }
     };
 
+    private ValueEventListener userValueEventListener = new ValueEventListener()
+    {
+
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
+                User addVal = mySnapshot.getValue(User.class);
+                String key = mySnapshot.getKey();
+                mUser.put(key, addVal);
+            }
+                mOnFindUserValueEventListener.onSuccess(mUser);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
     public String getCurrentUid() {
         FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
         if(u != null) {
@@ -242,6 +264,24 @@ FireHelper {
 
     }
 
+    public void findUser(String userID)
+    {
+        mUserID = userID;
+        FindUser fu = new FindUser();
+        fu.execute();
+    }
+
+    private class FindUser extends AsyncTask<Void, Void, Void>
+    {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            mQuery6 = mDatabase.child("models").child("users").orderByKey().equalTo(mUserID);
+            mQuery6.addValueEventListener(userValueEventListener);
+            return null;
+        }
+    }
+
     public void addNote(Bitmap bitmap, Monument monument,String userID,int size)
     {
         mUserID = userID;
@@ -305,6 +345,24 @@ FireHelper {
         @Override
         protected Void doInBackground(Void... params) {
             mDatabase.child("models").child("users").child(mUserID).child("favoriteMon").child(mMonument.getId()).setValue(mMonument);
+            return null;
+        }
+    }
+
+    public void removeFavoriteMon(Monument monument, String userID)
+    {
+        mUserID = userID;
+        mMonument = monument;
+        RemoveFavoriteMon rfm = new RemoveFavoriteMon();
+        rfm.execute();
+    }
+
+    private class RemoveFavoriteMon extends AsyncTask<Void, Void, Void>
+    {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            mDatabase.child("models").child("users").child(mUserID).child("favoriteMon").child(mMonument.getId()).removeValue();
             return null;
         }
     }
@@ -380,4 +438,14 @@ FireHelper {
     public interface IOnFavMonSuccessListener{
         void onSuccess(HashMap<String,Monument> mMap);
     }
+
+    public void setOnFindUserSuccessListener(IOnFindUserSuccessListener onFindUserSuccessListener) {
+        mOnFindUserValueEventListener = onFindUserSuccessListener;
+    }
+
+    public interface IOnFindUserSuccessListener{
+        void onSuccess(HashMap<String,User> mMap);
+    }
+
+
 }

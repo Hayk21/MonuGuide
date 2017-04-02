@@ -28,6 +28,8 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.HashMap;
+
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.models.User;
@@ -40,7 +42,10 @@ public class FacebookLoginActivity extends AppCompatActivity implements
     private CallbackManager callbackManager;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FireHelper.IOnFindUserSuccessListener mFindUserSuccessListener;
     private ProgressDialog mProgress;
+    private FireHelper mFireHelper = new FireHelper();
+    private User mMyUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +53,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_facebook_login);
         setupActionBar();
-
+        mMyUser = new User();
         mAuth = FirebaseAuth.getInstance();
         mProgress = new ProgressDialog(this);
         findViewById(R.id.button_facebook_signout).setOnClickListener(this);
@@ -75,6 +80,21 @@ public class FacebookLoginActivity extends AppCompatActivity implements
                 FacebookLoginActivity.this.finish();
             }
         });
+
+        mFindUserSuccessListener = new FireHelper.IOnFindUserSuccessListener() {
+            @Override
+            public void onSuccess(HashMap<String, User> mMap) {
+                if(mMap == null)
+                {
+                    mFireHelper.addUser(mMyUser);
+                }
+                else
+                {
+
+                }
+                mProgress.dismiss();
+            }
+        };
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -125,15 +145,13 @@ public class FacebookLoginActivity extends AppCompatActivity implements
                     public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful())
                             {
-                                FireHelper fh = new FireHelper();
-                                User myUser = new User();
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                myUser.setuID(user.getUid());
-                                myUser.setName(user.getDisplayName());
-                                myUser.setEmail(user.getEmail());
-                                myUser.setPhotoUrl(user.getPhotoUrl().toString());
-                                fh.addUser(myUser);
-                                mProgress.dismiss();
+                                mMyUser.setuID(user.getUid());
+                                mMyUser.setName(user.getDisplayName());
+                                mMyUser.setEmail(user.getEmail());
+                                mMyUser.setPhotoUrl(user.getPhotoUrl().toString());
+                                mFireHelper.setOnFindUserSuccessListener(mFindUserSuccessListener);
+                                mFireHelper.findUser(mMyUser.getuID());
                                 //FacebookLoginActivity.this.finish();
                             }
                     }
