@@ -3,9 +3,11 @@ package blue_team.com.monuguide.activities;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -45,6 +47,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_facebook_login);
+        setupActionBar();
 
         mAuth = FirebaseAuth.getInstance();
         mProgress = new ProgressDialog(this);
@@ -161,6 +164,29 @@ public class FacebookLoginActivity extends AppCompatActivity implements
         int i = v.getId();
         if (i == R.id.button_facebook_signout) {
             signOut();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
+        this.overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+            this.overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 }

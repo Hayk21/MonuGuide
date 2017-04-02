@@ -9,6 +9,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.Services.LocationService;
@@ -28,6 +32,7 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     private FragmentTransaction mFragmentTransaction;
     private FireHelper mFireHalper = new FireHelper();
     private AlertDialog mAlertDialog;
+    private Animation open, close, close2;
 
 
     @Override
@@ -40,6 +45,9 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         setupActionBar();
+        open = AnimationUtils.loadAnimation(this, R.anim.push_effect);
+        close = AnimationUtils.loadAnimation(this, R.anim.pull_effect);
+        close2 = AnimationUtils.loadAnimation(this, R.anim.pull_effect);
         if (getIntent() != null) {
             if (getIntent().getParcelableExtra(LocationService.SHOWING_MONUMENT) != null) {
                 mMonument = getIntent().getParcelableExtra(LocationService.SHOWING_MONUMENT);
@@ -47,7 +55,6 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
         }
         mFragmentManager = getFragmentManager();
         Bundle args = new Bundle();
-        args = new Bundle();
         mFragmentTransaction = mFragmentManager.beginTransaction();
         DetailsFragment detailsFragment = new DetailsFragment();
         if (mMonument != null) {
@@ -65,8 +72,8 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     public void onBackPressed() {
         if (mFragmentManager.getBackStackEntryCount() == 1) {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            this.finish();
             overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
         } else {
             if (mFragmentManager.findFragmentByTag(WEB_FRAGMENT) != null) {
@@ -86,31 +93,77 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     }
 
     @Override
-    public void onFragmentInteraction(int ID, Monument monument) {
+    public void onFragmentInteraction(int ID, Monument monument, final ImageView view) {
         switch (ID) {
+            case R.id.location_img:
+                Intent intentForMap = new Intent(StartActivity.this, MainActivity.class);
+                intentForMap.putExtra(ARGUMENT_WITH_MONUMENT, monument);
+                startActivity(intentForMap);
+                this.finish();
+                overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
+                break;
             case R.id.heart_img:
+                close.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        view.setImageDrawable(getResources().getDrawable(R.mipmap.star_icon7));
+                        view.startAnimation(open);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                close2.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        view.setImageDrawable(getResources().getDrawable(R.mipmap.pressed_star_icon));
+                        view.startAnimation(open);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
                 String myuser = mFireHalper.getCurrentUid();
-                if(myuser != null)
-                {
-                    mFireHalper.addFavoriteMon(monument, myuser);
-                }
-                else
-                {
+                if (myuser != null) {
+                    if (view.getTag().toString().equals("default")) {
+                        mFireHalper.addFavoriteMon(monument, myuser);
+                        view.setTag("pressed");
+                        view.startAnimation(close2);
+                    } else {
+                        view.setTag("default");
+                        view.startAnimation(close);
+                    }
+                } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(StartActivity.this);
-                    builder.setTitle("If you wish add monument in your favorite monuments list you will be login in facebook\n continue...?");
-                    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    builder.setTitle("Attention").setMessage("If you want to have your own list of favorite monuments,log in with facebook.");
+                    builder.setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            mAlertDialog.cancel();
+                        }
+                    });
+                    builder.setNegativeButton(R.string.login_text, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Intent intent = new Intent(StartActivity.this, FacebookLoginActivity.class);
                             startActivity(intent);
                         }
                     });
-                    builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            mAlertDialog.cancel();
-                        }
-                    });
                     mAlertDialog = builder.create();
+                    mAlertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
                     mAlertDialog.show();
                 }
 

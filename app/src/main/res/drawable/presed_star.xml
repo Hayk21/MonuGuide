@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:variablePadding="true"
+    android:dither="true"
+    android:constantSize="true">
+
+    <item
+        android:state_pressed="true"
+        android:drawable="@mipmap/heart_icon"/>
+    <item
+        android:state_checked="true"
+        android:drawable="@mipmap/star_icon"/>
+    <item
+        android:state_activated="true"
+        android:drawable="@mipmap/star_icon"/>
+    <item
+        android:drawable="@mipmap/star_icon7"/>
+
+
+</selector>

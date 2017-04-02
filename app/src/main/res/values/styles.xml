@@ -29,4 +29,9 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
+    <style name="DialogTheme">
+        <item name="android:windowEnterAnimation">@anim/go_to_left</item>
+        <item name="android:windowExitAnimation">@anim/go_to_right</item>
+    </style>
+
 </resources>

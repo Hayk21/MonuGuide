@@ -17,6 +17,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,6 +31,7 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,14 +39,18 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.HashMap;
 
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
 import blue_team.com.monuguide.fragments.SearchFragment;
+import blue_team.com.monuguide.models.Monument;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String SEARCH_FRAGMENT = "SearchFragment";
     public static final String MAP_FRAGMENT = "MapFragment";
+    public static final String FAVORITE_FRAGMENT = "FavoriteFragment";
+    public static final String ARGUMENT_FOR_FAVORITE = "Favorite";
     Fragment mMapStatueFragment;
     FragmentManager mFragmentManager;
     FragmentTransaction mFragmentTransaction;
@@ -54,7 +61,9 @@ public class MainActivity extends AppCompatActivity
     Animation animation_close;
     private SearchView searchView;
     private MenuItem item;
-
+    private FireHelper mFireHelper = new FireHelper();
+    private NavigationView navigationView;
+    private SearchFragment favoriteFragment;
 
 
     @Override
@@ -100,9 +109,21 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mFireHelper.getCurrentUid() == null) {
+            navigationView.getMenu().findItem(R.id.login).setTitle(this.getString(R.string.log_in));
+            navigationView.getMenu().findItem(R.id.fav_mon).setVisible(false);
+        } else {
+            navigationView.getMenu().findItem(R.id.login).setTitle(this.getString(R.string.log_out));
+            navigationView.getMenu().findItem(R.id.fav_mon).setVisible(true);
+        }
     }
 
     @Override
@@ -111,7 +132,27 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            this.finish();
+            if (mFrameLayout.getVisibility() == View.VISIBLE) {
+                if(mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)!=null) {
+                    item.collapseActionView();
+                    searchView.setIconified(true);
+                    searchView.clearFocus();
+                    invalidateOptionsMenu();
+                    FragmentTransaction fragmentTransaction1 = mFragmentManager.beginTransaction();
+                    fragmentTransaction1.remove(mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
+                    fragmentTransaction1.commit();
+                    mFrameLayout.startAnimation(animation_close);
+                }
+                else if(mFragmentManager.findFragmentByTag(FAVORITE_FRAGMENT)!=null){
+                    FragmentTransaction fragmentTransaction1 = mFragmentManager.beginTransaction();
+                    fragmentTransaction1.remove(mFragmentManager.findFragmentByTag(FAVORITE_FRAGMENT));
+                    fragmentTransaction1.commit();
+                    mFrameLayout.startAnimation(animation_close);
+                    favoriteFragment = null;
+                }
+            } else {
+                this.finish();
+            }
         }
     }
 
@@ -132,7 +173,9 @@ public class MainActivity extends AppCompatActivity
                     FragmentTransaction fragmentTransaction1 = mFragmentManager.beginTransaction();
                     fragmentTransaction1.remove(mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
                     fragmentTransaction1.commit();
-                    mFrameLayout.startAnimation(animation_close);
+                    if(favoriteFragment == null) {
+                        mFrameLayout.startAnimation(animation_close);
+                    }
                 }
 
                 return false;
@@ -151,20 +194,27 @@ public class MainActivity extends AppCompatActivity
                     public void ViewChanged() {
                         View view = MainActivity.this.getCurrentFocus();
                         if (view != null) {
-                            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                            item.collapseActionView();
-                            searchView.setIconified(true);
-                            searchView.clearFocus();
-                            invalidateOptionsMenu();
                         }
+                        item.collapseActionView();
+                        searchView.setIconified(true);
+                        searchView.clearFocus();
+                        invalidateOptionsMenu();
                     }
                 });
                 FragmentTransaction transaction = mFragmentManager.beginTransaction();
-                transaction.add(R.id.search_container,searchFragment,SEARCH_FRAGMENT);
+                if(mFragmentManager.findFragmentByTag(FAVORITE_FRAGMENT)!=null){
+                    transaction.remove(mFragmentManager.findFragmentByTag(FAVORITE_FRAGMENT));
+                    transaction.add(R.id.search_container, searchFragment, SEARCH_FRAGMENT);
+                    transaction.commit();
+                    mFrameLayout.setVisibility(View.INVISIBLE);
+                    mFrameLayout.setVisibility(View.VISIBLE);
+                }else {
+                transaction.add(R.id.search_container, searchFragment, SEARCH_FRAGMENT);
                 transaction.commit();
                 mFrameLayout.setVisibility(View.VISIBLE);
-                mFrameLayout.startAnimation(animation_open);
+                mFrameLayout.startAnimation(animation_open);}
             }
         });
 
@@ -172,18 +222,19 @@ public class MainActivity extends AppCompatActivity
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchView.onActionViewCollapsed();
                 return false;
             }
 
+
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (newText.isEmpty()){
+                if (newText.isEmpty()) {
                     System.out.println("datark");
+                    ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).setText();
                     ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).monumentList.clear();
                     ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).mAdapter.setMonumentList(((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).monumentList);
                     ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).mAdapter.notifyDataSetChanged();
-                }else {
+                } else {
                     System.out.println("baza");
                     ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).getFh().getSearchMonument(newText);
                 }
@@ -192,6 +243,7 @@ public class MainActivity extends AppCompatActivity
         });
         return super.onCreateOptionsMenu(menu);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -207,7 +259,13 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.getParcelableExtra(StartActivity.ARGUMENT_WITH_MONUMENT) != null) {
+            ((MapStatueFragment) mFragmentManager.findFragmentByTag(MAP_FRAGMENT)).setMonumentFromSearch(((Monument) intent.getParcelableExtra(StartActivity.ARGUMENT_WITH_MONUMENT)));
+        }
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -218,23 +276,50 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.login) {
             Intent intent = new Intent(MainActivity.this, FacebookLoginActivity.class);
             startActivity(intent);
-        } else if (id == R.id.fav_mon){
+        } else if (id == R.id.fav_mon) {
+            favoriteFragment = new SearchFragment();
+            Bundle args = new Bundle();
+            args.putString(ARGUMENT_FOR_FAVORITE, "Favorite");
+            favoriteFragment.setArguments(args);
+            View view = MainActivity.this.getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+            if (mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT) != null) {
+                item.collapseActionView();
+                searchView.setIconified(true);
+                searchView.clearFocus();
+                invalidateOptionsMenu();
+                mFragmentTransaction = mFragmentManager.beginTransaction();
+                mFragmentTransaction.remove(mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
+                mFragmentTransaction.add(R.id.search_container, favoriteFragment, FAVORITE_FRAGMENT);
+                mFragmentTransaction.commit();
+            } else {
+                if (mFragmentManager.findFragmentByTag(FAVORITE_FRAGMENT) == null) {
+                    mFragmentTransaction = mFragmentManager.beginTransaction();
+                    mFragmentTransaction.add(R.id.search_container, favoriteFragment, FAVORITE_FRAGMENT);
+                    mFragmentTransaction.commit();
+                    mFrameLayout.setVisibility(View.VISIBLE);
+                    mFrameLayout.startAnimation(animation_open);
+                }
+            }
 
-        } else if (id == R.id.nav_manage) {
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
+            } else if (id == R.id.nav_manage) {
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
 
-        } else if (id == R.id.nav_share) {
+            } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
+            } else if (id == R.id.nav_send) {
 
+            }
+
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+            return true;
         }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 
     private void getConnections() {
         ConnectivityManager cm =
@@ -247,7 +332,7 @@ public class MainActivity extends AppCompatActivity
             builder.setMessage("Please connect with internet")
                     .setPositiveButton("CONNECT", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            WifiManager wifiManager = (WifiManager) mContext.getSystemService(mContext.WIFI_SERVICE);
+                            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
                             if (!wifiManager.isWifiEnabled())
                                 wifiManager.setWifiEnabled(true);
                             else

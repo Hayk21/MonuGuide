@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/paint_view_back"
+    android:background="@drawable/back44"
     tools:context="blue_team.com.monuguide.activities.FacebookLoginActivity">
 
         <com.facebook.login.widget.LoginButton

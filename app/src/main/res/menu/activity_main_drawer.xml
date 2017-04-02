@@ -6,11 +6,11 @@
 
         <item
             android:id="@+id/login"
-            android:icon="@drawable/facebook_icon"
-            android:title="Log in with Facebook" />
+            android:icon="@drawable/face_icon"
+            android:title="@string/log_in" />
         <item
             android:id="@+id/fav_mon"
-            android:icon="@drawable/facebook_icon"
+            android:icon="@drawable/favorite_icon"
             android:title="Favorite monuments" />
         <item
             android:id="@+id/nav_manage"
