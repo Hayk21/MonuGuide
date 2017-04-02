@@ -45,6 +45,7 @@ FireHelper {
     private Query mQuery4;
     private Query mQuery5;
     private Query mQuery6;
+    private Query mQuery7;
     private DatabaseReference mDatabase;
     private DatabaseReference mDatabase1;
     private FirebaseStorage mStorage;
@@ -55,6 +56,7 @@ FireHelper {
     private IOnSearchSuccessListener mOnSearchSuccessListener;
     private IOnFavMonSuccessListener mOnFavMonValueEventListener;
     private IOnFindUserSuccessListener mOnFindUserValueEventListener;
+    private IOnFindFavMonSuccessListener mOnFindFavMonValueEventListener;
     private HashMap<String,Monument> mMon = new HashMap<>();
     private HashMap<String,Note> mNote = new HashMap<>();
     private HashMap<String,User> mUser = new HashMap<>();
@@ -178,6 +180,23 @@ FireHelper {
         }
     };
 
+    private ValueEventListener findFavMonValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
+                Monument addVal = mySnapshot.getValue(Monument.class);
+                String key = mySnapshot.getKey();
+                mMon.put(key, addVal);
+            }
+            mOnFindFavMonValueEventListener.onSuccess(mMon);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
     public String getCurrentUid() {
         FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
         if(u != null) {
@@ -282,6 +301,24 @@ FireHelper {
         }
     }
 
+    public void findFavMon(String userID,Monument monument)
+    {
+        mUserID = userID;
+        mMonument = monument;
+        FindFavMon ffm = new FindFavMon();
+        ffm.execute();
+    }
+
+    private class FindFavMon extends AsyncTask<Void, Void, Void>
+    {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            mQuery7 = mDatabase.child("models").child("users").child(mUserID).child("favoriteMon").orderByKey().equalTo(mMonument.getId());
+            mQuery7.addValueEventListener(findFavMonValueEventListener);
+            return null;
+        }
+    }
     public void addNote(Bitmap bitmap, Monument monument,String userID,int size)
     {
         mUserID = userID;
@@ -445,6 +482,14 @@ FireHelper {
 
     public interface IOnFindUserSuccessListener{
         void onSuccess(HashMap<String,User> mMap);
+    }
+
+    public void setOnFindFavMonSuccessListener(IOnFindFavMonSuccessListener onFindFavMonSuccessListener) {
+        mOnFindFavMonValueEventListener = onFindFavMonSuccessListener;
+    }
+
+    public interface IOnFindFavMonSuccessListener{
+        void onSuccess(HashMap<String,Monument> mMap);
     }
 
 

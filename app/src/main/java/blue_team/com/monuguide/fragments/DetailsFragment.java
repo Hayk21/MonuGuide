@@ -19,6 +19,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.activities.MainActivity;
 import blue_team.com.monuguide.activities.StartActivity;
@@ -32,7 +34,9 @@ public class DetailsFragment extends Fragment {
     private ImageView mHeaderImage;
     private ProgressBar mProgressBar;
     private Monument mMonument;
-    FireHelper mFireHelper = new FireHelper();
+    private ImageView favorites;
+    private FireHelper mFireHelper = new FireHelper();
+    private FireHelper.IOnFindFavMonSuccessListener mFindFavMonSuccessListener;
 
     private OnFragmentInteractionListener mListener;
 
@@ -56,7 +60,6 @@ public class DetailsFragment extends Fragment {
         }
     });
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +71,22 @@ public class DetailsFragment extends Fragment {
                 mMonument = this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT);
             }
         }
+        mFindFavMonSuccessListener = new FireHelper.IOnFindFavMonSuccessListener()
+        {
+            @Override
+            public void onSuccess(HashMap<String, Monument> mMap) {
+                if(!mMap.isEmpty())
+                {
+                    favorites.setTag("pressed");
+                    favorites.setImageDrawable(getResources().getDrawable(R.mipmap.pressed_star_icon));
+                }
+                else
+                {
+                    favorites.setTag("default");
+                    favorites.setImageDrawable(getResources().getDrawable(R.mipmap.star_icon7));
+                }
+            }
+        };
     }
 
 
@@ -101,7 +120,7 @@ public class DetailsFragment extends Fragment {
     }
 
     public void startFragmentOperation(View view) {
-        ImageView location,notes,favorites,wiki;
+        ImageView location,notes,wiki;
         TextView shortDesc;
         location = (ImageView)view.findViewById(R.id.location_img);
         notes = (ImageView)view.findViewById(R.id.comment_img);
@@ -115,7 +134,8 @@ public class DetailsFragment extends Fragment {
         favorites.setOnClickListener(onIconClickListener);
         wiki.setOnClickListener(onIconClickListener);
         if(mFireHelper.getCurrentUid() != null){
-//            aystexel stugvelua ete @s monument@ chka useri favoritnerum,uremn petqa sovorakan icon@ cuyc tal,hakarak depqum avelacraci icon@.
+           mFireHelper.setOnFindFavMonSuccessListener(mFindFavMonSuccessListener);
+            mFireHelper.findFavMon(mFireHelper.getCurrentUid(),mMonument);
         }
         if (mMonument != null) {
             shortDesc.setText(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getDesc());
