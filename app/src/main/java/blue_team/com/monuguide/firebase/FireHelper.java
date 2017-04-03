@@ -37,6 +37,9 @@ FireHelper {
     private double mRad;
     private String imageUrl;
     private String mUserID;
+    private String mNoteId;
+    private String mMonumentId;
+    private String mUserName;
     private Monument mMonument;
     private Note note;
     private Query mQuery1;
@@ -46,6 +49,9 @@ FireHelper {
     private Query mQuery5;
     private Query mQuery6;
     private Query mQuery7;
+    private Query mQuery8;
+    private Query mQuery9;
+    private Query mQuery10;
     private DatabaseReference mDatabase;
     private DatabaseReference mDatabase1;
     private FirebaseStorage mStorage;
@@ -54,12 +60,14 @@ FireHelper {
     private IOnSuccessListener mOnSuccessListener;
     private IOnNoteSuccessListener mOnNoteSuccessListener;
     private IOnSearchSuccessListener mOnSearchSuccessListener;
-    private IOnFavMonSuccessListener mOnFavMonValueEventListener;
-    private IOnFindUserSuccessListener mOnFindUserValueEventListener;
-    private IOnFindFavMonSuccessListener mOnFindFavMonValueEventListener;
+    private IOnFavMonSuccessListener mOnFavMonSuccessListener;
+    private IOnFindUserSuccessListener mOnFindUserSuccessListener;
+    private IOnFindFavMonSuccessListener mOnFindFavMonSuccessListener;
+    private IOnFindUserLikeSuccessListener mOnFindUserLikeSuccessListener;
     private HashMap<String,Monument> mMon = new HashMap<>();
     private HashMap<String,Note> mNote = new HashMap<>();
     private HashMap<String,User> mUser = new HashMap<>();
+    private HashMap<String,String> mUserId = new HashMap<>();
 
 
 
@@ -152,7 +160,7 @@ FireHelper {
                 String key = mySnapshot.getKey();
                 mMon.put(key, addVal);
             }
-            mOnFavMonValueEventListener.onSuccess(mMon);
+            mOnFavMonSuccessListener.onSuccess(mMon);
         }
 
         @Override
@@ -171,7 +179,7 @@ FireHelper {
                 String key = mySnapshot.getKey();
                 mUser.put(key, addVal);
             }
-                mOnFindUserValueEventListener.onSuccess(mUser);
+                mOnFindUserSuccessListener.onSuccess(mUser);
         }
 
         @Override
@@ -188,7 +196,75 @@ FireHelper {
                 String key = mySnapshot.getKey();
                 mMon.put(key, addVal);
             }
-            mOnFindFavMonValueEventListener.onSuccess(mMon);
+            mOnFindFavMonSuccessListener.onSuccess(mMon);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+    private ValueEventListener addLikeCountValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            mNote.clear();
+            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
+                Note addVal = mySnapshot.getValue(Note.class);
+                String key = mySnapshot.getKey();
+                mNoteId = key;
+                mNote.put(key, addVal);
+            }
+            if(mNote!=null) {
+                if (!mNote.isEmpty()) {
+                    int likeCount = mNote.get(mNoteId).getLikeCount();
+                    ++likeCount;
+                    setLikeCount(likeCount);
+                }
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+    private ValueEventListener subLikeCountValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            mNote.clear();
+            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
+                Note addVal = mySnapshot.getValue(Note.class);
+                String key = mySnapshot.getKey();
+                mNoteId = key;
+                mNote.put(key, addVal);
+            }
+            if(mNote != null) {
+                if (!mNote.isEmpty()) {
+                    int likeCount = mNote.get(mNoteId).getLikeCount();
+                    --likeCount;
+                    setLikeCount(likeCount);
+                }
+            }
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+    private ValueEventListener findUserLikeValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
+                String addVal = mySnapshot.getValue(String.class);
+                String key = mySnapshot.getKey();
+                mUserId.put(key, addVal);
+            }
+            mOnFindUserLikeSuccessListener.onSuccess(mUserId);
         }
 
         @Override
@@ -201,6 +277,16 @@ FireHelper {
         FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
         if(u != null) {
             return u.getUid();
+        }
+        else{
+            return null;
+        }
+    }
+
+    public String getCurrentUserName(){
+        FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
+        if(u != null) {
+            return u.getDisplayName();
         }
         else{
             return null;
@@ -319,9 +405,10 @@ FireHelper {
             return null;
         }
     }
-    public void addNote(Bitmap bitmap, Monument monument,String userID,int size)
+    public void addNote(Bitmap bitmap, Monument monument,String userID,String userName, int size)
     {
         mUserID = userID;
+        mUserName = userName;
         mMonument = monument;
         mNotesListSize = size;
         AddNote sn = new AddNote();
@@ -344,6 +431,7 @@ FireHelper {
             s+=(mNotesListSize+1);
             note = new Note();
             note.setId(s);
+            note.setAutorName(mUserName);
             note.setUid(mUserID);
             UploadTask uploadTask = mStorageRef.child("noteImages/"+s).putBytes(data);
             uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -444,6 +532,102 @@ FireHelper {
         }
     }
 
+    public void addLike(String noteID, String userID, String monumentID)
+    {
+        mUserID = userID;
+        AddLike al = new AddLike();
+        al.execute(noteID, monumentID);
+    }
+
+    public class AddLike extends AsyncTask<String, Void, Void>
+    {
+        int i = 0;
+        @Override
+        protected Void doInBackground(String... params) {
+            for (String b : params) {
+                if (i == 0) {
+                    mNoteId = b;
+                    i++;
+                }
+                else{
+                    mMonumentId = b;
+                }
+            }
+            mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").child(mNoteId).child("like").child(mUserID).setValue(mUserID);
+            mQuery8 = mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").orderByKey().equalTo(mNoteId);
+            mQuery8.addValueEventListener(addLikeCountValueEventListener);
+            return null;
+        }
+    }
+
+    public void subLike(String noteID, String userID, String monumentID)
+    {
+        mUserID = userID;
+        SubLike sl = new SubLike();
+        sl.execute(noteID, monumentID);
+    }
+
+    public class SubLike extends AsyncTask<String, Void, Void>
+    {
+        int i = 0;
+        @Override
+        protected Void doInBackground(String... params) {
+            for (String b : params) {
+                if (i == 0) {
+                    mNoteId = b;
+                    i++;
+                }
+                else{
+                    mMonumentId = b;
+                }
+            }
+            mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").child(mNoteId).child("like").child(mUserID).removeValue();
+            mQuery9 = mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").orderByKey().equalTo(mNoteId);
+            mQuery9.addValueEventListener(subLikeCountValueEventListener);
+            return null;
+        }
+    }
+
+    private void setLikeCount(int likeCount)
+    {
+        SetLikeCount alc = new SetLikeCount();
+        alc.execute(likeCount);
+    }
+
+    private class SetLikeCount extends AsyncTask<Integer, Void, Void>
+    {
+        int likeCount;
+        @Override
+        protected Void doInBackground(Integer... params) {
+            for (int b : params) {
+                likeCount = b;
+            }
+            mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").child(mNoteId).child("likeCount").setValue(likeCount);
+            return null;
+        }
+    }
+
+    public void findLikeUser(String noteID, String userID, String monumentID)
+    {
+        mUserID = userID;
+        mMonumentId = monumentID;
+        mNoteId = noteID;
+        FindLikeUser flu = new FindLikeUser();
+        flu.execute();
+
+    }
+
+    private class FindLikeUser extends AsyncTask<Void, Void, Void>
+    {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            mQuery10 = mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").child(mNoteId).child("like").orderByKey().equalTo(mUserID);
+            mQuery10.addValueEventListener(findUserLikeValueEventListener);
+            return null;
+        }
+    }
+
     public void setOnSuccessListener(IOnSuccessListener onSuccessListener) {
         mOnSuccessListener = onSuccessListener;
     }
@@ -469,7 +653,7 @@ FireHelper {
     }
 
     public void setOnFavMonSuccessListener(IOnFavMonSuccessListener onFavMonSuccessListener) {
-        mOnFavMonValueEventListener = onFavMonSuccessListener;
+        mOnFavMonSuccessListener = onFavMonSuccessListener;
     }
 
     public interface IOnFavMonSuccessListener{
@@ -477,7 +661,7 @@ FireHelper {
     }
 
     public void setOnFindUserSuccessListener(IOnFindUserSuccessListener onFindUserSuccessListener) {
-        mOnFindUserValueEventListener = onFindUserSuccessListener;
+        mOnFindUserSuccessListener = onFindUserSuccessListener;
     }
 
     public interface IOnFindUserSuccessListener{
@@ -485,11 +669,19 @@ FireHelper {
     }
 
     public void setOnFindFavMonSuccessListener(IOnFindFavMonSuccessListener onFindFavMonSuccessListener) {
-        mOnFindFavMonValueEventListener = onFindFavMonSuccessListener;
+        mOnFindFavMonSuccessListener = onFindFavMonSuccessListener;
     }
 
     public interface IOnFindFavMonSuccessListener{
         void onSuccess(HashMap<String,Monument> mMap);
+    }
+
+    public void setOnFindUserLikeSuccessListener(IOnFindUserLikeSuccessListener onFindUserLikeSuccessListener) {
+        mOnFindUserLikeSuccessListener = onFindUserLikeSuccessListener;
+    }
+
+    public interface IOnFindUserLikeSuccessListener{
+        void onSuccess(HashMap<String,String> mMap);
     }
 
 

@@ -30,6 +30,7 @@ public class DrawingActivity extends AppCompatActivity {
     private ImageButton mCurrentCollor;
     private AlertDialog mAlertDialog;
     private String[] arrayOfItems = {"Anonymous","With your name"};
+    private FireHelper mFireHelper = new FireHelper();
     private boolean isAnonymous = true;
 
     private void setupActionBar() {
@@ -152,14 +153,19 @@ public class DrawingActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int id) {
                             mPaintView.buildDrawingCache();
                             Bitmap bitmap = mPaintView.getDrawingCache();
-                            FireHelper fh = new FireHelper();
                             if(mMonument != null) {
-                                if(isAnonymous){
-//                                    stex ete isAnonymous@ trua-a uremn petqa aranc anun cuyc tas,ete false,anunov.
+                                String myuser = mFireHelper.getCurrentUid();
+                                if(myuser != null) {
+                                    if (isAnonymous) {
+                                        mFireHelper.addNote(bitmap, mMonument, myuser, " ", mSize);
+                                    } else {
+                                        mFireHelper.addNote(bitmap, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize);
+                                    }
                                 }
-                                String myuser = fh.getCurrentUid();
-                                fh.addNote(bitmap, mMonument, myuser, mSize);
+
+
                                 PagerActivity.setFirstCommit(true);
+
                             }
                             DrawingActivity.this.finish();
                         }
