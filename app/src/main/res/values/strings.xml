@@ -48,4 +48,6 @@
     <string name="ok">OK</string>
     <string name="log_out">Log out from Facebook</string>
     <string name="log_in">Log in with Facebook</string>
+    <string name="face_tittle">If you would like to use all of the features of our app then please log in via Facebook</string>
+    <string name="face_tittle2">Thank you for log in!</string>
 </resources>

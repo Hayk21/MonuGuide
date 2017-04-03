@@ -79,11 +79,13 @@ public class DetailsFragment extends Fragment {
                 {
                     favorites.setTag("pressed");
                     favorites.setImageDrawable(getResources().getDrawable(R.mipmap.pressed_star_icon));
+                    mFireHelper.setOnFavMonSuccessListener(null);
                 }
                 else
                 {
                     favorites.setTag("default");
                     favorites.setImageDrawable(getResources().getDrawable(R.mipmap.star_icon7));
+                    mFireHelper.setOnFavMonSuccessListener(null);
                 }
                 mFireHelper.removeOnFindFavMonSuccessListener(mFindFavMonSuccessListener);
             }
