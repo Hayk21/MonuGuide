@@ -113,7 +113,6 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
                     public void onAnimationEnd(Animation animation) {
                         view.setImageDrawable(getResources().getDrawable(R.mipmap.star_icon7));
                         view.startAnimation(open);
-                        view.setTag("default");
                     }
 
                     @Override
@@ -131,7 +130,6 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
                     public void onAnimationEnd(Animation animation) {
                         view.setImageDrawable(getResources().getDrawable(R.mipmap.pressed_star_icon));
                         view.startAnimation(open);
-                        view.setTag("pressed");
                     }
 
                     @Override

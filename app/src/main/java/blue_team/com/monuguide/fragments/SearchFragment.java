@@ -130,12 +130,18 @@ public class SearchFragment extends Fragment {
             public void onItemSelected(Monument monument) {
 
                 System.out.println("Item click");
-                fragmentManager = getFragmentManager();
+                iOnFavMonSuccessListener = null;
+                fragmentManager = getActivity().getFragmentManager();
                 ((MapStatueFragment) fragmentManager.findFragmentByTag(MAP_FRAGMENT)).setMonumentFromSearch(monument);
 
                 FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
-                fragmentTransaction1.remove(fragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
-                searchViewChangeListener.ViewChanged();
+                if(fragmentManager.findFragmentByTag(SEARCH_FRAGMENT)!= null) {
+                    fragmentTransaction1.remove(fragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
+                    searchViewChangeListener.ViewChanged();
+                }
+                else {
+                    fragmentTransaction1.remove(fragmentManager.findFragmentByTag(MainActivity.FAVORITE_FRAGMENT));
+                }
                 fragmentTransaction1.commit();
                 frameLayout.setVisibility(View.INVISIBLE);
                 frameLayout.startAnimation(animation_close);

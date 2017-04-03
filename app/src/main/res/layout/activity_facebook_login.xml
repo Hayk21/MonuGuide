@@ -7,19 +7,57 @@
     android:background="@drawable/back44"
     tools:context="blue_team.com.monuguide.activities.FacebookLoginActivity">
 
+        <TextView
+            android:id="@+id/face_tittle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="21sp"
+            android:textColor="@color/facebook_button"
+            android:text="@string/face_tittle"
+            android:typeface="serif"
+            android:gravity="center"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="55dp" />
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:textColor="@color/facebook_button"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/user_img"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_above="@+id/user_name"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"/>
+
         <com.facebook.login.widget.LoginButton
             android:id="@+id/button_facebook_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
 
         <Button
             android:id="@+id/button_facebook_signout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:theme="@style/ThemeOverlay.MyDarkButton"
-            android:text="sign_out"
+            android:textColor="@android:color/white"
+            android:background="@color/facebook_button"
+            android:text="sign out"
+            android:layout_below="@+id/user_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="12dp"
             android:visibility="gone"/>
 
 
