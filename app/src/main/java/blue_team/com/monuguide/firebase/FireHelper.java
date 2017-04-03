@@ -88,6 +88,7 @@ FireHelper {
             count = 1;
             mDatabase1 = mQuery1.getRef();
             getMonuments(mLat,mLon,mRad);
+            mQuery1.removeEventListener(monValueEventListener);
         }
 
         @Override
@@ -107,6 +108,7 @@ FireHelper {
             }
             count = 0;
             mOnSuccessListener.onSuccess(mMon);
+            mQuery2.removeEventListener(monValueEventListener1);
         }
 
         @Override
@@ -125,6 +127,7 @@ FireHelper {
                 mMon.put(key,addVal);
             }
             mOnSearchSuccessListener.onSuccess(mMon);
+            mQuery3.removeEventListener(monValueEventListener2);
         }
 
         @Override
@@ -143,6 +146,7 @@ FireHelper {
                 mNote.put(key,addVal);
             }
             mOnNoteSuccessListener.onSuccess(mNote);
+            mQuery4.removeEventListener(noteValueEventListener);
         }
 
         @Override
@@ -225,6 +229,7 @@ FireHelper {
                     setLikeCount(likeCount);
                 }
             }
+            mQuery8.removeEventListener(addLikeCountValueEventListener);
         }
 
         @Override
@@ -250,6 +255,7 @@ FireHelper {
                     setLikeCount(likeCount);
                 }
             }
+            mQuery9.removeEventListener(subLikeCountValueEventListener);
 
         }
 
@@ -268,6 +274,7 @@ FireHelper {
                 mUserId.put(key, addVal);
             }
             mOnFindUserLikeSuccessListener.onSuccess(mUserId);
+            mQuery10.removeEventListener(findUserLikeValueEventListener);
         }
 
         @Override
@@ -529,8 +536,8 @@ FireHelper {
             for (String b : params) {
                 monId = b;
             }
-            mQuery3 = mDatabase.child("models").child("monuments").child(monId).child("notes");
-            mQuery3.addValueEventListener(noteValueEventListener);
+            mQuery4 = mDatabase.child("models").child("monuments").child(monId).child("notes");
+            mQuery4.addValueEventListener(noteValueEventListener);
             return null;
         }
     }
@@ -627,6 +634,30 @@ FireHelper {
         protected Void doInBackground(Void... params) {
             mQuery10 = mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").child(mNoteId).child("like").orderByKey().equalTo(mUserID);
             mQuery10.addValueEventListener(findUserLikeValueEventListener);
+            return null;
+        }
+    }
+
+    public void getLikeCount(String noteID, String userID, String monumentID)
+    {
+        mUserID = userID;
+        GetLikeCount glc = new GetLikeCount();
+        glc.execute(noteID,monumentID);
+    }
+
+    public class GetLikeCount extends AsyncTask<String, Void, Void>
+    {
+        int i = 0;
+        @Override
+        protected Void doInBackground(String... params) {
+            for (String b : params) {
+                if (i == 0) {
+                    mNoteId = b;
+                    i++;
+                } else {
+                    mMonumentId = b;
+                }
+            }
             return null;
         }
     }
