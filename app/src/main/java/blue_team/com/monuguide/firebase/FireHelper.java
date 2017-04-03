@@ -52,6 +52,7 @@ FireHelper {
     private Query mQuery8;
     private Query mQuery9;
     private Query mQuery10;
+    private Query mQuery11;
     private DatabaseReference mDatabase;
     private DatabaseReference mDatabase1;
     private FirebaseStorage mStorage;
@@ -64,6 +65,7 @@ FireHelper {
     private IOnFindUserSuccessListener mOnFindUserSuccessListener;
     private IOnFindFavMonSuccessListener mOnFindFavMonSuccessListener;
     private IOnFindUserLikeSuccessListener mOnFindUserLikeSuccessListener;
+    private IOnGetLikeCountSuccessListener mOnGetLikeCountSuccessListener;
     private HashMap<String,Monument> mMon = new HashMap<>();
     private HashMap<String,Note> mNote = new HashMap<>();
     private HashMap<String,User> mUser = new HashMap<>();
@@ -275,6 +277,30 @@ FireHelper {
             }
             mOnFindUserLikeSuccessListener.onSuccess(mUserId);
             mQuery10.removeEventListener(findUserLikeValueEventListener);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+    private ValueEventListener getLikeCountValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
+                Note addVal = mySnapshot.getValue(Note.class);
+                String key = mySnapshot.getKey();
+                mNoteId = key;
+                mNote.put(key, addVal);
+            }
+            if(mNote != null) {
+                if (!mNote.isEmpty()) {
+                    int likeCount = mNote.get(mNoteId).getLikeCount();
+                    mOnGetLikeCountSuccessListener.onSuccess(likeCount);
+                }
+                //mQuery11.removeEventListener(getLikeCountValueEventListener);
+            }
         }
 
         @Override
@@ -638,9 +664,8 @@ FireHelper {
         }
     }
 
-    public void getLikeCount(String noteID, String userID, String monumentID)
+    public void getLikeCount(String noteID, String monumentID)
     {
-        mUserID = userID;
         GetLikeCount glc = new GetLikeCount();
         glc.execute(noteID,monumentID);
     }
@@ -658,6 +683,8 @@ FireHelper {
                     mMonumentId = b;
                 }
             }
+            mQuery11 = mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").orderByKey().equalTo(mNoteId);
+            mQuery11.addValueEventListener(getLikeCountValueEventListener);
             return null;
         }
     }
@@ -718,5 +745,11 @@ FireHelper {
         void onSuccess(HashMap<String,String> mMap);
     }
 
+    public void setOnGetLikeCountSuccessListener(IOnGetLikeCountSuccessListener onGetLikeCountSuccessListener) {
+        mOnGetLikeCountSuccessListener = onGetLikeCountSuccessListener;
+    }
 
+    public interface IOnGetLikeCountSuccessListener{
+        void onSuccess(int likeCount);
+    }
 }

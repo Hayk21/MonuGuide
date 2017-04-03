@@ -31,11 +31,13 @@ public class PageFragment extends Fragment {
     private String mNoteID;
     private String mMonumentID;
     private String mURL;
+    private int mCountLike;
     private ImageView mLike;
     private TextView mLikeCount;
     private Animation open, close, close2;
     private FireHelper mFireHelper = new FireHelper();
     private FireHelper.IOnFindUserLikeSuccessListener mOnFindUserLikeSuccessListener;
+    private FireHelper.IOnGetLikeCountSuccessListener mOnGetLikeCountSuccessListener;
 
 
     View.OnClickListener OnLikeClickListener = new View.OnClickListener() {
@@ -88,8 +90,9 @@ public class PageFragment extends Fragment {
                 } else {
                     mLike.setTag("default");
                     mLike.startAnimation(close);
-                    mFireHelper.subLike(mNoteID,user,mMonumentID);
+                    mFireHelper.subLike(mNoteID, user, mMonumentID);
                 }
+
             }
         }
     };
@@ -123,6 +126,13 @@ public class PageFragment extends Fragment {
                 }
             }
         };
+        mOnGetLikeCountSuccessListener = new FireHelper.IOnGetLikeCountSuccessListener() {
+            @Override
+            public void onSuccess(int likeCount) {
+                mCountLike = likeCount;
+                mLikeCount.setText(mCountLike+"");
+            }
+        };
     }
 
     @Override
@@ -134,7 +144,8 @@ public class PageFragment extends Fragment {
         mURL = this.getArguments().getString(PAGE_URL);
         mNoteID = this.getArguments().getString(NOTE_ID);
         mMonumentID = this.getArguments().getString(MONUMENT_ID);
-
+        mFireHelper.setOnGetLikeCountSuccessListener(mOnGetLikeCountSuccessListener);
+        mFireHelper.getLikeCount(mNoteID, mMonumentID);
         if(mFireHelper.getCurrentUid() != null)
         {
             mFireHelper.setOnFindUserLikeSuccessListener(mOnFindUserLikeSuccessListener);
