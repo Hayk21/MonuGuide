@@ -85,6 +85,7 @@ public class DetailsFragment extends Fragment {
                     favorites.setTag("default");
                     favorites.setImageDrawable(getResources().getDrawable(R.mipmap.star_icon7));
                 }
+                mFireHelper.removeOnFindFavMonSuccessListener(mFindFavMonSuccessListener);
             }
         };
     }

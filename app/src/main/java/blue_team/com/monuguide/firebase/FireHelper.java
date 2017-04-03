@@ -197,6 +197,7 @@ FireHelper {
                 mMon.put(key, addVal);
             }
             mOnFindFavMonSuccessListener.onSuccess(mMon);
+            mQuery6.removeEventListener(findFavMonValueEventListener);
         }
 
         @Override
