@@ -130,7 +130,6 @@ public class SearchFragment extends Fragment {
             public void onItemSelected(Monument monument) {
 
                 System.out.println("Item click");
-                iOnFavMonSuccessListener = null;
                 fragmentManager = getActivity().getFragmentManager();
                 ((MapStatueFragment) fragmentManager.findFragmentByTag(MAP_FRAGMENT)).setMonumentFromSearch(monument);
 
