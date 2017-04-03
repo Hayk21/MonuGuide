@@ -1,9 +1,12 @@
 package blue_team.com.monuguide.fragments;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +20,9 @@ import com.squareup.picasso.Picasso;
 import java.util.HashMap;
 
 import blue_team.com.monuguide.R;
+import blue_team.com.monuguide.activities.FacebookLoginActivity;
+import blue_team.com.monuguide.activities.PagerActivity;
+import blue_team.com.monuguide.activities.StartActivity;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.models.Monument;
 import blue_team.com.monuguide.models.Note;
@@ -35,6 +41,7 @@ public class PageFragment extends Fragment {
     private ImageView mLike;
     private TextView mLikeCount;
     private Animation open, close, close2;
+    private AlertDialog mAlertDialog;
     private FireHelper mFireHelper = new FireHelper();
     private FireHelper.IOnFindUserLikeSuccessListener mOnFindUserLikeSuccessListener;
     private FireHelper.IOnGetLikeCountSuccessListener mOnGetLikeCountSuccessListener;
@@ -93,6 +100,25 @@ public class PageFragment extends Fragment {
                     mFireHelper.subLike(mNoteID, user, mMonumentID);
                 }
 
+            }
+            else
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Attention").setMessage("If you want to like this note,log in with facebook.");
+                builder.setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mAlertDialog.cancel();
+                    }
+                });
+                builder.setNegativeButton(R.string.login_text, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getActivity(), FacebookLoginActivity.class);
+                        startActivity(intent);
+                    }
+                });
+                mAlertDialog = builder.create();
+                mAlertDialog.show();
             }
         }
     };
