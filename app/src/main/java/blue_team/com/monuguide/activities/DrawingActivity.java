@@ -157,7 +157,7 @@ public class DrawingActivity extends AppCompatActivity {
                                 String myuser = mFireHelper.getCurrentUid();
                                 if(myuser != null) {
                                     if (isAnonymous) {
-                                        mFireHelper.addNote(bitmap, mMonument, myuser, " ", mSize);
+                                        mFireHelper.addNote(bitmap, mMonument, myuser, "Anonymous", mSize);
                                     } else {
                                         mFireHelper.addNote(bitmap, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize);
                                     }
