@@ -59,6 +59,7 @@ import blue_team.com.monuguide.models.Monument;
 import static android.content.Context.LOCATION_SERVICE;
 import static android.location.LocationManager.GPS_PROVIDER;
 import static android.location.LocationManager.NETWORK_PROVIDER;
+import static blue_team.com.monuguide.activities.SettingsActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 
 public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
@@ -113,29 +114,35 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
         mLocationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
 
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }else {
 
-        setLocationListener();
-        mLocationManager.requestLocationUpdates(GPS_PROVIDER, 1000, 1, mLocationListener);
-        mLocationManager.requestLocationUpdates(NETWORK_PROVIDER, 1000 * 10, 10, mLocationListener);
-        System.out.println("Latitude = " + mLatitude);
-        initMap();
+            setLocationListener();
+            mLocationManager.requestLocationUpdates(GPS_PROVIDER, 1000, 1, mLocationListener);
+            mLocationManager.requestLocationUpdates(NETWORK_PROVIDER, 1000 * 10, 10, mLocationListener);
+            System.out.println("Latitude = " + mLatitude);
+            initMap();
+        }
 
     }
 
     private void setMyLocation() {
-        LatLng currentLL = new LatLng(mLatitude, mLongitude);
-        CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
-        mMap.addMarker(new MarkerOptions().position(currentLL).title("My loaction"));
-        float zoomLevel = (float) 16.0; //This goes up to 21
-        CameraUpdate zoom=CameraUpdateFactory.zoomTo(zoomLevel);
-        mMap.moveCamera(center);
-        mMap.animateCamera(zoom, 4000, null);
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }else {
+            LatLng currentLL = new LatLng(mLatitude, mLongitude);
+            CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
+            mMap.addMarker(new MarkerOptions().position(currentLL).title("My loaction"));
+            float zoomLevel = (float) 16.0; //This goes up to 21
+            CameraUpdate zoom = CameraUpdateFactory.zoomTo(zoomLevel);
+            mMap.moveCamera(center);
+            mMap.animateCamera(zoom, 4000, null);
+        }
     }
 
     private MapFragment getMapFragment() {

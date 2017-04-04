@@ -40,7 +40,14 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="wiki_text">More Inforamtion</string>
-    <string name="ok">OK</string>
+    <string name="login_text">Log in</string>
     <string name="cancel">Cancel</string>
     <string name="nothing_text">There are no notes here,You can be FISRT!!!</string>
+    <string name="no_result">No result for this search</string>
+    <string name="no_monuments">No favorite monuments</string>
+    <string name="ok">OK</string>
+    <string name="log_out">Log out from Facebook</string>
+    <string name="log_in">Log in with Facebook</string>
+    <string name="face_tittle">If you would like to use all of the features of our app then please log in via Facebook</string>
+    <string name="face_tittle2">Thank you for log in!</string>
 </resources>

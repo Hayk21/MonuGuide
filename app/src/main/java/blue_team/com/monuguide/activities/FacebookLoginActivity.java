@@ -3,10 +3,14 @@ package blue_team.com.monuguide.activities;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -25,6 +29,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
+
+import java.util.HashMap;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.firebase.FireHelper;
@@ -34,27 +41,38 @@ public class FacebookLoginActivity extends AppCompatActivity implements
         View.OnClickListener{
 
     private static final String TAG = "FacebookLogin";
-    private LoginButton loginButton;
+    private LoginButton mLoginButton;
+    private Button mSignOutButton;
     private CallbackManager callbackManager;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FireHelper.IOnFindUserSuccessListener mFindUserSuccessListener;
     private ProgressDialog mProgress;
+    private FireHelper mFireHelper = new FireHelper();
+    private User mMyUser;
+    ImageView mUserImg;
+    TextView mFaceTittle,mUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_facebook_login);
-
+        setupActionBar();
+        mMyUser = new User();
         mAuth = FirebaseAuth.getInstance();
         mProgress = new ProgressDialog(this);
         findViewById(R.id.button_facebook_signout).setOnClickListener(this);
-        loginButton = (LoginButton) findViewById(R.id.button_facebook_login);
+        mLoginButton = (LoginButton) findViewById(R.id.button_facebook_login);
+        mSignOutButton = (Button) findViewById(R.id.button_facebook_signout);
+        mUserImg = (ImageView) findViewById(R.id.user_img);
+        mFaceTittle = (TextView) findViewById(R.id.face_tittle);
+        mUserName = (TextView) findViewById(R.id.user_name);
 
-        loginButton.setReadPermissions("email", "public_profile");
+        mLoginButton.setReadPermissions("email", "public_profile");
         callbackManager = CallbackManager.Factory.create();
 
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        mLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 handleFacebookAccessToken(loginResult.getAccessToken());
@@ -72,6 +90,21 @@ public class FacebookLoginActivity extends AppCompatActivity implements
                 FacebookLoginActivity.this.finish();
             }
         });
+
+        mFindUserSuccessListener = new FireHelper.IOnFindUserSuccessListener() {
+            @Override
+            public void onSuccess(HashMap<String, User> mMap) {
+                if(mMap == null)
+                {
+                    mFireHelper.addUser(mMyUser);
+                }
+                else
+                {
+
+                }
+                mProgress.dismiss();
+            }
+        };
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -122,15 +155,13 @@ public class FacebookLoginActivity extends AppCompatActivity implements
                     public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful())
                             {
-                                FireHelper fh = new FireHelper();
-                                User myUser = new User();
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                myUser.setuID(user.getUid());
-                                myUser.setName(user.getDisplayName());
-                                myUser.setEmail(user.getEmail());
-                                myUser.setPhotoUrl(user.getPhotoUrl().toString());
-                                fh.addUser(myUser);
-                                mProgress.dismiss();
+                                mMyUser.setuID(user.getUid());
+                                mMyUser.setName(user.getDisplayName());
+                                mMyUser.setEmail(user.getEmail());
+                                mMyUser.setPhotoUrl(user.getPhotoUrl().toString());
+                                mFireHelper.setOnFindUserSuccessListener(mFindUserSuccessListener);
+                                mFireHelper.findUser(mMyUser.getuID());
                                 //FacebookLoginActivity.this.finish();
                             }
                     }
@@ -148,11 +179,21 @@ public class FacebookLoginActivity extends AppCompatActivity implements
             mProgress.dismiss();
         }
         if (user != null) {
-            findViewById(R.id.button_facebook_login).setVisibility(View.GONE);
-            findViewById(R.id.button_facebook_signout).setVisibility(View.VISIBLE);
+            mUserImg.setVisibility(View.VISIBLE);
+            mFaceTittle.setText(this.getString(R.string.face_tittle2));
+            mUserName.setVisibility(View.VISIBLE);
+            mUserName.setText(user.getDisplayName());
+            if(user.getPhotoUrl()!=null) {
+                Picasso.with(this).load(user.getPhotoUrl()).resize(500, 500).into(mUserImg);
+            }
+            mLoginButton.setVisibility(View.GONE);
+            mSignOutButton.setVisibility(View.VISIBLE);
         } else {
-            findViewById(R.id.button_facebook_login).setVisibility(View.VISIBLE);
-            findViewById(R.id.button_facebook_signout).setVisibility(View.GONE);
+            mUserImg.setVisibility(View.GONE);
+            mFaceTittle.setText(this.getString(R.string.face_tittle));
+            mUserName.setVisibility(View.GONE);
+            mLoginButton.setVisibility(View.VISIBLE);
+            mSignOutButton.setVisibility(View.GONE);
         }
     }
 
@@ -161,6 +202,29 @@ public class FacebookLoginActivity extends AppCompatActivity implements
         int i = v.getId();
         if (i == R.id.button_facebook_signout) {
             signOut();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
+        this.overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+            this.overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 }

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 
 import blue_team.com.monuguide.R;
@@ -28,6 +29,9 @@ public class DrawingActivity extends AppCompatActivity {
     private LinearLayout mFirstListOfColors, mSecondListOfColors, mListOfTools;
     private ImageButton mCurrentCollor;
     private AlertDialog mAlertDialog;
+    private String[] arrayOfItems = {"Anonymous","With your name"};
+    private FireHelper mFireHelper = new FireHelper();
+    private boolean isAnonymous = true;
 
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
@@ -135,15 +139,33 @@ public class DrawingActivity extends AppCompatActivity {
                     AlertDialog.Builder builder2 = new AlertDialog.Builder(DrawingActivity.this);
                     mPaintView.setDrawingCacheEnabled(true);
                     builder2.setTitle("Save Drawing?");
+                    builder2.setSingleChoiceItems(arrayOfItems, 0, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if(i == 0){
+                                isAnonymous = true;
+                            }else if(i == 1){
+                                isAnonymous = false;
+                            }
+                        }
+                    });
                     builder2.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             mPaintView.buildDrawingCache();
                             Bitmap bitmap = mPaintView.getDrawingCache();
-                            FireHelper fh = new FireHelper();
                             if(mMonument != null) {
-                                String myuser = fh.getCurrentUid();
-                                fh.addNote(bitmap, mMonument, myuser, mSize);
+                                String myuser = mFireHelper.getCurrentUid();
+                                if(myuser != null) {
+                                    if (isAnonymous) {
+                                        mFireHelper.addNote(bitmap, mMonument, myuser, " ", mSize);
+                                    } else {
+                                        mFireHelper.addNote(bitmap, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize);
+                                    }
+                                }
+
+
                                 PagerActivity.setFirstCommit(true);
+
                             }
                             DrawingActivity.this.finish();
                         }
@@ -154,6 +176,7 @@ public class DrawingActivity extends AppCompatActivity {
                         }
                     });
                     mAlertDialog = builder2.create();
+                    mAlertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
                     mAlertDialog.show();
                     break;
                 case R.id.back_button:

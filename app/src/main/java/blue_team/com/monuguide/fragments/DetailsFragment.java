@@ -11,15 +11,20 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.activities.MainActivity;
 import blue_team.com.monuguide.activities.StartActivity;
+import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.models.Monument;
 
 public class DetailsFragment extends Fragment {
@@ -29,17 +34,20 @@ public class DetailsFragment extends Fragment {
     private ImageView mHeaderImage;
     private ProgressBar mProgressBar;
     private Monument mMonument;
+    private ImageView favorites;
+    private FireHelper mFireHelper = new FireHelper();
+    private FireHelper.IOnFindFavMonSuccessListener mFindFavMonSuccessListener;
 
     private OnFragmentInteractionListener mListener;
 
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(int ID,Monument monument);
+        void onFragmentInteraction(int ID,Monument monument,ImageView view);
     }
 
     View.OnClickListener onIconClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            mListener.onFragmentInteraction(view.getId(),mMonument);
+            mListener.onFragmentInteraction(view.getId(),mMonument, ((ImageView) view));
         }
     };
 
@@ -52,7 +60,6 @@ public class DetailsFragment extends Fragment {
         }
     });
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +71,24 @@ public class DetailsFragment extends Fragment {
                 mMonument = this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT);
             }
         }
+        mFindFavMonSuccessListener = new FireHelper.IOnFindFavMonSuccessListener()
+        {
+            @Override
+            public void onSuccess(HashMap<String, Monument> mMap) {
+                if(!mMap.isEmpty())
+                {
+                    favorites.setTag("pressed");
+                    favorites.setImageDrawable(getResources().getDrawable(R.mipmap.pressed_star_icon));
+                    mFireHelper.setOnFavMonSuccessListener(null);
+                }
+                else
+                {
+                    favorites.setTag("default");
+                    favorites.setImageDrawable(getResources().getDrawable(R.mipmap.star_icon7));
+                    mFireHelper.setOnFavMonSuccessListener(null);
+                }
+            }
+        };
     }
 
 
@@ -97,17 +122,23 @@ public class DetailsFragment extends Fragment {
     }
 
     public void startFragmentOperation(View view) {
-        ImageView notes,favorites,wiki;
+        ImageView location,notes,wiki;
         TextView shortDesc;
+        location = (ImageView)view.findViewById(R.id.location_img);
         notes = (ImageView)view.findViewById(R.id.comment_img);
         favorites = (ImageView)view.findViewById(R.id.heart_img);
         wiki = (ImageView)view.findViewById(R.id.wiki_img);
         mHeaderImage = (ImageView) view.findViewById(R.id.monument_img);
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         shortDesc = (TextView) view.findViewById(R.id.short_desc);
+        location.setOnClickListener(onIconClickListener);
         notes.setOnClickListener(onIconClickListener);
         favorites.setOnClickListener(onIconClickListener);
         wiki.setOnClickListener(onIconClickListener);
+        if(mFireHelper.getCurrentUid() != null){
+           mFireHelper.setOnFindFavMonSuccessListener(mFindFavMonSuccessListener);
+            mFireHelper.findFavMon(mFireHelper.getCurrentUid(),mMonument);
+        }
         if (mMonument != null) {
             shortDesc.setText(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getDesc());
             Picasso.with(getActivity()).load(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getImage()).into(mHeaderImage);
@@ -128,8 +159,8 @@ public class DetailsFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(getActivity(), MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            getActivity().finish();
             getActivity().overridePendingTransition(R.anim.alpha_up,R.anim.alpha_down);
         }
         return true;

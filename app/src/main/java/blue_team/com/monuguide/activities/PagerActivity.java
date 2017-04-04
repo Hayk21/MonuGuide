@@ -142,7 +142,7 @@ public class PagerActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return PageFragment.newInstance(position, mListOfNote.get(position));
+            return PageFragment.newInstance(position, mListOfNote.get(position),mMonument);
         }
 
         @Override

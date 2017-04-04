@@ -8,10 +8,11 @@ import java.util.HashMap;
 
 public class Note implements Parcelable {
     private String uid;
+    private String autorName;
     private String id;
     private String image;
     private int likeCount;
-    private boolean like;
+    private HashMap<String,String> like;
 
     public Note() {
 
@@ -45,11 +46,11 @@ public class Note implements Parcelable {
         this.uid = uid;
     }
 
-    public boolean isLike() {
+    public HashMap<String, String> getLike() {
         return like;
     }
 
-    public void setLike(boolean like) {
+    public void setLike(HashMap<String, String> like) {
         this.like = like;
     }
 
@@ -59,6 +60,14 @@ public class Note implements Parcelable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAutorName() {
+        return autorName;
+    }
+
+    public void setAutorName(String autorName) {
+        this.autorName = autorName;
     }
 
     public String getImage() {
