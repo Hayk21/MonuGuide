@@ -62,6 +62,8 @@ import static android.location.LocationManager.NETWORK_PROVIDER;
 
 public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
+    private static final String TAG = "MapFragment";
+
     private static View view;
     private GoogleMap mMap;
     private LocationManager mLocationManager;
@@ -226,7 +228,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     }
 
     private void mapMove(){
-        mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+       /* mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
             @Override
             public void onCameraMoveStarted(int i) {
                 System.out.println("camera move started = " + mMap.getCameraPosition().zoom);
@@ -250,16 +252,16 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
                 System.out.println("onCameraMove = " + mMap.getCameraPosition().target);
             }
-        });
+        });*/
 
-
-
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
-            public void onMapClick(LatLng latLng) {
-                System.out.println("onMapClickListener = " + latLng.latitude);
+            public void onCameraIdle() {
+                Log.v(TAG, "latitude = " + mMap.getCameraPosition().target.latitude + mMap.getCameraPosition().target);
             }
         });
+
+
 
     }
 
