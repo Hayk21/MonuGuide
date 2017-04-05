@@ -1,4 +1,4 @@
-package blue_team.com.monuguide.activities;
+        package blue_team.com.monuguide.activities;
 
 import android.app.Dialog;
 import android.content.DialogInterface;

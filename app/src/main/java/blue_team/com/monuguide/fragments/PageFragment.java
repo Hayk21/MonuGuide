@@ -170,6 +170,11 @@ public class PageFragment extends Fragment {
         mURL = this.getArguments().getString(PAGE_URL);
         mNoteID = this.getArguments().getString(NOTE_ID);
         mMonumentID = this.getArguments().getString(MONUMENT_ID);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         mFireHelper.setOnGetLikeCountSuccessListener(mOnGetLikeCountSuccessListener);
         mFireHelper.getLikeCount(mNoteID, mMonumentID);
         if(mFireHelper.getCurrentUid() != null)
@@ -177,8 +182,6 @@ public class PageFragment extends Fragment {
             mFireHelper.setOnFindUserLikeSuccessListener(mOnFindUserLikeSuccessListener);
             mFireHelper.findLikeUser(mNoteID,mFireHelper.getCurrentUid(),mMonumentID);
         }
-
-
     }
 
     @Nullable
@@ -194,6 +197,5 @@ public class PageFragment extends Fragment {
         mLike = (ImageView) view.findViewById(R.id.like_img);
         mLike.setOnClickListener(OnLikeClickListener);
         Picasso.with(getActivity()).load(mURL).into(mCurrentImage);
-
     }
 }
