@@ -152,7 +152,7 @@ public class PagerActivity extends FragmentActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return "Image " + position;
+            return mListOfNote.get(position).getAutorName();
         }
     }
 

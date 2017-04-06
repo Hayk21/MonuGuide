@@ -79,13 +79,11 @@ public class DetailsFragment extends Fragment {
                 {
                     favorites.setTag("pressed");
                     favorites.setImageDrawable(getResources().getDrawable(R.mipmap.pressed_star_icon));
-                    mFireHelper.setOnFavMonSuccessListener(null);
                 }
                 else
                 {
                     favorites.setTag("default");
                     favorites.setImageDrawable(getResources().getDrawable(R.mipmap.star_icon7));
-                    mFireHelper.setOnFavMonSuccessListener(null);
                 }
             }
         };
@@ -116,6 +114,15 @@ public class DetailsFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        if(mFireHelper.getCurrentUid() != null){
+            mFireHelper.setOnFindFavMonSuccessListener(mFindFavMonSuccessListener);
+            mFireHelper.findFavMon(mFireHelper.getCurrentUid(),mMonument);
+        }
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
@@ -135,10 +142,6 @@ public class DetailsFragment extends Fragment {
         notes.setOnClickListener(onIconClickListener);
         favorites.setOnClickListener(onIconClickListener);
         wiki.setOnClickListener(onIconClickListener);
-        if(mFireHelper.getCurrentUid() != null){
-           mFireHelper.setOnFindFavMonSuccessListener(mFindFavMonSuccessListener);
-            mFireHelper.findFavMon(mFireHelper.getCurrentUid(),mMonument);
-        }
         if (mMonument != null) {
             shortDesc.setText(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getDesc());
             Picasso.with(getActivity()).load(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getImage()).into(mHeaderImage);
