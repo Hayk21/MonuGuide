@@ -2,9 +2,12 @@ package blue_team.com.monuguide.activities;
 
 import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
@@ -12,10 +15,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -47,10 +52,12 @@ import blue_team.com.monuguide.models.Monument;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final String TAG = "MainActivity";
     public static final String SEARCH_FRAGMENT = "SearchFragment";
     public static final String MAP_FRAGMENT = "MapFragment";
     public static final String FAVORITE_FRAGMENT = "FavoriteFragment";
     public static final String ARGUMENT_FOR_FAVORITE = "Favorite";
+    public static final int LOCATION_REQUEST = 1;
     Fragment mMapStatueFragment;
     FragmentManager mFragmentManager;
     FragmentTransaction mFragmentTransaction;
@@ -64,12 +71,22 @@ public class MainActivity extends AppCompatActivity
     private FireHelper mFireHelper = new FireHelper();
     private NavigationView navigationView;
     private SearchFragment favoriteFragment;
+    private locBR  mLocBR = new locBR();
+    private Boolean mLocationStatus = false;
+
+    private Snackbar snackbar;
+
+    private BroadcastReceiver mBroadcastReceiver;
+    final IntentFilter mIntentFilter = new IntentFilter();
+    private boolean mRegisteredBR = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        registerReceiver(mBroadcastReceiver, new IntentFilter(Intent.ACTION_LOCALE_CHANGED));
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mFrameLayout = (FrameLayout) findViewById(R.id.search_container);
@@ -95,10 +112,12 @@ public class MainActivity extends AppCompatActivity
 
         mContext = this;
 
+        if (!mLocationStatus) {
+            getLocation();
+        }
         mFragmentManager = getFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
         mMapStatueFragment = new MapStatueFragment();
-        getLocation();
         mFragmentTransaction.add(R.id.container, mMapStatueFragment, MAP_FRAGMENT);
         mFragmentTransaction.commit();
 
@@ -124,6 +143,19 @@ public class MainActivity extends AppCompatActivity
             navigationView.getMenu().findItem(R.id.login).setTitle(this.getString(R.string.log_out));
             navigationView.getMenu().findItem(R.id.fav_mon).setVisible(true);
         }
+
+        mIntentFilter.addAction("android.location.PROVIDERS_CHANGED");
+        mIntentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        mIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+            registerReceiver(mLocBR, mIntentFilter);
+
+        //getLocation();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+            unregisterReceiver(mLocBR);
     }
 
     @Override
@@ -322,6 +354,19 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
+    private void checkNetworkLocationInfo(){
+        if (mBroadcastReceiver == null){
+            mBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    int level = intent.getIntExtra(Intent.ACTION_LOCALE_CHANGED, 0);
+                    Log.v(TAG, level + "");
+                }
+            };
+            //mIntentFilter.addAction();
+        }
+    }
+
     private void getConnections() {
         ConnectivityManager cm =
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -352,11 +397,13 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void getLocation() {
+    private void  getLocation()  {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
         }
+        else
+            mLocationStatus = true;
     }
 
     private void buildAlertMessageNoGps() {
@@ -365,16 +412,45 @@ public class MainActivity extends AppCompatActivity
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), LOCATION_REQUEST);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         dialog.cancel();
+                        snackbar = Snackbar
+                                .make((View) findViewById(R.id.mapId), "Please turn on Location and Internet for use our application", Snackbar.LENGTH_INDEFINITE);
+                        snackbar.show();
                     }
                 });
         final AlertDialog alert = builder.create();
         alert.show();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LOCATION_REQUEST) {
+
+            System.out.println("requestCode = ");
+            // Make sure the request was successful
+            switch (resultCode) {
+                case 1: mLocationStatus = true;
+                    break;
+                case 0: mLocationStatus = false;
+                    Snackbar snackbar = Snackbar
+                        .make((View) findViewById(R.id.mapId), "Please turn on Location and Internet for use our application", Snackbar.LENGTH_INDEFINITE);
+                        snackbar.show();
+                    System.out.println("show snackbar");
+                    break;
+            }
+        }
+    }
+
+    private class locBR extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int level = intent.getIntExtra(Intent.ACTION_LOCALE_CHANGED, 0);
+            Log.v(TAG, level + " level");
+        }
+    }
 }

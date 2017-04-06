@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/mapId">
 
     <fragment
         class="com.google.android.gms.maps.MapFragment"
@@ -19,8 +20,8 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:padding="5dp"
-        android:src="@mipmap/ic_my_location"
-        app:backgroundTint="@color/colorPrimary"
+        android:src="@drawable/ic_my_location"
+        app:backgroundTint="@color/colorAccent"
         android:alpha="0.8"/>
 
 </RelativeLayout>

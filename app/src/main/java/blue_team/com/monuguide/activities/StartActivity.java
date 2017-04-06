@@ -1,9 +1,22 @@
 package blue_team.com.monuguide.activities;
 
+import android.Manifest;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +26,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.Services.LocationService;
@@ -20,6 +34,8 @@ import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.DetailsFragment;
 import blue_team.com.monuguide.fragments.WebFragment;
 import blue_team.com.monuguide.models.Monument;
+
+import static blue_team.com.monuguide.activities.MainActivity.LOCATION_REQUEST;
 
 public class StartActivity extends AppCompatActivity implements DetailsFragment.OnFragmentInteractionListener {
 
@@ -33,6 +49,8 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     private FireHelper mFireHalper = new FireHelper();
     private AlertDialog mAlertDialog;
     private Animation open, close, close2;
+    LocationManager locationManager;
+    Handler handler;
 
 
     @Override
@@ -48,6 +66,7 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
         open = AnimationUtils.loadAnimation(this, R.anim.push_effect);
         close = AnimationUtils.loadAnimation(this, R.anim.pull_effect);
         close2 = AnimationUtils.loadAnimation(this, R.anim.pull_effect);
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (getIntent() != null) {
             if (getIntent().getParcelableExtra(LocationService.SHOWING_MONUMENT) != null) {
                 mMonument = getIntent().getParcelableExtra(LocationService.SHOWING_MONUMENT);
@@ -93,7 +112,8 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     }
 
     @Override
-    public void onFragmentInteraction(int ID, Monument monument, final ImageView view) {
+    public void onFragmentInteraction(int ID, final Monument monument, final ImageView view) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(CONNECTIVITY_SERVICE);
         switch (ID) {
             case R.id.location_img:
                 Intent intentForMap = new Intent(StartActivity.this, MainActivity.class);
@@ -137,16 +157,37 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
 
                     }
                 });
-                String myuser = mFireHalper.getCurrentUid();
+                final String myuser = mFireHalper.getCurrentUid();
                 if (myuser != null) {
-                    if (view.getTag().toString().equals("default")) {
-                        mFireHalper.addFavoriteMon(monument, myuser);
-                        view.setTag("pressed");
-                        view.startAnimation(close2);
+                    if (connectivityManager.getActiveNetworkInfo() != null) {
+                        if (view.getTag().toString().equals("default")) {
+                            mFireHalper.addFavoriteMon(monument, myuser);
+                            view.setTag("pressed");
+                            view.startAnimation(close2);
+                        } else {
+                            mFireHalper.removeFavoriteMon(monument, myuser);
+                            view.setTag("default");
+                            view.startAnimation(close);
+                        }
                     } else {
-                        mFireHalper.removeFavoriteMon(monument, myuser);
-                        view.setTag("default");
-                        view.startAnimation(close);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setMessage("Please connect with internet")
+                                .setPositiveButton("CONNECT", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+                                        if (!wifiManager.isWifiEnabled())
+                                            wifiManager.setWifiEnabled(true);
+                                        else
+                                            wifiManager.setWifiEnabled(true);
+                                    }
+                                })
+                                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        builder.create();
+                        builder.show();
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(StartActivity.this);
@@ -170,10 +211,51 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
 
                 break;
             case R.id.comment_img:
-                Intent intent = new Intent(StartActivity.this, PagerActivity.class);
-                intent.putExtra(ARGUMENT_WITH_MONUMENT, monument);
-                startActivity(intent);
-                overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
+                if (connectivityManager.getActiveNetworkInfo() != null) {
+                    if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                        }
+                        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
+                        locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                                .setCancelable(false)
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                                        startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), LOCATION_REQUEST);
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                                        dialog.cancel();
+                                        Toast.makeText(StartActivity.this, "GPS not enabled", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setMessage("Please connect with internet")
+                            .setPositiveButton("CONNECT", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+                                    if (!wifiManager.isWifiEnabled())
+                                        wifiManager.setWifiEnabled(true);
+                                    else
+                                        wifiManager.setWifiEnabled(true);
+                                }
+                            })
+                            .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    builder.create();
+                    builder.show();
+                }
                 break;
             case R.id.wiki_img:
                 WebFragment webFragment = new WebFragment();
@@ -187,6 +269,41 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
                 mFragmentTransaction.commit();
         }
     }
+
+    LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            double x = mMonument.getLatitude() - location.getLatitude();
+            x = x * x;
+            double y = mMonument.getLongitude() - location.getLongitude();
+            y = y * y;
+            double result = x + y;
+            if(result<=0.00000196){
+                Intent intent = new Intent(StartActivity.this, PagerActivity.class);
+                intent.putExtra(ARGUMENT_WITH_MONUMENT, mMonument);
+                startActivity(intent);
+                overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
+            }else {
+                Toast.makeText(StartActivity.this, "You are far from monument to see notes", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
+
 
 
 }

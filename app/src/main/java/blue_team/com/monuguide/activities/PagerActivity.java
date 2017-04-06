@@ -1,7 +1,16 @@
 package blue_team.com.monuguide.activities;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +22,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +33,8 @@ import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.PageFragment;
 import blue_team.com.monuguide.models.Monument;
 import blue_team.com.monuguide.models.Note;
+
+import static blue_team.com.monuguide.activities.MainActivity.LOCATION_REQUEST;
 
 public class PagerActivity extends FragmentActivity {
 
@@ -87,30 +99,72 @@ public class PagerActivity extends FragmentActivity {
         draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mFireHelper.getCurrentUid() != null) {
-                    Intent intent = new Intent(PagerActivity.this, DrawingActivity.class);
-                    intent.putExtra(EXTRA_WITH_MONUMENT, mMonument);
-                    intent.putExtra(EXTRA_WITH_SIZE, mSize);
-                    startActivity(intent);
-                    overridePendingTransition(R.anim.draw_open_anim, R.anim.draw_alpha_down);
-                }
-                else{
+                LocationManager locationManager = (LocationManager) PagerActivity.this.getSystemService(Context.LOCATION_SERVICE);
+                ConnectivityManager connectivityManager = (ConnectivityManager) PagerActivity.this.getSystemService(CONNECTIVITY_SERVICE);
+                if (connectivityManager.getActiveNetworkInfo() != null) {
+                    if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                        if (mFireHelper.getCurrentUid() != null) {
+                            if (ActivityCompat.checkSelfPermission(PagerActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(PagerActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                            } else {
+                                locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
+                                locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
+                            }
+                        } else {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(PagerActivity.this);
+                            builder.setTitle("If you wish paint note you will be login in facebook\n continue...?");
+                            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent intent = new Intent(PagerActivity.this, FacebookLoginActivity.class);
+                                    startActivity(intent);
+                                }
+                            });
+                            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    mAlertDialog.cancel();
+                                }
+                            });
+                            mAlertDialog = builder.create();
+                            mAlertDialog.show();
+                        }
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(PagerActivity.this);
+                        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                                .setCancelable(false)
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                                        startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), LOCATION_REQUEST);
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                                        dialog.cancel();
+                                        Toast.makeText(PagerActivity.this, "GPS not enabled", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(PagerActivity.this);
-                    builder.setTitle("If you wish paint note you will be login in facebook\n continue...?");
-                    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(PagerActivity.this, FacebookLoginActivity.class);
-                            startActivity(intent);
-                        }
-                    });
-                    builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            mAlertDialog.cancel();
-                        }
-                    });
-                    mAlertDialog = builder.create();
-                    mAlertDialog.show();
+                    builder.setMessage("Please connect with internet")
+                            .setPositiveButton("CONNECT", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+                                    if (!wifiManager.isWifiEnabled())
+                                        wifiManager.setWifiEnabled(true);
+                                    else
+                                        wifiManager.setWifiEnabled(true);
+                                }
+                            })
+                            .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    builder.create();
+                    builder.show();
                 }
             }
         });
@@ -142,7 +196,7 @@ public class PagerActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return PageFragment.newInstance(position, mListOfNote.get(position),mMonument);
+            return PageFragment.newInstance(position, mListOfNote.get(position), mMonument);
         }
 
         @Override
@@ -159,5 +213,40 @@ public class PagerActivity extends FragmentActivity {
     public static void setFirstCommit(boolean firstCommit) {
         mFirstCommit = firstCommit;
     }
+
+    LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            double x = mMonument.getLatitude() - location.getLatitude();
+            x = x * x;
+            double y = mMonument.getLongitude() - location.getLongitude();
+            y = y * y;
+            double result = x + y;
+            if (result <= 0.00000196) {
+                Intent intent = new Intent(PagerActivity.this, DrawingActivity.class);
+                intent.putExtra(EXTRA_WITH_MONUMENT, mMonument);
+                intent.putExtra(EXTRA_WITH_SIZE, mSize);
+                startActivity(intent);
+                overridePendingTransition(R.anim.draw_open_anim, R.anim.draw_alpha_down);
+            } else {
+                Toast.makeText(PagerActivity.this, "You are far from monument to see notes", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
 
 }
