@@ -20,8 +20,8 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:padding="5dp"
-        android:src="@mipmap/ic_my_location"
-        app:backgroundTint="@color/colorPrimary"
+        android:src="@drawable/ic_my_location"
+        app:backgroundTint="@color/colorAccent"
         android:alpha="0.8"/>
 
 </RelativeLayout>

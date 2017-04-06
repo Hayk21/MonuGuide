@@ -23,4 +23,5 @@
     <color name="example_color">#edd2d2</color>
     <color name="items_color">#6b05a2</color>
     <color name="facebook_button">#2b4f94</color>
+    <color name="back_color">#d0dae9</color>
 </resources>
