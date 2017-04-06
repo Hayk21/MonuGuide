@@ -35,6 +35,7 @@ FireHelper {
     private double mLat;
     private double mLon;
     private double mRad;
+    private String mMonName;
     private String imageUrl;
     private String mUserID;
     private String mNoteId;
@@ -128,8 +129,28 @@ FireHelper {
                 String key = mySnapshot.getKey();
                 mMon.put(key,addVal);
             }
-            mOnSearchSuccessListener.onSuccess(mMon);
+            count = 1;
+            getSearchMonument(mMonName);
             mQuery3.removeEventListener(monValueEventListener2);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+    private ValueEventListener monValueEventListener3 = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            for (DataSnapshot mySnapshot: dataSnapshot.getChildren()) {
+                Monument addVal = mySnapshot.getValue(Monument.class);
+                String key = mySnapshot.getKey();
+                mMon.put(key,addVal);
+            }
+            count = 0;
+            mOnSearchSuccessListener.onSuccess(mMon);
+            mQuery3.removeEventListener(monValueEventListener3);
         }
 
         @Override
@@ -363,22 +384,29 @@ FireHelper {
 
     public void getSearchMonument(String s)
     {
+        mMonName = s;
         GetSearchMonument gsm = new GetSearchMonument();
-        gsm.execute(s);
+        gsm.execute(mMonName);
     }
 
     private class GetSearchMonument extends AsyncTask<String,Void,Void>
     {
-        String monName;
+//        String monName;
         @Override
         protected Void doInBackground(String... params) {
-            for(String s : params)
-            {
-                monName = s;
+//            for(String s : params)
+//            {
+//                monName = s;
+//            }
+            if(count == 0) {
+                mQuery3 = mDatabase.child("models").child("monuments").orderByChild("searchName1").startAt(mMonName).endAt(mMonName + "\uf8ff");
+                mQuery3.addValueEventListener(monValueEventListener2);
             }
-            mQuery3 = mDatabase.child("models").child("monuments").orderByChild("name").startAt(monName).endAt(monName+"\uf8ff");
-            mQuery3.addValueEventListener(monValueEventListener2);
-            mMon.clear();
+            else{
+                mQuery3 = mDatabase.child("models").child("monuments").orderByChild("searchName2").startAt(mMonName).endAt(mMonName + "\uf8ff");
+                mQuery3.addValueEventListener(monValueEventListener3);
+            }
+
             return null;
         }
     }
