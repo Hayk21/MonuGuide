@@ -4,6 +4,7 @@ package blue_team.com.monuguide.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Monument implements Parcelable {
@@ -16,6 +17,8 @@ public class Monument implements Parcelable {
         private String urlMon;
         private double latitude;
         private double longitude;
+        private String searchName1;
+        private String searchName2;
 
         public Monument() {
 
@@ -109,6 +112,22 @@ public class Monument implements Parcelable {
         public void setLongitude(double longitude) {
             this.longitude = longitude;
         }
+
+    public String getSearchName1() {
+        return searchName1;
+    }
+
+    public void setSearchName1(String searchName1) {
+        this.searchName1 = searchName1;
+    }
+
+    public String getSearchName2() {
+        return searchName2;
+    }
+
+    public void setSearchName2(String searchName2) {
+        this.searchName2 = searchName2;
+    }
 
     @Override
     public int describeContents() {

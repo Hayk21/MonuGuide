@@ -265,7 +265,8 @@ public class MainActivity extends AppCompatActivity
                     ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).mAdapter.notifyDataSetChanged();
                 } else {
                     System.out.println("baza");
-                    ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).getFh().getSearchMonument(newText);
+                    String text = newText.toLowerCase();
+                    ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).getFh().getSearchMonument(text);
                 }
                 return false;
             }
