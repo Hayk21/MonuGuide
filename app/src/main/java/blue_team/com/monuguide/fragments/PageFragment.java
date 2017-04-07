@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,6 +119,7 @@ public class PageFragment extends Fragment {
                     }
                 });
                 mAlertDialog = builder.create();
+                mAlertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
                 mAlertDialog.show();
             }
         }
@@ -170,6 +172,12 @@ public class PageFragment extends Fragment {
         mURL = this.getArguments().getString(PAGE_URL);
         mNoteID = this.getArguments().getString(NOTE_ID);
         mMonumentID = this.getArguments().getString(MONUMENT_ID);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("Log_Tag_1","on destroy");
     }
 
     @Override

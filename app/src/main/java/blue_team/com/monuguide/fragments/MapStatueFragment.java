@@ -2,6 +2,7 @@ package blue_team.com.monuguide.fragments;
 
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -25,6 +26,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 
 import android.location.LocationListener;
@@ -74,10 +78,10 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     private double mLongitude;
     private Marker mMarker;
     private FireHelper fireHelper = new FireHelper();
-    private DetailsFragment mDetailsFragment;
     List<Monument> listOfMonument;
     private FloatingActionButton mCurrentLocationBtn;
     public boolean mSetMyLocation = false;
+    boolean b = false;
 
     private double mRadius = 0.047685;
 
@@ -178,19 +182,44 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                 mapMove();
                 if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                         && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
                     return;
                 }
                 mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                     @Override
                     public void onMapLoaded() {
                         //setMyLocation();
+                    }
+                });
+                mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(LatLng latLng) {
+                        Animation animation1 = AnimationUtils.loadAnimation(getActivity(),R.anim.translate_down);
+                        mCurrentLocationBtn.setVisibility(View.VISIBLE);
+                        mCurrentLocationBtn.startAnimation(animation1);
+                    }
+                });
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.translate_up);
+                        animation.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                mCurrentLocationBtn.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+
+                            }
+                        });
+                            mCurrentLocationBtn.startAnimation(animation);
+                        return false;
                     }
                 });
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {

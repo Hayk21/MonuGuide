@@ -49,5 +49,11 @@
     <string name="log_out">Log out from Facebook</string>
     <string name="log_in">Log in with Facebook</string>
     <string name="face_tittle">If you would like to use all of the features of our app then please log in via Facebook</string>
-    <string name="face_tittle2">Thank you for log in!</string>
+    <string name="snack_bar_text">For using this APP you need to turn ON your GPS and Internet connection</string>
+    <string name="add_favorite_monument_text">If you want to have your own list of favorite monuments,please log in with your facebook account</string>
+    <string name="turn_on_GPS">Your GPS is currently OFF,do you want to turn it ON?</string>
+    <string name="connect_internet">Please connect to internet</string>
+    <string name="far_from_monument">You are far from monument,so you can"'"t see notes,please get near</string>
+    <string name="open_new_page">Do you want to open new page for drawing?</string>
+    <string name="save_drawing">Do you want to save it?</string>
 </resources>

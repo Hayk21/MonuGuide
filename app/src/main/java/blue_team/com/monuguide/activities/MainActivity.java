@@ -1,5 +1,6 @@
 package blue_team.com.monuguide.activities;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
@@ -7,23 +8,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.location.Location;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,18 +35,16 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import java.util.HashMap;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.MapStatueFragment;
 import blue_team.com.monuguide.fragments.SearchFragment;
 import blue_team.com.monuguide.models.Monument;
+
+import static blue_team.com.monuguide.activities.SettingsActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -73,12 +70,12 @@ public class MainActivity extends AppCompatActivity
     private SearchFragment favoriteFragment;
     private locBR  mLocBR = new locBR();
     private Boolean mLocationStatus = false;
+    private AlertDialog mAlertDialog;
 
     private Snackbar snackbar;
 
     private BroadcastReceiver mBroadcastReceiver;
     final IntentFilter mIntentFilter = new IntentFilter();
-    private boolean mRegisteredBR = false;
 
 
     @Override
@@ -374,7 +371,9 @@ public class MainActivity extends AppCompatActivity
         if (cm.getActiveNetworkInfo() == null) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            builder.setMessage("Please connect with internet")
+            builder.setTitle("Attention");
+            builder.setIcon(R.drawable.ic_info_black_24dp);
+            builder.setMessage(getString(R.string.connect_internet))
                     .setPositiveButton("CONNECT", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
@@ -389,8 +388,9 @@ public class MainActivity extends AppCompatActivity
                             dialog.cancel();
                         }
                     });
-            builder.create();
-            builder.show();
+            mAlertDialog = builder.create();
+            mAlertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+            mAlertDialog.show();
 
         }
 
@@ -407,23 +407,29 @@ public class MainActivity extends AppCompatActivity
 
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
-                .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), LOCATION_REQUEST);
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        dialog.cancel();
-                        snackbar = Snackbar
-                                .make((View) findViewById(R.id.mapId), "Please turn on Location and Internet for use our application", Snackbar.LENGTH_INDEFINITE);
-                        snackbar.show();
-                    }
-                });
-        final AlertDialog alert = builder.create();
-        alert.show();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        } else {
+            builder.setIcon(R.drawable.ic_info_black_24dp);
+            builder.setTitle("Attention");
+            builder.setMessage(getString(R.string.turn_on_GPS))
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                            startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), LOCATION_REQUEST);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                            dialog.cancel();
+                            snackbar = Snackbar
+                                    .make((View) findViewById(R.id.mapId), getString(R.string.snack_bar_text), Snackbar.LENGTH_INDEFINITE);
+                            snackbar.show();
+                        }
+                    });
+            mAlertDialog = builder.create();
+            mAlertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+            mAlertDialog.show();
+        }
     }
 
     @Override
@@ -436,8 +442,8 @@ public class MainActivity extends AppCompatActivity
                 case 1: mLocationStatus = true;
                     break;
                 case 0: mLocationStatus = false;
-                    Snackbar snackbar = Snackbar
-                        .make((View) findViewById(R.id.mapId), "Please turn on Location and Internet for use our application", Snackbar.LENGTH_INDEFINITE);
+                    snackbar = Snackbar
+                        .make((View) findViewById(R.id.mapId), getString(R.string.snack_bar_text), Snackbar.LENGTH_INDEFINITE);
                         snackbar.show();
                     System.out.println("show snackbar");
                     break;
@@ -448,8 +454,29 @@ public class MainActivity extends AppCompatActivity
     private class locBR extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
-            int level = intent.getIntExtra(Intent.ACTION_LOCALE_CHANGED, 0);
-            Log.v(TAG, level + " level");
+            LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+            ConnectivityManager cm =
+                    (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && cm.getActiveNetworkInfo() != null){
+                    if (snackbar != null) {
+                        snackbar.dismiss();
+                    }
+            }else {
+                snackbar = Snackbar
+                        .make((View) findViewById(R.id.mapId), getString(R.string.snack_bar_text), Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+                Toast.makeText(mContext, "Eccept permission to use app", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

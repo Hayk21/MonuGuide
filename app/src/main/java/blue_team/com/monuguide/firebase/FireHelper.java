@@ -23,6 +23,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 
+import blue_team.com.monuguide.custom_views.PaintView;
 import blue_team.com.monuguide.models.Monument;
 import blue_team.com.monuguide.models.Note;
 import blue_team.com.monuguide.models.User;
@@ -441,7 +442,7 @@ FireHelper {
             return null;
         }
     }
-    public void addNote(Bitmap bitmap, Monument monument,String userID,String userName, int size)
+    public void addNote(Bitmap bitmap, Monument monument, String userID, String userName, int size)
     {
         mUserID = userID;
         mUserName = userName;
@@ -460,37 +461,38 @@ FireHelper {
             {
                 bitmap = b;
             }
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
-            byte[] data = baos.toByteArray();
-            String s = mMonument.getId()+"Note";
-            s+=(mNotesListSize+1);
-            note = new Note();
-            note.setId(s);
-            note.setAutorName(mUserName);
-            note.setUid(mUserID);
-            UploadTask uploadTask = mStorageRef.child("noteImages/"+s).putBytes(data);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] data = baos.toByteArray();
+                String s = mMonument.getId() + "Note";
+                s += (mNotesListSize + 1);
+                note = new Note();
+                note.setId(s);
+                note.setAutorName(mUserName);
+                note.setUid(mUserID);
+                UploadTask uploadTask = mStorageRef.child("noteImages/" + s).putBytes(data);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
 
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    @SuppressWarnings("VisibleForTests")
-                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    imageUrl=downloadUrl.toString();
-                    note.setImage(imageUrl);
-                    note.setLikeCount(0);
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        @SuppressWarnings("VisibleForTests")
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        imageUrl = downloadUrl.toString();
+                        note.setImage(imageUrl);
+                        note.setLikeCount(0);
 
-                    mDatabase.child("models").child("monuments").child(mMonument.getId()).child("notes").child(note.getId()).setValue(note);
+                        mDatabase.child("models").child("monuments").child(mMonument.getId()).child("notes").child(note.getId()).setValue(note);
 
-                }
-            });
+                    }
+                });
 
             return null;
         }
+
     }
 
     public void addFavoriteMon(Monument monument,String userID)
