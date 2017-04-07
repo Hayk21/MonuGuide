@@ -81,20 +81,20 @@ public class FacebookLoginActivity extends AppCompatActivity implements
             @Override
             public void onCancel() {
                 updateUI(null);
-                FacebookLoginActivity.this.finish();
+                //FacebookLoginActivity.this.finish();
             }
 
             @Override
             public void onError(FacebookException error) {
                 updateUI(null);
-                FacebookLoginActivity.this.finish();
+               // FacebookLoginActivity.this.finish();
             }
         });
 
         mFindUserSuccessListener = new FireHelper.IOnFindUserSuccessListener() {
             @Override
             public void onSuccess(HashMap<String, User> mMap) {
-                if(mMap == null)
+                if(mMap.isEmpty())
                 {
                     mFireHelper.addUser(mMyUser);
                 }
@@ -170,8 +170,15 @@ public class FacebookLoginActivity extends AppCompatActivity implements
     }
     public void signOut() {
         mAuth.signOut();
-        LoginManager.getInstance().logOut();
-        updateUI(null);
+        try {
+            if (AccessToken.getCurrentAccessToken() != null) {
+                LoginManager.getInstance().logOut();
+                updateUI(null);
+            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+
     }
 
     private void updateUI(FirebaseUser user) {
