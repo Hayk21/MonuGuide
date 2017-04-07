@@ -187,7 +187,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements
         }
         if (user != null) {
             mUserImg.setVisibility(View.VISIBLE);
-            mFaceTittle.setText(this.getString(R.string.face_tittle2));
+            mFaceTittle.setVisibility(View.GONE);
             mUserName.setVisibility(View.VISIBLE);
             mUserName.setText(user.getDisplayName());
             if(user.getPhotoUrl()!=null) {
@@ -197,7 +197,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements
             mSignOutButton.setVisibility(View.VISIBLE);
         } else {
             mUserImg.setVisibility(View.GONE);
-            mFaceTittle.setText(this.getString(R.string.face_tittle));
+            mFaceTittle.setVisibility(View.VISIBLE);
             mUserName.setVisibility(View.GONE);
             mLoginButton.setVisibility(View.VISIBLE);
             mSignOutButton.setVisibility(View.GONE);

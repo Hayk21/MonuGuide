@@ -14,11 +14,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,6 +37,7 @@ import blue_team.com.monuguide.models.Monument;
 import blue_team.com.monuguide.models.Note;
 
 import static blue_team.com.monuguide.activities.MainActivity.LOCATION_REQUEST;
+import static blue_team.com.monuguide.activities.SettingsActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 
 public class PagerActivity extends FragmentActivity {
 
@@ -105,7 +108,9 @@ public class PagerActivity extends FragmentActivity {
                     if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                         if (mFireHelper.getCurrentUid() != null) {
                             if (ActivityCompat.checkSelfPermission(PagerActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(PagerActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
+                                ActivityCompat.requestPermissions(PagerActivity.this,
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
                             } else {
                                 locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
                                 locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
@@ -126,6 +131,7 @@ public class PagerActivity extends FragmentActivity {
                                 }
                             });
                             mAlertDialog = builder.create();
+                            mAlertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
                             mAlertDialog.show();
                         }
                     } else {
@@ -143,8 +149,9 @@ public class PagerActivity extends FragmentActivity {
                                         Toast.makeText(PagerActivity.this, "GPS not enabled", Toast.LENGTH_SHORT).show();
                                     }
                                 });
-                        AlertDialog alert = builder.create();
-                        alert.show();
+                        mAlertDialog = builder.create();
+                        mAlertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+                        mAlertDialog.show();
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(PagerActivity.this);
@@ -163,8 +170,9 @@ public class PagerActivity extends FragmentActivity {
                                     dialog.cancel();
                                 }
                             });
-                    builder.create();
-                    builder.show();
+                    mAlertDialog = builder.create();
+                    mAlertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+                    mAlertDialog.show();
                 }
             }
         });
@@ -184,11 +192,12 @@ public class PagerActivity extends FragmentActivity {
         if (mFirstCommit && mViewPager.getVisibility() == View.GONE) {
             mNothingText.setVisibility(View.GONE);
             mViewPager.setVisibility(View.VISIBLE);
-            mPagerAdapter.notifyDataSetChanged();
         }
+        Log.d("Log_Tag",String.valueOf(mListOfNote.size()));
+        mPagerAdapter.notifyDataSetChanged();
     }
 
-    public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
+    public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
         public MyFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -222,7 +231,7 @@ public class PagerActivity extends FragmentActivity {
             double y = mMonument.getLongitude() - location.getLongitude();
             y = y * y;
             double result = x + y;
-            if (result <= 0.00000196) {
+            if (result <= 1) {
                 Intent intent = new Intent(PagerActivity.this, DrawingActivity.class);
                 intent.putExtra(EXTRA_WITH_MONUMENT, mMonument);
                 intent.putExtra(EXTRA_WITH_SIZE, mSize);

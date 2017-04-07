@@ -28,17 +28,17 @@
             android:textColor="@color/facebook_button"
             android:gravity="center"
             android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
+            android:layout_toRightOf="@+id/face_tittle"
+            android:layout_toEndOf="@+id/face_tittle"
             android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/user_img"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_above="@+id/user_name"
             android:layout_centerHorizontal="true"
+            android:layout_marginBottom="19dp"
             android:visibility="gone"/>
 
         <com.facebook.login.widget.LoginButton
@@ -57,7 +57,7 @@
             android:text="sign out"
             android:layout_below="@+id/user_name"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="72dp"
             android:visibility="gone"/>
 
 
