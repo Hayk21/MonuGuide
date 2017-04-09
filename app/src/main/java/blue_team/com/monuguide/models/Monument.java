@@ -9,21 +9,21 @@ import java.util.HashMap;
 
 public class Monument implements Parcelable {
 
-        private String id;
-        private String name;
-        private String desc;
-        private String image;
-        private HashMap<String,Note> notes;
-        private String urlMon;
-        private double latitude;
-        private double longitude;
-        private String searchName1;
-        private String searchName2;
+    private String id;
+    private String name;
+    private String desc;
+    private String image;
+    private HashMap<String,Note> notes;
+    private String urlMon;
+    private double latitude;
+    private double longitude;
+    private String searchName1;
+    private String searchName2;
+    private double type;
 
-        public Monument() {
+    public Monument() {
 
-        }
-
+    }
 
     protected Monument(Parcel in) {
         id = in.readString();
@@ -33,7 +33,7 @@ public class Monument implements Parcelable {
         urlMon = in.readString();
         latitude = in.readDouble();
         longitude = in.readDouble();
-
+        type = in.readDouble();
     }
 
     public static final Creator<Monument> CREATOR = new Creator<Monument>() {
@@ -53,63 +53,63 @@ public class Monument implements Parcelable {
             return id;
         }
 
-        public void setId(String id) {
+    public void setId(String id) {
             this.id = id;
         }
 
-        public String getName() {
+    public String getName() {
             return name;
         }
 
-        public void setName(String name) {
+    public void setName(String name) {
             this.name = name;
         }
 
-        public String getDesc() {
+    public String getDesc() {
             return desc;
         }
 
-        public void setDesc(String desc) {
+    public void setDesc(String desc) {
             this.desc = desc;
         }
 
-        public String getImage() {
+    public String getImage() {
             return image;
         }
 
-        public void setImage(String image) {
+    public void setImage(String image) {
             this.image = image;
         }
 
-        public HashMap<String, Note> getNotes() {
+    public HashMap<String, Note> getNotes() {
             return notes;
         }
 
-        public void setNotes(HashMap<String, Note> notes) {
+    public void setNotes(HashMap<String, Note> notes) {
             this.notes = notes;
         }
 
-        public String getUrlMon() {
+    public String getUrlMon() {
             return urlMon;
         }
 
-        public void setUrlMon(String urlMon) {
+    public void setUrlMon(String urlMon) {
             this.urlMon = urlMon;
         }
 
-        public double getLatitude() {
+    public double getLatitude() {
             return latitude;
         }
 
-        public void setLatitude(double latitude) {
+    public void setLatitude(double latitude) {
             this.latitude = latitude;
         }
 
-        public double getLongitude() {
+    public double getLongitude() {
             return longitude;
         }
 
-        public void setLongitude(double longitude) {
+    public void setLongitude(double longitude) {
             this.longitude = longitude;
         }
 
@@ -129,6 +129,14 @@ public class Monument implements Parcelable {
         this.searchName2 = searchName2;
     }
 
+    public double getType() {
+        return type;
+    }
+
+    public void setType(double type) {
+        this.type = type;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -143,5 +151,6 @@ public class Monument implements Parcelable {
         parcel.writeString(urlMon);
         parcel.writeDouble(latitude);
         parcel.writeDouble(longitude);
+        parcel.writeDouble(type);
     }
 }
