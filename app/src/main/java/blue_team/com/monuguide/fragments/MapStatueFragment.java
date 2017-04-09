@@ -90,7 +90,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         listOfMonument = new ArrayList<>();
-        fireHelper.setOnSuccessListener(onSuccessListener);
+        fireHelper.setOnGetMonumentListSuccessListener(onGetMonumentListSuccessListener);
     }
 
     @Nullable
@@ -286,7 +286,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     }
 
 
-    private FireHelper.IOnSuccessListener onSuccessListener = new FireHelper.IOnSuccessListener() {
+    private FireHelper.IOnGetMonumentListSuccessListener onGetMonumentListSuccessListener = new FireHelper.IOnGetMonumentListSuccessListener() {
         @Override
         public void onSuccess(HashMap<String, Monument> mMap) {
             listOfMonument.clear();

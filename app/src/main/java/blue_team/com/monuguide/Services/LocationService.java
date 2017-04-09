@@ -50,7 +50,7 @@ public class LocationService extends Service {
     private int notifID;
     private long[] mVibrateTime = {300, 200, 300, 500, 300, 200, 300};
 
-    private FireHelper.IOnSuccessListener onSuccessListener = new FireHelper.IOnSuccessListener() {
+    private FireHelper.IOnGetMonumentListSuccessListener onSuccessListener = new FireHelper.IOnGetMonumentListSuccessListener() {
         @Override
         public void onSuccess(HashMap<String, Monument> mMap) {
             mListOfMonument.clear();
@@ -134,7 +134,7 @@ public class LocationService extends Service {
 
     private void startServiceOperation() {
         Notification foregroundNotification;
-        mFireHelper.setOnSuccessListener(onSuccessListener);
+        mFireHelper.setOnGetMonumentListSuccessListener(onSuccessListener);
         mListOfMonument = new ArrayList<>();
         mNotManager = (NotificationManager) getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
         mBuilder = new NotificationCompat.Builder(getApplicationContext());
