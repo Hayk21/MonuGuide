@@ -303,9 +303,9 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
                 if (cameraPosition.zoom >= mDefaultZoom){
-                    getMonumentList();
+                    //getMonumentList();
                 }
-                else mMap.clear();
+                //else mMap.clear();
                 Log.v(TAG, "Latitude!! = " + (mLatStart - mLatEnd) + "    Longitude!! = " + (mLongEnd - mLongStart));
             }
         });
