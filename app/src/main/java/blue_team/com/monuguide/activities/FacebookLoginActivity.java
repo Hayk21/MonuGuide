@@ -81,20 +81,20 @@ public class FacebookLoginActivity extends AppCompatActivity implements
             @Override
             public void onCancel() {
                 updateUI(null);
-                FacebookLoginActivity.this.finish();
+                //FacebookLoginActivity.this.finish();
             }
 
             @Override
             public void onError(FacebookException error) {
                 updateUI(null);
-                FacebookLoginActivity.this.finish();
+               // FacebookLoginActivity.this.finish();
             }
         });
 
         mFindUserSuccessListener = new FireHelper.IOnFindUserSuccessListener() {
             @Override
             public void onSuccess(HashMap<String, User> mMap) {
-                if(mMap == null)
+                if(mMap.isEmpty())
                 {
                     mFireHelper.addUser(mMyUser);
                 }
@@ -170,8 +170,15 @@ public class FacebookLoginActivity extends AppCompatActivity implements
     }
     public void signOut() {
         mAuth.signOut();
-        LoginManager.getInstance().logOut();
-        updateUI(null);
+        try {
+            if (AccessToken.getCurrentAccessToken() != null) {
+                LoginManager.getInstance().logOut();
+                updateUI(null);
+            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+
     }
 
     private void updateUI(FirebaseUser user) {
@@ -180,7 +187,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements
         }
         if (user != null) {
             mUserImg.setVisibility(View.VISIBLE);
-            mFaceTittle.setText(this.getString(R.string.face_tittle2));
+            mFaceTittle.setVisibility(View.GONE);
             mUserName.setVisibility(View.VISIBLE);
             mUserName.setText(user.getDisplayName());
             if(user.getPhotoUrl()!=null) {
@@ -190,7 +197,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements
             mSignOutButton.setVisibility(View.VISIBLE);
         } else {
             mUserImg.setVisibility(View.GONE);
-            mFaceTittle.setText(this.getString(R.string.face_tittle));
+            mFaceTittle.setVisibility(View.VISIBLE);
             mUserName.setVisibility(View.GONE);
             mLoginButton.setVisibility(View.VISIBLE);
             mSignOutButton.setVisibility(View.GONE);

@@ -36,6 +36,7 @@ import blue_team.com.monuguide.fragments.WebFragment;
 import blue_team.com.monuguide.models.Monument;
 
 import static blue_team.com.monuguide.activities.MainActivity.LOCATION_REQUEST;
+import static blue_team.com.monuguide.activities.SettingsActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 
 public class StartActivity extends AppCompatActivity implements DetailsFragment.OnFragmentInteractionListener {
 
@@ -50,7 +51,6 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     private AlertDialog mAlertDialog;
     private Animation open, close, close2;
     LocationManager locationManager;
-    Handler handler;
 
 
     @Override
@@ -171,7 +171,9 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
                         }
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setMessage("Please connect with internet")
+                        builder.setIcon(R.drawable.ic_info_black_24dp);
+                        builder.setTitle("Attention");
+                        builder.setMessage("Please connect to internet")
                                 .setPositiveButton("CONNECT", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
@@ -186,12 +188,14 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
                                         dialog.cancel();
                                     }
                                 });
-                        builder.create();
-                        builder.show();
+                        mAlertDialog = builder.create();
+                        mAlertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+                        mAlertDialog.show();
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(StartActivity.this);
-                    builder.setTitle("Attention").setMessage("If you want to have your own list of favorite monuments,log in with facebook.");
+                    builder.setTitle("Attention").setMessage(getString(R.string.add_favorite_monument_text));
+                    builder.setIcon(R.drawable.ic_info_black_24dp);
                     builder.setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             mAlertDialog.cancel();
@@ -214,13 +218,18 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
                 if (connectivityManager.getActiveNetworkInfo() != null) {
                     if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
+                            ActivityCompat.requestPermissions(StartActivity.this,
+                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                        }else {
+                            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
+                            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
                         }
-                        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
-                        locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                        builder.setIcon(R.drawable.ic_info_black_24dp);
+                        builder.setTitle("Attention");
+                        builder.setMessage(getString(R.string.turn_on_GPS))
                                 .setCancelable(false)
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
@@ -230,15 +239,18 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
                                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                                         dialog.cancel();
-                                        Toast.makeText(StartActivity.this, "GPS not enabled", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(StartActivity.this, "GPS is turn OFF", Toast.LENGTH_SHORT).show();
                                     }
                                 });
-                        AlertDialog alert = builder.create();
-                        alert.show();
+                        mAlertDialog = builder.create();
+                        mAlertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+                        mAlertDialog.show();
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage("Please connect with internet")
+                    builder.setIcon(R.drawable.ic_info_black_24dp);
+                    builder.setTitle("Attention");
+                    builder.setMessage(getString(R.string.connect_internet))
                             .setPositiveButton("CONNECT", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
@@ -253,8 +265,9 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
                                     dialog.cancel();
                                 }
                             });
-                    builder.create();
-                    builder.show();
+                    mAlertDialog = builder.create();
+                    mAlertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+                    mAlertDialog.show();
                 }
                 break;
             case R.id.wiki_img:
@@ -278,13 +291,14 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
             double y = mMonument.getLongitude() - location.getLongitude();
             y = y * y;
             double result = x + y;
-            if(result<=0.00000196){
+//            0.00000196
+            if(result<=1){
                 Intent intent = new Intent(StartActivity.this, PagerActivity.class);
                 intent.putExtra(ARGUMENT_WITH_MONUMENT, mMonument);
                 startActivity(intent);
                 overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
             }else {
-                Toast.makeText(StartActivity.this, "You are far from monument to see notes", Toast.LENGTH_LONG).show();
+                Toast.makeText(StartActivity.this, getString(R.string.far_from_monument), Toast.LENGTH_LONG).show();
             }
         }
 

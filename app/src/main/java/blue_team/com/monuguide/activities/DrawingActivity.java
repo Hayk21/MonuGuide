@@ -79,7 +79,7 @@ public class DrawingActivity extends AppCompatActivity {
                             }
                         }
                     };
-                    brushDialog.setTitle("Choose Size Of Brush");
+                    brushDialog.setTitle("Choose you brush size");
                     brushDialog.setContentView(R.layout.brush_dialog);
                     ImageButton small_brush = (ImageButton) brushDialog.findViewById(R.id.small_brush);
                     ImageButton medium_brush = (ImageButton) brushDialog.findViewById(R.id.medium_brush);
@@ -110,7 +110,7 @@ public class DrawingActivity extends AppCompatActivity {
                             }
                         }
                     };
-                    brushDialog2.setTitle("Choose Size Of Erase");
+                    brushDialog2.setTitle("Choose your eraser size");
                     brushDialog2.setContentView(R.layout.brush_dialog);
                     ImageButton small_eraser = (ImageButton) brushDialog2.findViewById(R.id.small_brush);
                     ImageButton medium_eraser = (ImageButton) brushDialog2.findViewById(R.id.medium_brush);
@@ -122,7 +122,7 @@ public class DrawingActivity extends AppCompatActivity {
                     break;
                 case R.id.create_button:
                     AlertDialog.Builder builder = new AlertDialog.Builder(DrawingActivity.this);
-                    builder.setTitle("Create new page for paint?").setCancelable(true).setNegativeButton("Create", new DialogInterface.OnClickListener() {
+                    builder.setMessage(getString(R.string.open_new_page)).setCancelable(true).setNegativeButton("Open", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             mPaintView.newPage();
@@ -133,12 +133,13 @@ public class DrawingActivity extends AppCompatActivity {
                         }
                     });
                     mAlertDialog = builder.create();
+                    mAlertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
                     mAlertDialog.show();
                     break;
                 case R.id.save_button:
                     AlertDialog.Builder builder2 = new AlertDialog.Builder(DrawingActivity.this);
                     mPaintView.setDrawingCacheEnabled(true);
-                    builder2.setTitle("Save Drawing?");
+                    builder2.setTitle(getString(R.string.save_drawing));
                     builder2.setSingleChoiceItems(arrayOfItems, 0, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -153,26 +154,27 @@ public class DrawingActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int id) {
                             mPaintView.buildDrawingCache();
                             Bitmap bitmap = mPaintView.getDrawingCache();
+                            Bitmap bitmap1 = bitmap.copy(null,false);
                             if(mMonument != null) {
                                 String myuser = mFireHelper.getCurrentUid();
                                 if(myuser != null) {
                                     if (isAnonymous) {
-                                        mFireHelper.addNote(bitmap, mMonument, myuser, "Anonymous", mSize);
+                                        mFireHelper.addNote(bitmap1, mMonument, myuser, "Anonymous", mSize);
                                     } else {
-                                        mFireHelper.addNote(bitmap, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize);
+                                        mFireHelper.addNote(bitmap1, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize);
                                     }
                                 }
-
-
                                 PagerActivity.setFirstCommit(true);
-
                             }
+                            mPaintView.destroyDrawingCache();
+                            mPaintView.setDrawingCacheEnabled(false);
                             DrawingActivity.this.finish();
                         }
                     });
                     builder2.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             mAlertDialog.cancel();
+                            mPaintView.setDrawingCacheEnabled(false);
                         }
                     });
                     mAlertDialog = builder2.create();

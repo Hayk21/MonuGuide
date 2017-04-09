@@ -87,11 +87,9 @@ public class SearchFragment extends Fragment {
     }
 
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         monumentList = new ArrayList<>();
         fh = new FireHelper();
         if(getArguments() != null){
@@ -105,6 +103,7 @@ public class SearchFragment extends Fragment {
         fh.setOnSearchSuccessListener(iOnSearchSuccessListener);
         animation_close = AnimationUtils.loadAnimation(getActivity(), R.anim.close_up);
     }
+
 
     @Nullable
     @Override
