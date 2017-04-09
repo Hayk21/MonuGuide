@@ -154,14 +154,16 @@ public class DrawingActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int id) {
                             mPaintView.buildDrawingCache();
                             Bitmap bitmap = mPaintView.getDrawingCache();
-       //                     Bitmap bitmap1 = bitmap.copy(null,false);
+                            Bitmap bitmap1 = bitmap.copy(null,false);
+                            bitmap.recycle();
+                            bitmap = null;
                             if(mMonument != null) {
                                 String myuser = mFireHelper.getCurrentUid();
                                 if(myuser != null) {
                                     if (isAnonymous) {
-                                        mFireHelper.addNote(bitmap, mMonument, myuser, "Anonymous", mSize);
+                                        mFireHelper.addNote(bitmap1, mMonument, myuser, "Anonymous", mSize);
                                     } else {
-                                        mFireHelper.addNote(bitmap, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize);
+                                        mFireHelper.addNote(bitmap1, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize);
                                     }
                                 }
                                 PagerActivity.setFirstCommit(true);

@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +53,7 @@ public class PagerActivity extends FragmentActivity {
     private TextView mNothingText;
     private FireHelper mFireHelper = new FireHelper();
     private AlertDialog mAlertDialog;
+    Animation animation;
 
     List<Note> mListOfNote;
     private FireHelper.IOnNoteSuccessListener iOnNoteSuccessListener = new FireHelper.IOnNoteSuccessListener() {
@@ -75,11 +78,12 @@ public class PagerActivity extends FragmentActivity {
         setContentView(R.layout.activity_pager);
         mFireHelper.setOnNoteSuccessListener(iOnNoteSuccessListener);
 
+        animation = AnimationUtils.loadAnimation(this,R.anim.pressed_anim);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mNothingText = (TextView) findViewById(R.id.nothing_id);
         TextView name = (TextView) findViewById(R.id.name_of_monument);
-        ImageView back = (ImageView) findViewById(R.id.home_img);
-        ImageView draw = (ImageView) findViewById(R.id.draw_img);
+        final ImageView back = (ImageView) findViewById(R.id.home_img);
+        final ImageView draw = (ImageView) findViewById(R.id.draw_img);
         mPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
 
         if (this.getIntent() != null) {
@@ -94,6 +98,7 @@ public class PagerActivity extends FragmentActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                back.startAnimation(animation);
                 PagerActivity.this.finish();
                 overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
             }
@@ -102,6 +107,7 @@ public class PagerActivity extends FragmentActivity {
         draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                draw.startAnimation(animation);
                 LocationManager locationManager = (LocationManager) PagerActivity.this.getSystemService(Context.LOCATION_SERVICE);
                 ConnectivityManager connectivityManager = (ConnectivityManager) PagerActivity.this.getSystemService(CONNECTIVITY_SERVICE);
                 if (connectivityManager.getActiveNetworkInfo() != null) {

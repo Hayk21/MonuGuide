@@ -14,16 +14,16 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.activities.FacebookLoginActivity;
-import blue_team.com.monuguide.activities.PagerActivity;
-import blue_team.com.monuguide.activities.StartActivity;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.models.Monument;
 import blue_team.com.monuguide.models.Note;
@@ -46,6 +46,7 @@ public class PageFragment extends Fragment {
     private FireHelper mFireHelper = new FireHelper();
     private FireHelper.IOnFindUserLikeSuccessListener mOnFindUserLikeSuccessListener;
     private FireHelper.IOnGetLikeCountSuccessListener mOnGetLikeCountSuccessListener;
+    private ProgressBar mProgressBar;
 
 
     View.OnClickListener OnLikeClickListener = new View.OnClickListener() {
@@ -204,6 +205,17 @@ public class PageFragment extends Fragment {
         mLikeCount = (TextView) view.findViewById(R.id.like_count);
         mLike = (ImageView) view.findViewById(R.id.like_img);
         mLike.setOnClickListener(OnLikeClickListener);
-        Picasso.with(getActivity()).load(mURL).into(mCurrentImage);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progress_page);
+        Picasso.with(getActivity()).load(mURL).into(mCurrentImage, new Callback() {
+            @Override
+            public void onSuccess() {
+                mProgressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
     }
 }

@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
@@ -51,14 +52,6 @@ public class DetailsFragment extends Fragment {
         }
     };
 
-    Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message message) {
-            if (message.what == MESSAGE_FOR_HANDLER)
-                mProgressBar.setVisibility(View.INVISIBLE);
-            return false;
-        }
-    });
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -144,17 +137,17 @@ public class DetailsFragment extends Fragment {
         wiki.setOnClickListener(onIconClickListener);
         if (mMonument != null) {
             shortDesc.setText(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getDesc());
-            Picasso.with(getActivity()).load(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getImage()).into(mHeaderImage);
-            final Thread thread = new Thread(new Runnable() {
+            Picasso.with(getActivity()).load(((Monument) this.getArguments().getParcelable(StartActivity.ARGUMENT_WITH_MONUMENT)).getImage()).into(mHeaderImage, new Callback() {
                 @Override
-                public void run() {
-                    while (mHeaderImage.getDrawable() == null) {
+                public void onSuccess() {
+                    mProgressBar.setVisibility(View.GONE);
+                }
 
-                    }
-                    handler.sendEmptyMessage(MESSAGE_FOR_HANDLER);
+                @Override
+                public void onError() {
+
                 }
             });
-            thread.start();
         }
     }
 
