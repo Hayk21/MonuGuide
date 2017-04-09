@@ -184,7 +184,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements
             mUserName.setVisibility(View.VISIBLE);
             mUserName.setText(user.getDisplayName());
             if(user.getPhotoUrl()!=null) {
-                Picasso.with(this).load(user.getPhotoUrl()).resize(500, 500).into(mUserImg);
+                Picasso.with(this).load(user.getPhotoUrl()).placeholder(R.mipmap.no_user).resize(500, 500).into(mUserImg);
             }
             mLoginButton.setVisibility(View.GONE);
             mSignOutButton.setVisibility(View.VISIBLE);

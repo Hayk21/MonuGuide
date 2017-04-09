@@ -71,6 +71,8 @@ public class MainActivity extends AppCompatActivity
     private locBR  mLocBR = new locBR();
     private Boolean mLocationStatus = false;
     private AlertDialog mAlertDialog;
+    ConnectivityManager cm;
+    LocationManager locationManager;
 
     private Snackbar snackbar;
 
@@ -85,6 +87,8 @@ public class MainActivity extends AppCompatActivity
 
         registerReceiver(mBroadcastReceiver, new IntentFilter(Intent.ACTION_LOCALE_CHANGED));
 
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mFrameLayout = (FrameLayout) findViewById(R.id.search_container);
         setSupportActionBar(mToolbar);
@@ -365,8 +369,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getConnections() {
-        ConnectivityManager cm =
-                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         System.out.println("inGetConnection = " + cm.getActiveNetworkInfo());
 
         if (cm.getActiveNetworkInfo() == null) {
@@ -422,9 +424,12 @@ public class MainActivity extends AppCompatActivity
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                             dialog.cancel();
+                            if(cm.getActiveNetworkInfo() == null || !locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
                             snackbar = Snackbar
                                     .make((View) findViewById(R.id.mapId), getString(R.string.snack_bar_text), Snackbar.LENGTH_INDEFINITE);
-                            snackbar.show();
+                            snackbar.show();}else {
+                                snackbar.dismiss();
+                            }
                         }
                     });
             mAlertDialog = builder.create();
@@ -455,9 +460,6 @@ public class MainActivity extends AppCompatActivity
     private class locBR extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
-            LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-            ConnectivityManager cm =
-                    (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
             if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && cm.getActiveNetworkInfo() != null){
                     if (snackbar != null) {
                         snackbar.dismiss();

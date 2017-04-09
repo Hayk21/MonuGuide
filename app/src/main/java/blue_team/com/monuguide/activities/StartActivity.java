@@ -114,8 +114,10 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     @Override
     public void onFragmentInteraction(int ID, final Monument monument, final ImageView view) {
         ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(CONNECTIVITY_SERVICE);
+        Animation animation = AnimationUtils.loadAnimation(this,R.anim.pressed_anim);
         switch (ID) {
             case R.id.location_img:
+                view.startAnimation(animation);
                 Intent intentForMap = new Intent(StartActivity.this, MainActivity.class);
                 intentForMap.putExtra(ARGUMENT_WITH_MONUMENT, monument);
                 startActivity(intentForMap);
@@ -215,6 +217,7 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
 
                 break;
             case R.id.comment_img:
+                view.startAnimation(animation);
                 if (connectivityManager.getActiveNetworkInfo() != null) {
                     if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -271,6 +274,7 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
                 }
                 break;
             case R.id.wiki_img:
+                view.startAnimation(animation);
                 WebFragment webFragment = new WebFragment();
                 Bundle args = new Bundle();
                 args.putParcelable(ARGUMENT_WITH_MONUMENT, monument);

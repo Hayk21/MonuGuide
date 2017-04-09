@@ -5,11 +5,25 @@
     android:background="@color/back_color"
     android:orientation="vertical">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/small_brush"
+        android:layout_weight="9">
+
+        <ProgressBar
+            android:id="@+id/progress_page"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"/>
+
     <ImageView
         android:id="@+id/image_page"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="8" />
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/linear_tools"
@@ -36,7 +50,7 @@
             android:gravity="center_vertical"
             android:layout_weight="6"
             android:text="-"
-            android:textColor="@color/paint_grey"
+            android:textColor="@color/text_color"
             android:textSize="30sp" />
 
 

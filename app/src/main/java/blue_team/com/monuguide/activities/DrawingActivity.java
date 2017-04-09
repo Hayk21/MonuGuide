@@ -155,6 +155,8 @@ public class DrawingActivity extends AppCompatActivity {
                             mPaintView.buildDrawingCache();
                             Bitmap bitmap = mPaintView.getDrawingCache();
                             Bitmap bitmap1 = bitmap.copy(null,false);
+                            bitmap.recycle();
+                            bitmap = null;
                             if(mMonument != null) {
                                 String myuser = mFireHelper.getCurrentUid();
                                 if(myuser != null) {
