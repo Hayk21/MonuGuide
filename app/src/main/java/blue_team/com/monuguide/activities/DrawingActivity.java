@@ -154,7 +154,7 @@ public class DrawingActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int id) {
                             mPaintView.buildDrawingCache();
                             Bitmap bitmap = mPaintView.getDrawingCache();
-                            Bitmap bitmap1 = bitmap.copy(null,false);
+                            Bitmap bitmap1 = bitmap.copy(Bitmap.Config.ARGB_8888,false);
                             bitmap.recycle();
                             bitmap = null;
                             if(mMonument != null) {

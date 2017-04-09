@@ -157,9 +157,9 @@ public class FireHelper {
         sl.execute();
     }
 
-    public void setLikeCount(int likeCount, String monumentId, String noteId, FireHelper fh)
+    public void setLikeCount(int likeCount, String monumentId, String noteId)
     {
-        SetLikeCount alc = new SetLikeCount(likeCount, monumentId, noteId, fh);
+        SetLikeCount alc = new SetLikeCount(likeCount, monumentId, noteId, this);
         alc.execute();
     }
 

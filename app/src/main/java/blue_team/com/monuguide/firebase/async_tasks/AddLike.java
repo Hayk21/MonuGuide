@@ -35,7 +35,7 @@ public class AddLike extends AsyncTask<Void, Void, Void>
                 if (!mNote.isEmpty()) {
                     int likeCount = mNote.get(mNoteId).getLikeCount();
                     ++likeCount;
-                    mFireHelper.setLikeCount(likeCount, mMonumentId, mNoteId, mFireHelper);
+                    mFireHelper.setLikeCount(likeCount, mMonumentId, mNoteId);
                 }
             }
             mAddLikeCountQuery.removeEventListener(addLikeCountValueEventListener);

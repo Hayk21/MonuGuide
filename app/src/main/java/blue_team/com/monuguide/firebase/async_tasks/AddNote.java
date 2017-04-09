@@ -32,12 +32,15 @@ public class AddNote extends AsyncTask<Void,Void,Void>
         this.mUserName = userName;
         this.mSize = size;
         this.mFireHelper = fh;
+        mNote = new Note();
     }
 
     @Override
     protected Void doInBackground(Void... params) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        mBitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+        mBitmap.recycle();
+        mBitmap = null;
         byte[] data = baos.toByteArray();
         String s = mMonument.getId() + "Note";
         s += (mSize + 1);
@@ -61,9 +64,8 @@ public class AddNote extends AsyncTask<Void,Void,Void>
                 mNote.setLikeCount(0);
 
                 mFireHelper.getmDatabase().child("models").child("monuments").child(mMonument.getId()).child("notes").child(mNote.getId()).setValue(mNote);
-
-            }
-        });
+                }
+            });
 
         return null;
     }

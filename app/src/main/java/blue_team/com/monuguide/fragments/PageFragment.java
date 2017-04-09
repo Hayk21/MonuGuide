@@ -159,7 +159,7 @@ public class PageFragment extends Fragment {
             @Override
             public void onSuccess(int likeCount) {
                 mCountLike = likeCount;
-                mLikeCount.setText(mCountLike+"");
+                mLikeCount.setText(mCountLike+" ");
             }
         };
     }
