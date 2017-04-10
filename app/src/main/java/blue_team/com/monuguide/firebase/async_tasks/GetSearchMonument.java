@@ -14,11 +14,10 @@ import blue_team.com.monuguide.models.Monument;
 
 public class GetSearchMonument extends AsyncTask<Void,Void,Void>
 {
-    private static int count = 0;
     private String mMonName;
     private FireHelper mFireHelper;
     private Query mGetSearchMonumentsQuery;
-    private HashMap<String, Monument> mMon;
+    private HashMap<String, Monument> mMon = new HashMap<>();;
 
     private ValueEventListener monSearchByName1ValueEventListener = new ValueEventListener() {
         @Override
@@ -29,8 +28,8 @@ public class GetSearchMonument extends AsyncTask<Void,Void,Void>
                 String key = mySnapshot.getKey();
                 mMon.put(key,addVal);
             }
-            count = 1;
-            mFireHelper.getSearchMonument(mMonName);
+            mGetSearchMonumentsQuery = mFireHelper.getmDatabase().child("models").child("monuments").orderByChild("searchName2").startAt(mMonName).endAt(mMonName + "\uf8ff");
+            mGetSearchMonumentsQuery.addValueEventListener(monSearchByName2ValueEventListener);
             mGetSearchMonumentsQuery.removeEventListener(monSearchByName1ValueEventListener);
         }
 
@@ -48,7 +47,6 @@ public class GetSearchMonument extends AsyncTask<Void,Void,Void>
                 String key = mySnapshot.getKey();
                 mMon.put(key,addVal);
             }
-            count = 0;
             mFireHelper.getOnSearchSuccessListener().onSuccess(mMon);
             mGetSearchMonumentsQuery.removeEventListener(monSearchByName2ValueEventListener);
         }
@@ -63,21 +61,13 @@ public class GetSearchMonument extends AsyncTask<Void,Void,Void>
     {
         this.mMonName = monName;
         this.mFireHelper = fh;
-        mMon = new HashMap<>();
     }
 
     @Override
     protected Void doInBackground(Void... params) {
 
-        if(count == 0) {
-            mGetSearchMonumentsQuery = mFireHelper.getmDatabase().child("models").child("monuments").orderByChild("searchName1").startAt(mMonName).endAt(mMonName + "\uf8ff");
-            mGetSearchMonumentsQuery.addValueEventListener(monSearchByName1ValueEventListener);
-        }
-        else{
-            mGetSearchMonumentsQuery = mFireHelper.getmDatabase().child("models").child("monuments").orderByChild("searchName2").startAt(mMonName).endAt(mMonName + "\uf8ff");
-            mGetSearchMonumentsQuery.addValueEventListener(monSearchByName2ValueEventListener);
-        }
-
+        mGetSearchMonumentsQuery = mFireHelper.getmDatabase().child("models").child("monuments").orderByChild("searchName1").startAt(mMonName).endAt(mMonName + "\uf8ff");
+        mGetSearchMonumentsQuery.addValueEventListener(monSearchByName1ValueEventListener);
         return null;
     }
 }

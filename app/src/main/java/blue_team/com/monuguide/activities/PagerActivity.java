@@ -68,6 +68,7 @@ public class PagerActivity extends FragmentActivity {
                 mViewPager.setVisibility(View.GONE);
                 mNothingText.setVisibility(View.VISIBLE);
             }
+            mPagerAdapter.notifyDataSetChanged();
         }
     };
 
@@ -193,6 +194,12 @@ public class PagerActivity extends FragmentActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        //mFireHelper.getNotesList(mMonument.getId());
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (mFirstCommit && mViewPager.getVisibility() == View.GONE) {
@@ -200,7 +207,7 @@ public class PagerActivity extends FragmentActivity {
             mViewPager.setVisibility(View.VISIBLE);
         }
         Log.d("Log_Tag",String.valueOf(mListOfNote.size()));
-        mPagerAdapter.notifyDataSetChanged();
+        //mPagerAdapter.notifyDataSetChanged();
     }
 
     public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
