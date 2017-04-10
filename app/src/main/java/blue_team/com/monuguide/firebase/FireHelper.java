@@ -159,7 +159,7 @@ public class FireHelper {
 
     public void setLikeCount(int likeCount, String monumentId, String noteId)
     {
-        SetLikeCount alc = new SetLikeCount(likeCount, monumentId, noteId, this);
+        SetLikeCount alc = new SetLikeCount(likeCount, monumentId, noteId, mDatabase);
         alc.execute();
     }
 
@@ -169,9 +169,9 @@ public class FireHelper {
         flu.execute();
     }
 
-    public void getLikeCount(String noteID, String monumentID)
+    public void getLikeCount(String monumentID, String noteID)
     {
-        GetLikeCount glc = new GetLikeCount(noteID, monumentID, this);
+        GetLikeCount glc = new GetLikeCount(monumentID, noteID,  this);
         glc.execute();
     }
 

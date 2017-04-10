@@ -26,7 +26,6 @@ public class GetLikeCount extends AsyncTask<String, Void, Void>
             for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
                 Note addVal = mySnapshot.getValue(Note.class);
                 String key = mySnapshot.getKey();
-                mNoteId = key;
                 mNote.put(key, addVal);
             }
             if(mNote != null) {
@@ -34,7 +33,7 @@ public class GetLikeCount extends AsyncTask<String, Void, Void>
                     int likeCount = mNote.get(mNoteId).getLikeCount();
                     mFireHelper.getOnGetLikeCountSuccessListener().onSuccess(likeCount);
                 }
-                //mQuery11.removeEventListener(getLikeCountValueEventListener);
+                //mGetLikeCountQuery.removeEventListener(getLikeCountValueEventListener);
             }
         }
 
@@ -53,7 +52,7 @@ public class GetLikeCount extends AsyncTask<String, Void, Void>
 
     @Override
     protected Void doInBackground(String... params) {
-        mGetLikeCountQuery = mFireHelper.getmDatabase().child("models").child("monuments").child(mMonumentId).child("notes").orderByKey().equalTo(mNoteId);
+        mGetLikeCountQuery = (mFireHelper.getmDatabase()).child("models").child("monuments").child(mMonumentId).child("notes").orderByKey().equalTo(mNoteId);
         mGetLikeCountQuery.addValueEventListener(getLikeCountValueEventListener);
         return null;
     }
