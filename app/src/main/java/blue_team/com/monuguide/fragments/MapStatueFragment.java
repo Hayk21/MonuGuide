@@ -199,9 +199,11 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                 mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng latLng) {
-                        Animation animation1 = AnimationUtils.loadAnimation(getActivity(),R.anim.translate_down);
-                        mCurrentLocationBtn.setVisibility(View.VISIBLE);
-                        mCurrentLocationBtn.startAnimation(animation1);
+                        if(mCurrentLocationBtn.getVisibility() == View.GONE) {
+                            Animation animation1 = AnimationUtils.loadAnimation(getActivity(), R.anim.translate_down);
+                            mCurrentLocationBtn.setVisibility(View.VISIBLE);
+                            mCurrentLocationBtn.startAnimation(animation1);
+                        }
                     }
                 });
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
