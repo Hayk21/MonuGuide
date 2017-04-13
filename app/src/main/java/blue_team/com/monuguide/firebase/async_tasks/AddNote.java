@@ -21,6 +21,7 @@ public class AddNote extends AsyncTask<Void,Void,Void>
     private Monument mMonument;
     private String mUserID;
     private String mUserName;
+    private String mNoteId;
     private int mSize;
     private FireHelper mFireHelper;
     private Note mNote;
@@ -47,17 +48,18 @@ public class AddNote extends AsyncTask<Void,Void,Void>
         mBitmap.recycle();
         mBitmap = null;
         byte[] data = baos.toByteArray();
-        String s = mMonument.getId() + "Note";
-        s += (mSize + 1);
+        //String s = mMonument.getId() + "Note";
+        //s += (mSize + 1);
         mNote = new Note();
-        mNote.setId(s);
         mNote.setAutorName(mUserName);
         mNote.setUid(mUserID);
-        UploadTask uploadTask = mFireHelper.getmStorageRef().child("noteImages/" + s).putBytes(data);
+        mNoteId = mFireHelper.getmDatabase().child("models").child("monuments").child(mMonument.getId()).child("notes").push().getKey();
+        mNote.setId(mNoteId);
+        UploadTask uploadTask = mFireHelper.getmStorageRef().child("noteImages/" + mNoteId).putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-
+                mFireHelper.getmDatabase().child("models").child("monuments").child(mMonument.getId()).child("notes").child(mNoteId).removeValue();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
