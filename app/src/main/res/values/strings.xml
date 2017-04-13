@@ -56,4 +56,6 @@
     <string name="far_from_monument">You are far from monument,so you can"'"t see notes,please get near</string>
     <string name="open_new_page">Do you want to open new page for drawing?</string>
     <string name="save_drawing">Do you want to save it?</string>
+    <string name="favorite_monuments">Favorite Monuments</string>
+    <string name="name_of_app">MonuGuide</string>
 </resources>

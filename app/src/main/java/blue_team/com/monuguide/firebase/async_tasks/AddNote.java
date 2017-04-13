@@ -24,14 +24,19 @@ public class AddNote extends AsyncTask<Void,Void,Void>
     private int mSize;
     private FireHelper mFireHelper;
     private Note mNote;
+    public interface operationEndListener{
+        void doingSomething();
+    }
+    private operationEndListener mOperationEndListener;
 
-    public AddNote(Bitmap bitmap, Monument monument, String userID,String userName, int size, FireHelper fh) {
+    public AddNote(Bitmap bitmap, Monument monument, String userID,String userName, int size, FireHelper fh,operationEndListener mOperationEndListener) {
         this.mBitmap = bitmap;
         this.mMonument = monument;
         this.mUserID = userID;
         this.mUserName = userName;
         this.mSize = size;
         this.mFireHelper = fh;
+        this.mOperationEndListener = mOperationEndListener;
         mNote = new Note();
     }
 
@@ -64,6 +69,7 @@ public class AddNote extends AsyncTask<Void,Void,Void>
                 mNote.setLikeCount(0);
 
                 mFireHelper.getmDatabase().child("models").child("monuments").child(mMonument.getId()).child("notes").child(mNote.getId()).setValue(mNote);
+                mOperationEndListener.doingSomething();
                 }
             });
 

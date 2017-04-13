@@ -17,6 +17,7 @@ import android.widget.Toast;
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.custom_views.PaintView;
 import blue_team.com.monuguide.firebase.FireHelper;
+import blue_team.com.monuguide.firebase.async_tasks.AddNote;
 import blue_team.com.monuguide.models.Monument;
 
 public class DrawingActivity extends AppCompatActivity {
@@ -32,6 +33,12 @@ public class DrawingActivity extends AppCompatActivity {
     private String[] arrayOfItems = {"Anonymous","With your name"};
     private FireHelper mFireHelper = new FireHelper();
     private boolean isAnonymous = true;
+    private AddNote.operationEndListener mOpeartionEndListener = new AddNote.operationEndListener() {
+        @Override
+        public void doingSomething() {
+            DrawingActivity.this.finish();
+        }
+    };
 
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
@@ -161,16 +168,15 @@ public class DrawingActivity extends AppCompatActivity {
                                 String myuser = mFireHelper.getCurrentUid();
                                 if(myuser != null) {
                                     if (isAnonymous) {
-                                        mFireHelper.addNote(bitmap1, mMonument, myuser, "Anonymous", mSize);
+                                        mFireHelper.addNote(bitmap1, mMonument, myuser, "Anonymous", mSize,mOpeartionEndListener);
                                     } else {
-                                        mFireHelper.addNote(bitmap1, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize);
+                                        mFireHelper.addNote(bitmap1, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize,mOpeartionEndListener);
                                     }
                                 }
                                 PagerActivity.setFirstCommit(true);
                             }
                             mPaintView.destroyDrawingCache();
                             mPaintView.setDrawingCacheEnabled(false);
-                            DrawingActivity.this.finish();
                         }
                     });
                     builder2.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

@@ -180,6 +180,7 @@ public class MainActivity extends AppCompatActivity
                     FragmentTransaction fragmentTransaction1 = mFragmentManager.beginTransaction();
                     fragmentTransaction1.remove(mFragmentManager.findFragmentByTag(FAVORITE_FRAGMENT));
                     fragmentTransaction1.commit();
+                    mToolbar.setTitle(getString(R.string.name_of_app));
                     mFrameLayout.startAnimation(animation_close);
                     favoriteFragment = null;
                 }
@@ -328,12 +329,14 @@ public class MainActivity extends AppCompatActivity
                 mFragmentTransaction = mFragmentManager.beginTransaction();
                 mFragmentTransaction.remove(mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
                 mFragmentTransaction.add(R.id.search_container, favoriteFragment, FAVORITE_FRAGMENT);
+                mToolbar.setTitle(getString(R.string.favorite_monuments));
                 mFragmentTransaction.commit();
             } else {
                 if (mFragmentManager.findFragmentByTag(FAVORITE_FRAGMENT) == null) {
                     mFragmentTransaction = mFragmentManager.beginTransaction();
                     mFragmentTransaction.add(R.id.search_container, favoriteFragment, FAVORITE_FRAGMENT);
                     mFragmentTransaction.commit();
+                    mToolbar.setTitle(getString(R.string.favorite_monuments));
                     mFrameLayout.setVisibility(View.VISIBLE);
                     mFrameLayout.startAnimation(animation_open);
                 }
