@@ -176,6 +176,16 @@ public class DrawingActivity extends AppCompatActivity {
                                     } else {
                                         mFireHelper.addNote(bitmap1, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize, mOpeartionEndListener);
                                     }
+                                    Dialog loadingDialog = new Dialog(DrawingActivity.this);
+                                    loadingDialog.setContentView(R.layout.loading_dialog);
+                                    loadingDialog.setCanceledOnTouchOutside(false);
+                                    loadingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                        @Override
+                                        public void onCancel(DialogInterface dialogInterface) {
+                                            DrawingActivity.this.finish();
+                                        }
+                                    });
+                                    loadingDialog.show();
                                 }
                             }
                             mPaintView.destroyDrawingCache();

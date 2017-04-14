@@ -121,8 +121,8 @@ public class PagerActivity extends FragmentActivity {
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                         MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
                             } else {
-                                locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
                                 locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
+                                locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
                             }
                         } else {
                             AlertDialog.Builder builder = new AlertDialog.Builder(PagerActivity.this);
