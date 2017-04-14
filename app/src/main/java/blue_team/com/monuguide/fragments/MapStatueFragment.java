@@ -84,7 +84,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     boolean b = false;
 
     private double mRadius = 0.047685;
-    private float mDefaultZoom = (float) 13.0;
+    private float mDefaultZoom = (float) 13.0; //This goes up to 21
     private double mLatStart;
     private double mLatEnd;
     private double mLongStart;
@@ -137,24 +137,6 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
             initMap();
         }
-
-    }
-
-    private void setMyLocation() {
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-        else {
-            LatLng currentLL = new LatLng(mLatitude, mLongitude);
-            CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
-            mMap.addMarker(new MarkerOptions().position(currentLL).title("My loaction"));
-            float zoomLevel = mDefaultZoom; //This goes up to 21
-            CameraUpdate zoom = CameraUpdateFactory.zoomTo(zoomLevel);
-            mMap.moveCamera(center);
-            mMap.animateCamera(zoom, 4000, null);
-        }
     }
 
     private MapFragment getMapFragment() {
@@ -169,6 +151,19 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     }
 
 
+    private void setMyLocation() {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+        else {
+            LatLng currentLL = new LatLng(mLatitude, mLongitude);
+            CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
+            mMap.moveCamera(center);
+            mMap.addMarker(new MarkerOptions().position(currentLL).title("My loaction"));
+        }
+    }
 
     private void initMap(){
         getMapFragment().getMapAsync(new OnMapReadyCallback() {
@@ -180,8 +175,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                 CameraUpdate center = CameraUpdateFactory.newLatLng(defaultLatLng);
                 mMarker = mMap.addMarker((new MarkerOptions().position(defaultLatLng)
                         .title("Yerevan")));
-                float zoomLevel = mDefaultZoom; //This goes up to 21
-                CameraUpdate zoom=CameraUpdateFactory.zoomTo(zoomLevel);
+                CameraUpdate zoom=CameraUpdateFactory.zoomTo(mDefaultZoom);
                 mMap.moveCamera(center);
                 mMap.animateCamera(zoom, 9000, null);
 
@@ -258,6 +252,8 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                 mLatitude = location.getLatitude();
                 if(!mSetMyLocation){
                     setMyLocation();
+                    CameraUpdate zoom = CameraUpdateFactory.zoomTo(mDefaultZoom);
+                    mMap.animateCamera(zoom, 4000, null);
                     mSetMyLocation = true;
                 }
                 fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), mRadius);
@@ -302,10 +298,15 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
+                float x = (float) ((mLatEnd - mLatStart)*(mLatEnd - mLatStart) + (mLongEnd - mLongStart)*(mLongEnd - mLongStart));
                 if (cameraPosition.zoom >= mDefaultZoom){
-                    //getMonumentList();
+                    if( x > 0.00002809){
+                        getMonumentList();
+                    }
                 }
-                //else mMap.clear();
+                else {
+                    //mMap.clear();
+                }
                 Log.v(TAG, "Latitude!! = " + (mLatStart - mLatEnd) + "    Longitude!! = " + (mLongEnd - mLongStart));
             }
         });

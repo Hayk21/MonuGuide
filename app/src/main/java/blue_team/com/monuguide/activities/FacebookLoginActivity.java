@@ -87,7 +87,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements
             @Override
             public void onError(FacebookException error) {
                 updateUI(null);
-               // FacebookLoginActivity.this.finish();
+                error.getMessage();// FacebookLoginActivity.this.finish();
             }
         });
 
