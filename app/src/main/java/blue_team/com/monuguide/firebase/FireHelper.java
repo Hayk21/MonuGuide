@@ -14,7 +14,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -23,44 +22,33 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 
-import blue_team.com.monuguide.custom_views.PaintView;
+import blue_team.com.monuguide.firebase.async_tasks.AddFavoriteMon;
+import blue_team.com.monuguide.firebase.async_tasks.AddLike;
+import blue_team.com.monuguide.firebase.async_tasks.AddNote;
+import blue_team.com.monuguide.firebase.async_tasks.AddUser;
+import blue_team.com.monuguide.firebase.async_tasks.FindFavMon;
+import blue_team.com.monuguide.firebase.async_tasks.FindLikeUser;
+import blue_team.com.monuguide.firebase.async_tasks.FindUser;
+import blue_team.com.monuguide.firebase.async_tasks.GetFavMonList;
+import blue_team.com.monuguide.firebase.async_tasks.GetLikeCount;
+import blue_team.com.monuguide.firebase.async_tasks.GetMonumentList;
+import blue_team.com.monuguide.firebase.async_tasks.GetNotes;
+import blue_team.com.monuguide.firebase.async_tasks.GetSearchMonument;
+import blue_team.com.monuguide.firebase.async_tasks.RemoveFavoriteMon;
+import blue_team.com.monuguide.firebase.async_tasks.SetLikeCount;
+import blue_team.com.monuguide.firebase.async_tasks.SubLike;
 import blue_team.com.monuguide.models.Monument;
 import blue_team.com.monuguide.models.Note;
 import blue_team.com.monuguide.models.User;
 
-public class
-FireHelper {
+public class FireHelper {
 
-    private static int count = 0;
-    private int mNotesListSize;
-    private double mLat;
-    private double mLon;
-    private double mRad;
-    private String mMonName;
-    private String imageUrl;
-    private String mUserID;
-    private String mNoteId;
-    private String mMonumentId;
-    private String mUserName;
-    private Monument mMonument;
-    private Note note;
-    private Query mQuery1;
-    private Query mQuery2;
-    private Query mQuery3;
-    private Query mQuery4;
-    private Query mQuery5;
-    private Query mQuery6;
-    private Query mQuery7;
-    private Query mQuery8;
-    private Query mQuery9;
-    private Query mQuery10;
-    private Query mQuery11;
     private DatabaseReference mDatabase;
     private DatabaseReference mDatabase1;
     private FirebaseStorage mStorage;
     private StorageReference mStorageRef;
     private FirebaseAuth mAuth;
-    private IOnSuccessListener mOnSuccessListener;
+    private IOnGetMonumentListSuccessListener mOnGetMonumentListSuccessListener;
     private IOnNoteSuccessListener mOnNoteSuccessListener;
     private IOnSearchSuccessListener mOnSearchSuccessListener;
     private IOnFavMonSuccessListener mOnFavMonSuccessListener;
@@ -68,689 +56,234 @@ FireHelper {
     private IOnFindFavMonSuccessListener mOnFindFavMonSuccessListener;
     private IOnFindUserLikeSuccessListener mOnFindUserLikeSuccessListener;
     private IOnGetLikeCountSuccessListener mOnGetLikeCountSuccessListener;
-    private HashMap<String, Monument> mMon = new HashMap<>();
-    private HashMap<String, Note> mNote = new HashMap<>();
-    private HashMap<String, User> mUser = new HashMap<>();
-    private HashMap<String, String> mUserId = new HashMap<>();
 
-
-    public FireHelper() {
+    public FireHelper()
+    {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mStorage = FirebaseStorage.getInstance();
         mStorageRef = mStorage.getReference();
     }
 
-    private ValueEventListener monValueEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
-                Monument addVal = mySnapshot.getValue(Monument.class);
-            }
-            count = 1;
-            mDatabase1 = mQuery1.getRef();
-            getMonuments(mLat, mLon, mRad);
-            mQuery1.removeEventListener(monValueEventListener);
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-    private ValueEventListener monValueEventListener1 = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            mMon.clear();
-            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
-                Monument addVal = mySnapshot.getValue(Monument.class);
-                String key = mySnapshot.getKey();
-                mMon.put(key, addVal);
-            }
-            count = 0;
-            mOnSuccessListener.onSuccess(mMon);
-            mQuery2.removeEventListener(monValueEventListener1);
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-    private ValueEventListener monValueEventListener2 = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            mMon.clear();
-            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
-                Monument addVal = mySnapshot.getValue(Monument.class);
-                String key = mySnapshot.getKey();
-                mMon.put(key, addVal);
-            }
-            count = 1;
-            getSearchMonument(mMonName);
-            mQuery3.removeEventListener(monValueEventListener2);
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-    private ValueEventListener monValueEventListener3 = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
-                Monument addVal = mySnapshot.getValue(Monument.class);
-                String key = mySnapshot.getKey();
-                mMon.put(key, addVal);
-            }
-            count = 0;
-            mOnSearchSuccessListener.onSuccess(mMon);
-            mQuery3.removeEventListener(monValueEventListener3);
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-    private ValueEventListener noteValueEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            mNote.clear();
-            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
-                Note addVal = mySnapshot.getValue(Note.class);
-                String key = mySnapshot.getKey();
-                mNote.put(key, addVal);
-            }
-            mOnNoteSuccessListener.onSuccess(mNote);
-            mQuery4.removeEventListener(noteValueEventListener);
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-    private ValueEventListener favMonValueEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            mMon.clear();
-            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
-                Monument addVal = mySnapshot.getValue(Monument.class);
-                String key = mySnapshot.getKey();
-                mMon.put(key, addVal);
-            }
-            mOnFavMonSuccessListener.onSuccess(mMon);
-            mQuery5.removeEventListener(favMonValueEventListener);
-
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-    private ValueEventListener userValueEventListener = new ValueEventListener() {
-
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
-                User addVal = mySnapshot.getValue(User.class);
-                String key = mySnapshot.getKey();
-                mUser.put(key, addVal);
-            }
-            mOnFindUserSuccessListener.onSuccess(mUser);
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-    private ValueEventListener findFavMonValueEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
-                Monument addVal = mySnapshot.getValue(Monument.class);
-                String key = mySnapshot.getKey();
-                mMon.put(key, addVal);
-            }
-            mOnFindFavMonSuccessListener.onSuccess(mMon);
-            mQuery7.removeEventListener(findFavMonValueEventListener);
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-    private ValueEventListener addLikeCountValueEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            mNote.clear();
-            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
-                Note addVal = mySnapshot.getValue(Note.class);
-                String key = mySnapshot.getKey();
-                mNoteId = key;
-                mNote.put(key, addVal);
-            }
-            if (mNote != null) {
-                if (!mNote.isEmpty()) {
-                    int likeCount = mNote.get(mNoteId).getLikeCount();
-                    ++likeCount;
-                    setLikeCount(likeCount);
-                }
-            }
-            mQuery8.removeEventListener(addLikeCountValueEventListener);
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-    private ValueEventListener subLikeCountValueEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            mNote.clear();
-            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
-                Note addVal = mySnapshot.getValue(Note.class);
-                String key = mySnapshot.getKey();
-                mNoteId = key;
-                mNote.put(key, addVal);
-            }
-            if (mNote != null) {
-                if (!mNote.isEmpty()) {
-                    int likeCount = mNote.get(mNoteId).getLikeCount();
-                    --likeCount;
-                    setLikeCount(likeCount);
-                }
-            }
-            mQuery9.removeEventListener(subLikeCountValueEventListener);
-
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-    private ValueEventListener findUserLikeValueEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
-                String addVal = mySnapshot.getValue(String.class);
-                String key = mySnapshot.getKey();
-                mUserId.put(key, addVal);
-            }
-            mOnFindUserLikeSuccessListener.onSuccess(mUserId);
-            mQuery10.removeEventListener(findUserLikeValueEventListener);
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-    private ValueEventListener getLikeCountValueEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
-                Note addVal = mySnapshot.getValue(Note.class);
-                String key = mySnapshot.getKey();
-                mNoteId = key;
-                mNote.put(key, addVal);
-            }
-            if (mNote != null) {
-                if (!mNote.isEmpty()) {
-                    int likeCount = mNote.get(mNoteId).getLikeCount();
-                    mOnGetLikeCountSuccessListener.onSuccess(likeCount);
-                }
-                //mQuery11.removeEventListener(getLikeCountValueEventListener);
-            }
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
     public String getCurrentUid() {
         FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
-        if (u != null) {
+        if(u != null) {
             return u.getUid();
-        } else {
+        }
+        else{
             return null;
         }
     }
 
-    public String getCurrentUserName() {
+    public String getCurrentUserName(){
         FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
-        if (u != null) {
+        if(u != null) {
             return u.getDisplayName();
-        } else {
+        }
+        else{
             return null;
         }
     }
 
-    public void getMonuments(double pLatitude, double pLongitude, double pRadius) {
-        if (count == 0) {
-            mLat = pLatitude;
-            mLon = pLongitude;
-            mRad = pRadius;
-        }
-        GetMonumentList gml = new GetMonumentList();
+    public void getMonuments(double latitude, double longitude, double radius)
+    {
+        GetMonumentList gml = new GetMonumentList(latitude,longitude,radius,this);
         gml.execute();
     }
 
-    private class GetMonumentList extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            if (count == 0) {
-                mQuery1 = mDatabase.child("models").child("monuments").orderByChild("latitude").startAt(mLat - mRad).endAt(mLat + mRad);
-                mQuery1.addValueEventListener(monValueEventListener);
-            } else {
-                mQuery2 = mDatabase1.orderByChild("longitude").startAt(mLon - mRad).endAt(mLon + mRad);
-                mQuery2.addValueEventListener(monValueEventListener1);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
+    public void getSearchMonument(String monName)
+    {
+        GetSearchMonument gsm = new GetSearchMonument(monName, this);
+        gsm.execute();
     }
 
-    public void getSearchMonument(String s) {
-        mMonName = s;
-        GetSearchMonument gsm = new GetSearchMonument();
-        gsm.execute(mMonName);
+    public void addUser(User user)
+    {
+        AddUser au = new AddUser(user,this);
+        au.execute();
     }
 
-    private class GetSearchMonument extends AsyncTask<String, Void, Void> {
-        //        String monName;
-        @Override
-        protected Void doInBackground(String... params) {
-//            for(String s : params)
-//            {
-//                monName = s;
-//            }
-            if (count == 0) {
-                mQuery3 = mDatabase.child("models").child("monuments").orderByChild("searchName1").startAt(mMonName).endAt(mMonName + "\uf8ff");
-                mQuery3.addValueEventListener(monValueEventListener2);
-            } else {
-                mQuery3 = mDatabase.child("models").child("monuments").orderByChild("searchName2").startAt(mMonName).endAt(mMonName + "\uf8ff");
-                mQuery3.addValueEventListener(monValueEventListener3);
-            }
-
-            return null;
-        }
-    }
-
-    public void addUser(User user) {
-        AddUser au = new AddUser();
-        au.execute(user);
-    }
-
-    private class AddUser extends AsyncTask<User, Void, Void> {
-        User user = new User();
-
-        @Override
-        protected Void doInBackground(User... params) {
-            for (User u : params) {
-                user = u;
-            }
-            mDatabase.child("models").child("users").child(user.getuID()).setValue(user);
-            return null;
-        }
-
-    }
-
-    public void findUser(String userID) {
-        mUserID = userID;
-        FindUser fu = new FindUser();
+    public void findUser(String userID)
+    {
+        FindUser fu = new FindUser(userID,this);
         fu.execute();
     }
 
-    private class FindUser extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            mQuery6 = mDatabase.child("models").child("users").orderByKey().equalTo(mUserID);
-            mQuery6.addValueEventListener(userValueEventListener);
-            return null;
-        }
-    }
-
-    public void findFavMon(String userID, Monument monument) {
-        mUserID = userID;
-        mMonument = monument;
-        FindFavMon ffm = new FindFavMon();
+    public void findFavMon(String userID,Monument monument)
+    {
+        FindFavMon ffm = new FindFavMon(userID, monument, this);
         ffm.execute();
     }
 
-    private class FindFavMon extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            mQuery7 = mDatabase.child("models").child("users").child(mUserID).child("favoriteMon").orderByKey().equalTo(mMonument.getId());
-            mQuery7.addValueEventListener(findFavMonValueEventListener);
-            return null;
-        }
+    public void addNote(Bitmap bitmap, Monument monument, String userID, String userName, int size, AddNote.operationEndListener operationEndListener)
+    {
+        AddNote sn = new AddNote(bitmap, monument, userID, userName, size, this,operationEndListener);
+        sn.execute();
     }
 
-    public void addNote(Bitmap bitmap, Monument monument, String userID, String userName, int size) {
-        mUserID = userID;
-        mUserName = userName;
-        mMonument = monument;
-        mNotesListSize = size;
-        AddNote sn = new AddNote();
-        sn.execute(bitmap);
-    }
-
-    private class AddNote extends AsyncTask<Bitmap, Void, Void> {
-        Bitmap bitmap;
-
-        @Override
-        protected Void doInBackground(Bitmap... params) {
-            for (Bitmap b : params) {
-                bitmap = b;
-            }
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
-            bitmap.recycle();
-            bitmap = null;
-            byte[] data = baos.toByteArray();
-            String s = mMonument.getId() + "Note";
-            s += (mNotesListSize + 1);
-            note = new Note();
-            note.setId(s);
-            note.setAutorName(mUserName);
-            note.setUid(mUserID);
-            UploadTask uploadTask = mStorageRef.child("noteImages/" + s).putBytes(data);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    @SuppressWarnings("VisibleForTests")
-                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    imageUrl = downloadUrl.toString();
-                    note.setImage(imageUrl);
-                    note.setLikeCount(0);
-
-                    mDatabase.child("models").child("monuments").child(mMonument.getId()).child("notes").child(note.getId()).setValue(note);
-
-                }
-            });
-
-            return null;
-        }
-
-    }
-
-    public void addFavoriteMon(Monument monument, String userID) {
-        mUserID = userID;
-        mMonument = monument;
-        AddFavoriteMon afm = new AddFavoriteMon();
+    public void addFavoriteMon(Monument monument,String userID)
+    {
+        AddFavoriteMon afm= new AddFavoriteMon(userID, monument, this);
         afm.execute();
     }
 
-    private class AddFavoriteMon extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            mDatabase.child("models").child("users").child(mUserID).child("favoriteMon").child(mMonument.getId()).setValue(mMonument);
-            return null;
-        }
-    }
-
-    public void removeFavoriteMon(Monument monument, String userID) {
-        mUserID = userID;
-        mMonument = monument;
-        RemoveFavoriteMon rfm = new RemoveFavoriteMon();
+    public void removeFavoriteMon(Monument monument, String userID)
+    {
+        RemoveFavoriteMon rfm = new RemoveFavoriteMon(userID, monument, this);
         rfm.execute();
     }
 
-    private class RemoveFavoriteMon extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            mDatabase.child("models").child("users").child(mUserID).child("favoriteMon").child(mMonument.getId()).removeValue();
-            return null;
-        }
+    public void getFavMonList(String userID)
+    {
+        GetFavMonList gfml = new GetFavMonList(userID, this);
+        gfml.execute();
     }
 
-    public void getFavMonList(String userID) {
-        GetFavMonList gfml = new GetFavMonList();
-        gfml.execute(userID);
+    public void getNotesList(String monId)
+    {
+        GetNotes gn = new GetNotes(monId, this);
+        gn.execute();
     }
 
-    private class GetFavMonList extends AsyncTask<String, Void, Void> {
-        String myuser;
-
-        @Override
-        protected Void doInBackground(String... params) {
-            for (String b : params) {
-                myuser = b;
-            }
-            mQuery5 = mDatabase.child("models").child("users").child(myuser).child("favoriteMon");
-            mQuery5.addValueEventListener(favMonValueEventListener);
-            return null;
-
-        }
+    public void addLike(String noteID, String userID, String monumentID)
+    {
+        AddLike al = new AddLike(noteID, userID, monumentID, this);
+        al.execute();
     }
 
-    public void getNotesList(String monId) {
-        GetNotes gn = new GetNotes();
-        gn.execute(monId);
+    public void subLike(String noteID, String userID, String monumentID)
+    {
+        SubLike sl = new SubLike(noteID, userID, monumentID, this);
+        sl.execute();
     }
 
-    private class GetNotes extends AsyncTask<String, Void, Void> {
-        String monId;
-
-        @Override
-        protected Void doInBackground(String... params) {
-            for (String b : params) {
-                monId = b;
-            }
-            mQuery4 = mDatabase.child("models").child("monuments").child(monId).child("notes");
-            mQuery4.addValueEventListener(noteValueEventListener);
-            return null;
-        }
+    public void setLikeCount(int likeCount, String monumentId, String noteId)
+    {
+        SetLikeCount alc = new SetLikeCount(likeCount, monumentId, noteId, mDatabase);
+        alc.execute();
     }
 
-    public void addLike(String noteID, String userID, String monumentID) {
-        mUserID = userID;
-        AddLike al = new AddLike();
-        al.execute(noteID, monumentID);
-    }
-
-    public class AddLike extends AsyncTask<String, Void, Void> {
-        int i = 0;
-
-        @Override
-        protected Void doInBackground(String... params) {
-            for (String b : params) {
-                if (i == 0) {
-                    mNoteId = b;
-                    i++;
-                } else {
-                    mMonumentId = b;
-                }
-            }
-            mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").child(mNoteId).child("like").child(mUserID).setValue(mUserID);
-            mQuery8 = mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").orderByKey().equalTo(mNoteId);
-            mQuery8.addValueEventListener(addLikeCountValueEventListener);
-            return null;
-        }
-    }
-
-    public void subLike(String noteID, String userID, String monumentID) {
-        mUserID = userID;
-        SubLike sl = new SubLike();
-        sl.execute(noteID, monumentID);
-    }
-
-    public class SubLike extends AsyncTask<String, Void, Void> {
-        int i = 0;
-
-        @Override
-        protected Void doInBackground(String... params) {
-            for (String b : params) {
-                if (i == 0) {
-                    mNoteId = b;
-                    i++;
-                } else {
-                    mMonumentId = b;
-                }
-            }
-            mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").child(mNoteId).child("like").child(mUserID).removeValue();
-            mQuery9 = mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").orderByKey().equalTo(mNoteId);
-            mQuery9.addValueEventListener(subLikeCountValueEventListener);
-            return null;
-        }
-    }
-
-    private void setLikeCount(int likeCount) {
-        SetLikeCount alc = new SetLikeCount();
-        alc.execute(likeCount);
-    }
-
-    private class SetLikeCount extends AsyncTask<Integer, Void, Void> {
-        int likeCount;
-
-        @Override
-        protected Void doInBackground(Integer... params) {
-            for (int b : params) {
-                likeCount = b;
-            }
-            mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").child(mNoteId).child("likeCount").setValue(likeCount);
-            return null;
-        }
-    }
-
-    public void findLikeUser(String noteID, String userID, String monumentID) {
-        mUserID = userID;
-        mMonumentId = monumentID;
-        mNoteId = noteID;
-        FindLikeUser flu = new FindLikeUser();
+    public void findLikeUser(String noteID, String userID, String monumentID)
+    {
+        FindLikeUser flu = new FindLikeUser(noteID, userID, monumentID, this);
         flu.execute();
-
     }
 
-    private class FindLikeUser extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            mQuery10 = mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").child(mNoteId).child("like").orderByKey().equalTo(mUserID);
-            mQuery10.addValueEventListener(findUserLikeValueEventListener);
-            return null;
-        }
+    public void getLikeCount(String monumentID, String noteID)
+    {
+        GetLikeCount glc = new GetLikeCount(monumentID, noteID,  this);
+        glc.execute();
     }
 
-    public void getLikeCount(String noteID, String monumentID) {
-        GetLikeCount glc = new GetLikeCount();
-        glc.execute(noteID, monumentID);
+    public DatabaseReference getmDatabase() {
+        return mDatabase;
     }
 
-    public class GetLikeCount extends AsyncTask<String, Void, Void> {
-        int i = 0;
-
-        @Override
-        protected Void doInBackground(String... params) {
-            for (String b : params) {
-                if (i == 0) {
-                    mNoteId = b;
-                    i++;
-                } else {
-                    mMonumentId = b;
-                }
-            }
-            mQuery11 = mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").orderByKey().equalTo(mNoteId);
-            mQuery11.addValueEventListener(getLikeCountValueEventListener);
-            return null;
-        }
+    public DatabaseReference getmDatabase1() {
+        return mDatabase1;
     }
 
-    public void setOnSuccessListener(IOnSuccessListener onSuccessListener) {
-        mOnSuccessListener = onSuccessListener;
+    public void setmDatabase1(DatabaseReference mDatabase1) {
+        this.mDatabase1 = mDatabase1;
     }
 
-    public interface IOnSuccessListener {
-        void onSuccess(HashMap<String, Monument> mMap);
+    public StorageReference getmStorageRef() {
+        return mStorageRef;
     }
 
-    public void setOnNoteSuccessListener(IOnNoteSuccessListener onNoteSuccessListener) {
+    public void setOnGetMonumentListSuccessListener(IOnGetMonumentListSuccessListener onGetMonumentListSuccessListener) {
+        mOnGetMonumentListSuccessListener = onGetMonumentListSuccessListener;
+    }
+
+    public IOnGetMonumentListSuccessListener getOnGetMonumentSuccessListener() {
+        return mOnGetMonumentListSuccessListener;
+    }
+
+    public interface IOnGetMonumentListSuccessListener {
+        void onSuccess(HashMap<String,Monument> mMap);
+    }
+
+    public IOnNoteSuccessListener getOnNoteSuccessListener() {
+        return mOnNoteSuccessListener;
+    }
+
+    public void setOnNoteSuccessListener(IOnNoteSuccessListener onNoteSuccessListener){
         mOnNoteSuccessListener = onNoteSuccessListener;
     }
 
     public interface IOnNoteSuccessListener {
-        void onSuccess(HashMap<String, Note> mMap);
+        void onSuccess(HashMap<String,Note> mMap);
     }
 
-    public void setOnSearchSuccessListener(IOnSearchSuccessListener onSearchSuccessListener) {
+    public IOnSearchSuccessListener getOnSearchSuccessListener() {
+        return mOnSearchSuccessListener;
+    }
+
+    public void setOnSearchSuccessListener(IOnSearchSuccessListener onSearchSuccessListener){
         mOnSearchSuccessListener = onSearchSuccessListener;
     }
 
     public interface IOnSearchSuccessListener {
-        void onSuccess(HashMap<String, Monument> mMap);
+        void onSuccess(HashMap<String,Monument> mMap);
+    }
+
+    public IOnFavMonSuccessListener getOnFavMonSuccessListener() {
+        return mOnFavMonSuccessListener;
     }
 
     public void setOnFavMonSuccessListener(IOnFavMonSuccessListener onFavMonSuccessListener) {
         mOnFavMonSuccessListener = onFavMonSuccessListener;
     }
 
-    public interface IOnFavMonSuccessListener {
-        void onSuccess(HashMap<String, Monument> mMap);
+    public interface IOnFavMonSuccessListener{
+        void onSuccess(HashMap<String,Monument> mMap);
+    }
+
+    public IOnFindUserSuccessListener getOnFindUserSuccessListener() {
+        return mOnFindUserSuccessListener;
     }
 
     public void setOnFindUserSuccessListener(IOnFindUserSuccessListener onFindUserSuccessListener) {
         mOnFindUserSuccessListener = onFindUserSuccessListener;
     }
 
-    public interface IOnFindUserSuccessListener {
-        void onSuccess(HashMap<String, User> mMap);
+    public interface IOnFindUserSuccessListener{
+        void onSuccess(HashMap<String,User> mMap);
+    }
+
+    public IOnFindFavMonSuccessListener getOnFindFavMonSuccessListener() {
+        return mOnFindFavMonSuccessListener;
     }
 
     public void setOnFindFavMonSuccessListener(IOnFindFavMonSuccessListener onFindFavMonSuccessListener) {
         mOnFindFavMonSuccessListener = onFindFavMonSuccessListener;
     }
 
-    public interface IOnFindFavMonSuccessListener {
-        void onSuccess(HashMap<String, Monument> mMap);
+    public interface IOnFindFavMonSuccessListener{
+        void onSuccess(HashMap<String,Monument> mMap);
+    }
+
+    public IOnFindUserLikeSuccessListener getOnFindUserLikeSuccessListener() {
+        return mOnFindUserLikeSuccessListener;
     }
 
     public void setOnFindUserLikeSuccessListener(IOnFindUserLikeSuccessListener onFindUserLikeSuccessListener) {
         mOnFindUserLikeSuccessListener = onFindUserLikeSuccessListener;
     }
 
-    public interface IOnFindUserLikeSuccessListener {
-        void onSuccess(HashMap<String, String> mMap);
+    public interface IOnFindUserLikeSuccessListener{
+        void onSuccess(HashMap<String,String> mMap);
+    }
+
+    public IOnGetLikeCountSuccessListener getOnGetLikeCountSuccessListener() {
+        return mOnGetLikeCountSuccessListener;
     }
 
     public void setOnGetLikeCountSuccessListener(IOnGetLikeCountSuccessListener onGetLikeCountSuccessListener) {
         mOnGetLikeCountSuccessListener = onGetLikeCountSuccessListener;
     }
 
-    public interface IOnGetLikeCountSuccessListener {
+    public interface IOnGetLikeCountSuccessListener{
         void onSuccess(int likeCount);
     }
 }

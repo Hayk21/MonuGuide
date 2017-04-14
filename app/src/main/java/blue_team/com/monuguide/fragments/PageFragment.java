@@ -101,7 +101,6 @@ public class PageFragment extends Fragment {
                     mLike.startAnimation(close);
                     mFireHelper.subLike(mNoteID, user, mMonumentID);
                 }
-
             }
             else
             {
@@ -159,7 +158,8 @@ public class PageFragment extends Fragment {
             @Override
             public void onSuccess(int likeCount) {
                 mCountLike = likeCount;
-                mLikeCount.setText(mCountLike+"");
+                String lc = mCountLike + " ";
+                mLikeCount.setText(lc);
             }
         };
     }
@@ -185,7 +185,7 @@ public class PageFragment extends Fragment {
     public void onStart() {
         super.onStart();
         mFireHelper.setOnGetLikeCountSuccessListener(mOnGetLikeCountSuccessListener);
-        mFireHelper.getLikeCount(mNoteID, mMonumentID);
+        mFireHelper.getLikeCount(mMonumentID, mNoteID);
         if(mFireHelper.getCurrentUid() != null)
         {
             mFireHelper.setOnFindUserLikeSuccessListener(mOnFindUserLikeSuccessListener);

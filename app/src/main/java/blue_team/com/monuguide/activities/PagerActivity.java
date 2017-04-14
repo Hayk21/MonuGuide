@@ -10,6 +10,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -59,15 +60,17 @@ public class PagerActivity extends FragmentActivity {
     private FireHelper.IOnNoteSuccessListener iOnNoteSuccessListener = new FireHelper.IOnNoteSuccessListener() {
         @Override
         public void onSuccess(HashMap<String, Note> mMap) {
-            mListOfNote.clear();
+            mListOfNote = new ArrayList<>();
             mListOfNote.addAll(mMap.values());
             if (!mListOfNote.isEmpty()) {
-                mViewPager.setAdapter(mPagerAdapter);
                 mSize = mListOfNote.size();
+                mPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+                mViewPager.setAdapter(mPagerAdapter);
             } else {
                 mViewPager.setVisibility(View.GONE);
                 mNothingText.setVisibility(View.VISIBLE);
             }
+            mPagerAdapter.notifyDataSetChanged();
         }
     };
 
@@ -76,9 +79,10 @@ public class PagerActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pager);
+        mListOfNote = new ArrayList<>();
         mFireHelper.setOnNoteSuccessListener(iOnNoteSuccessListener);
 
-        animation = AnimationUtils.loadAnimation(this,R.anim.pressed_anim);
+        animation = AnimationUtils.loadAnimation(this, R.anim.pressed_anim);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mNothingText = (TextView) findViewById(R.id.nothing_id);
         TextView name = (TextView) findViewById(R.id.name_of_monument);
@@ -90,8 +94,6 @@ public class PagerActivity extends FragmentActivity {
             if (this.getIntent().getParcelableExtra(StartActivity.ARGUMENT_WITH_MONUMENT) != null) {
                 mMonument = this.getIntent().getParcelableExtra(StartActivity.ARGUMENT_WITH_MONUMENT);
                 name.setText(mMonument.getName());
-                mListOfNote = new ArrayList<>();
-                mFireHelper.getNotesList(mMonument.getId());
             }
         }
 
@@ -193,14 +195,22 @@ public class PagerActivity extends FragmentActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (mFirstCommit && mViewPager.getVisibility() == View.GONE) {
             mNothingText.setVisibility(View.GONE);
             mViewPager.setVisibility(View.VISIBLE);
+            mFireHelper.getNotesList(mMonument.getId());
+//        Log.d("Log_Tag",String.valueOf(mListOfNote.size()));
+//        mPagerAdapter.notifyDataSetChanged();
+        } else {
+            mFireHelper.getNotesList(mMonument.getId());
         }
-        Log.d("Log_Tag",String.valueOf(mListOfNote.size()));
-        mPagerAdapter.notifyDataSetChanged();
     }
 
     public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
