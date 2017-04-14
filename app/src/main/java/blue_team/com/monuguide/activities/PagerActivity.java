@@ -1,6 +1,7 @@
 package blue_team.com.monuguide.activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -47,7 +48,6 @@ public class PagerActivity extends FragmentActivity {
     public static final String EXTRA_WITH_MONUMENT = "ExtraMonumentID";
     public static final String EXTRA_WITH_SIZE = "ExtraListSize";
     int mSize;
-    public static boolean mFirstCommit = false;
     private ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
     private Monument mMonument;
@@ -64,7 +64,6 @@ public class PagerActivity extends FragmentActivity {
             mListOfNote.addAll(mMap.values());
             if (!mListOfNote.isEmpty()) {
                 mSize = mListOfNote.size();
-                mPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
                 mViewPager.setAdapter(mPagerAdapter);
             } else {
                 mViewPager.setVisibility(View.GONE);
@@ -96,6 +95,8 @@ public class PagerActivity extends FragmentActivity {
                 name.setText(mMonument.getName());
             }
         }
+
+        mFireHelper.getNotesList(mMonument.getId());
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,24 +195,6 @@ public class PagerActivity extends FragmentActivity {
         overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mFirstCommit && mViewPager.getVisibility() == View.GONE) {
-            mNothingText.setVisibility(View.GONE);
-            mViewPager.setVisibility(View.VISIBLE);
-            mFireHelper.getNotesList(mMonument.getId());
-//        Log.d("Log_Tag",String.valueOf(mListOfNote.size()));
-//        mPagerAdapter.notifyDataSetChanged();
-        } else {
-            mFireHelper.getNotesList(mMonument.getId());
-        }
-    }
 
     public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
@@ -235,10 +218,6 @@ public class PagerActivity extends FragmentActivity {
         }
     }
 
-    public static void setFirstCommit(boolean firstCommit) {
-        mFirstCommit = firstCommit;
-    }
-
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
@@ -252,6 +231,7 @@ public class PagerActivity extends FragmentActivity {
                 intent.putExtra(EXTRA_WITH_MONUMENT, mMonument);
                 intent.putExtra(EXTRA_WITH_SIZE, mSize);
                 startActivity(intent);
+                PagerActivity.this.finish();
                 overridePendingTransition(R.anim.draw_open_anim, R.anim.draw_alpha_down);
             } else {
                 Toast.makeText(PagerActivity.this, "You are far from monument to see notes", Toast.LENGTH_LONG).show();
@@ -273,5 +253,4 @@ public class PagerActivity extends FragmentActivity {
 
         }
     };
-
 }

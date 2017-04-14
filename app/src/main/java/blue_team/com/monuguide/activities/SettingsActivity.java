@@ -17,7 +17,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.Services.LocationService;
+import blue_team.com.monuguide.service.LocationService;
 
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {

@@ -12,28 +12,24 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.Services.LocationService;
+
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.DetailsFragment;
 import blue_team.com.monuguide.fragments.WebFragment;
 import blue_team.com.monuguide.models.Monument;
+import blue_team.com.monuguide.service.LocationService;
 
 import static blue_team.com.monuguide.activities.MainActivity.LOCATION_REQUEST;
 import static blue_team.com.monuguide.activities.SettingsActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;

@@ -311,6 +311,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.login) {
             Intent intent = new Intent(MainActivity.this, FacebookLoginActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.draw_alpha_up, R.anim.draw_close_anim);
         } else if (id == R.id.fav_mon) {
             favoriteFragment = new SearchFragment();
             Bundle args = new Bundle();
