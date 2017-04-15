@@ -39,10 +39,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.service.LocationService;
+
 import blue_team.com.monuguide.activities.StartActivity;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.models.Monument;
+import blue_team.com.monuguide.service.LocationService;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static android.location.LocationManager.GPS_PROVIDER;
@@ -310,7 +311,6 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
     private void getMonumentList(){
         mMap.clear();
-        listOfMonument.clear();
         LatLng currentLL = new LatLng(mLatitude, mLongitude);
         mMap.addMarker(new MarkerOptions().position(currentLL).title("Marker in Armenia"));
         for (Monument monument : listOfMonument) {

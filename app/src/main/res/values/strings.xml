@@ -58,4 +58,5 @@
     <string name="save_drawing">Do you want to save it?</string>
     <string name="favorite_monuments">Favorite Monuments</string>
     <string name="name_of_app">MonuGuide</string>
+    <string name="face_tittle_2_text">You are logged in as</string>
 </resources>

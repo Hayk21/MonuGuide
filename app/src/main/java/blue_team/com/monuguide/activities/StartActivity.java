@@ -24,11 +24,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.service.LocationService;
+
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.DetailsFragment;
 import blue_team.com.monuguide.fragments.WebFragment;
 import blue_team.com.monuguide.models.Monument;
+import blue_team.com.monuguide.service.LocationService;
 
 import static blue_team.com.monuguide.activities.MainActivity.LOCATION_REQUEST;
 import static blue_team.com.monuguide.activities.SettingsActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;

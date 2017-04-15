@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/back44"
+    android:background="@drawable/face_back44"
     tools:context="blue_team.com.monuguide.activities.FacebookLoginActivity">
 
         <TextView
@@ -12,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="21sp"
-            android:textColor="@color/facebook_button"
+            android:textColor="@android:color/white"
             android:text="@string/face_tittle"
             android:typeface="serif"
             android:gravity="center"
@@ -25,20 +25,39 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="17sp"
-            android:textColor="@color/facebook_button"
+            android:typeface="serif"
+            android:textColor="@android:color/white"
             android:gravity="center"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/face_tittle"
-            android:layout_toEndOf="@+id/face_tittle"
+            android:text="Hayk"
+            android:layout_marginBottom="19dp"
+            android:layout_above="@+id/button_facebook_signout"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/face_tittle_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/face_tittle_2_text"
+            android:textSize="21sp"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:typeface="serif"
+            android:layout_above="@+id/user_img"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="27dp"
             android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/user_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/user_name"
+            android:src="@mipmap/no_user"
+            android:layout_marginBottom="58dp"
+            android:layout_above="@+id/button_facebook_signout"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="19dp"
             android:visibility="gone"/>
 
         <com.facebook.login.widget.LoginButton
@@ -53,11 +72,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
+            android:textStyle="bold"
             android:background="@color/facebook_button"
             android:text="sign out"
-            android:layout_below="@+id/user_name"
+            android:alpha="0.9"
+            android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="72dp"
             android:visibility="gone"/>
 
 
