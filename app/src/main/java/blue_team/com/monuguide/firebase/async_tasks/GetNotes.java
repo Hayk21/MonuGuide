@@ -7,6 +7,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import blue_team.com.monuguide.firebase.FireHelper;
@@ -17,6 +18,7 @@ public class GetNotes extends AsyncTask<String,Void,Void> {
     private String mMonId;
     private FireHelper mFireHelper;
     private Query mGetNotesQuery;
+    Long server_timestamp = new Date().getTime();
     private HashMap<String, Note> mNote;
 
     private ValueEventListener noteValueEventListener = new ValueEventListener() {
@@ -48,7 +50,7 @@ public class GetNotes extends AsyncTask<String,Void,Void> {
     @Override
     protected Void doInBackground(String... params) {
 
-        mGetNotesQuery = mFireHelper.getmDatabase().child("models").child("monuments").child(mMonId).child("notes");
+        mGetNotesQuery = mFireHelper.getmDatabase().child("models").child("monuments").child(mMonId).child("notes").orderByChild("datetime").startAt(0);
         mGetNotesQuery.addValueEventListener(noteValueEventListener);
         return null;
     }

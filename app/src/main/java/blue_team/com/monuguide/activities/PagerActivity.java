@@ -31,6 +31,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -62,6 +65,7 @@ public class PagerActivity extends FragmentActivity {
         public void onSuccess(HashMap<String, Note> mMap) {
             mListOfNote = new ArrayList<>();
             mListOfNote.addAll(mMap.values());
+            Collections.sort(mListOfNote, new CustomComparator());
             if (!mListOfNote.isEmpty()) {
                 mSize = mListOfNote.size();
                 mViewPager.setAdapter(mPagerAdapter);
@@ -204,7 +208,7 @@ public class PagerActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return PageFragment.newInstance(position, mListOfNote.get(position), mMonument);
+            return PageFragment.newInstance(position , mListOfNote.get(position), mMonument);
         }
 
         @Override
@@ -253,4 +257,10 @@ public class PagerActivity extends FragmentActivity {
 
         }
     };
+    public class CustomComparator implements Comparator<Note> {
+        @Override
+        public int compare(Note o1, Note o2) {
+            return (int) (o2.getDatetime()-o1.getDatetime());
+        }
+    }
 }
