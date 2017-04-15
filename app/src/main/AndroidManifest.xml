@@ -59,7 +59,7 @@
             android:screenOrientation="portrait"/>
 
         <service
-            android:name=".Services.LocationService"
+            android:name=".service.LocationService"
             android:enabled="true"
             android:exported="true" />
 
@@ -107,7 +107,6 @@
         <activity android:name=".activities.MonumentSearchActivity" >
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" /></activity>
-        <activity android:name=".activities.FavoriteMonumentsActivity"></activity>
     </application>
 
 </manifest>

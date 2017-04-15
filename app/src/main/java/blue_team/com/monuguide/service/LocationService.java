@@ -1,4 +1,4 @@
-package blue_team.com.monuguide.Services;
+package blue_team.com.monuguide.service;
 
 import android.Manifest;
 import android.app.Notification;
@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.activities.MainActivity;
 import blue_team.com.monuguide.activities.SettingsActivity;
 import blue_team.com.monuguide.activities.StartActivity;
 import blue_team.com.monuguide.firebase.FireHelper;
