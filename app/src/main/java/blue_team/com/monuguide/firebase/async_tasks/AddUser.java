@@ -17,9 +17,12 @@ public class AddUser extends AsyncTask<Void,Void,Void>
 
     @Override
     protected Void doInBackground(Void... params) {
-
-        mFireHelper.getmDatabase().child("models").child("users").child(mUser.getuID()).setValue(mUser);
-        return null;
+         addUser();
+         return null;
     }
 
+    private void addUser()
+    {
+        mFireHelper.getmDatabase().child("models").child("users").child(mUser.getuID()).setValue(mUser);
+    }
 }

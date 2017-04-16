@@ -1,6 +1,7 @@
 package blue_team.com.monuguide.firebase.async_tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -14,6 +15,7 @@ import blue_team.com.monuguide.models.Monument;
 
 public class GetFavMonList extends AsyncTask<Void,Void,Void>
 {
+    private static final String TAG = "GetFavMonList";
     private String mMyuser;
     private FireHelper mFireHelper;
     private Query mGetFavMonListQuery;
@@ -23,22 +25,25 @@ public class GetFavMonList extends AsyncTask<Void,Void,Void>
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             mMon.clear();
-            for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
-                Monument addVal = mySnapshot.getValue(Monument.class);
-                String key = mySnapshot.getKey();
-                mMon.put(key, addVal);
-            }
+            getFavMonument(dataSnapshot);
             mFireHelper.getOnFavMonSuccessListener().onSuccess(mMon);
             mGetFavMonListQuery.removeEventListener(favMonValueEventListener);
-
         }
 
         @Override
         public void onCancelled(DatabaseError databaseError) {
-
+            Log.d(TAG,"favMonValueEventListener on cancelled");
         }
     };
 
+    private void getFavMonument(DataSnapshot dataSnapshot)
+    {
+        for (DataSnapshot mySnapshot : dataSnapshot.getChildren()) {
+            Monument addVal = mySnapshot.getValue(Monument.class);
+            String key = mySnapshot.getKey();
+            mMon.put(key, addVal);
+        }
+    }
 
     public GetFavMonList(String myuser, FireHelper fh) {
         this.mMyuser = myuser;
@@ -48,9 +53,13 @@ public class GetFavMonList extends AsyncTask<Void,Void,Void>
 
     @Override
     protected Void doInBackground(Void... params) {
+        getFavMonList();
+        return null;
+    }
+
+    private void getFavMonList()
+    {
         mGetFavMonListQuery = mFireHelper.getmDatabase().child("models").child("users").child(mMyuser).child("favoriteMon");
         mGetFavMonListQuery.addValueEventListener(favMonValueEventListener);
-        return null;
-
     }
 }

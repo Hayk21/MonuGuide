@@ -1,6 +1,7 @@
 package blue_team.com.monuguide.firebase.async_tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -15,6 +16,7 @@ import blue_team.com.monuguide.models.Note;
 
 public class GetNotes extends AsyncTask<String,Void,Void> {
 
+    private static final String TAG = "GetNotes";
     private String mMonId;
     private FireHelper mFireHelper;
     private Query mGetNotesQuery;
@@ -25,21 +27,25 @@ public class GetNotes extends AsyncTask<String,Void,Void> {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             mNote.clear();
-            for (DataSnapshot mySnapshot: dataSnapshot.getChildren()) {
-                Note addVal = mySnapshot.getValue(Note.class);
-                String key = mySnapshot.getKey();
-                mNote.put(key,addVal);
-            }
+            getNote(dataSnapshot);
             mFireHelper.getOnNoteSuccessListener().onSuccess(mNote);
             mGetNotesQuery.removeEventListener(noteValueEventListener);
         }
 
         @Override
         public void onCancelled(DatabaseError databaseError) {
-
+            Log.d(TAG,"noteValueEventListener on cancelled");
         }
     };
 
+    private void getNote(DataSnapshot dataSnapshot)
+    {
+        for (DataSnapshot mySnapshot: dataSnapshot.getChildren()) {
+            Note addVal = mySnapshot.getValue(Note.class);
+            String key = mySnapshot.getKey();
+            mNote.put(key,addVal);
+        }
+    }
 
     public GetNotes(String monId, FireHelper fh) {
         this.mMonId = monId;
@@ -49,9 +55,13 @@ public class GetNotes extends AsyncTask<String,Void,Void> {
 
     @Override
     protected Void doInBackground(String... params) {
+        getNotes();
+        return null;
+    }
 
+    private void getNotes()
+    {
         mGetNotesQuery = mFireHelper.getmDatabase().child("models").child("monuments").child(mMonId).child("notes").orderByChild("datetime").startAt(0);
         mGetNotesQuery.addValueEventListener(noteValueEventListener);
-        return null;
     }
 }

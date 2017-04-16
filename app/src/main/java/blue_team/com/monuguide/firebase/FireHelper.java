@@ -118,7 +118,7 @@ public class FireHelper {
 
     public void addNote(Bitmap bitmap, Monument monument, String userID, String userName, int size)
     {
-        AddNote sn = new AddNote(bitmap, monument, userID, userName, size, this);
+        AddNote sn = new AddNote(bitmap, monument, userID, userName, this);
         sn.execute();
     }
 
