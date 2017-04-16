@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.custom_views.PaintView;
 import blue_team.com.monuguide.firebase.FireHelper;
-import blue_team.com.monuguide.firebase.async_tasks.AddNote;
 import blue_team.com.monuguide.models.Monument;
 
 public class DrawingActivity extends AppCompatActivity {
@@ -32,17 +31,7 @@ public class DrawingActivity extends AppCompatActivity {
     private String[] arrayOfItems = {"Anonymous", "With your name"};
     private FireHelper mFireHelper = new FireHelper();
     private boolean isAnonymous = true;
-
-    private AddNote.operationEndListener mOpeartionEndListener = new AddNote.operationEndListener() {
-        @Override
-        public void doingSomething() {
-            Intent intent = new Intent(DrawingActivity.this, PagerActivity.class);
-            intent.putExtra(StartActivity.ARGUMENT_WITH_MONUMENT, mMonument);
-            startActivity(intent);
-            DrawingActivity.this.finish();
-            overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
-        }
-    };
+    private FireHelper.IOnOperationEndListener mOperationEndListener;
 
     View.OnClickListener OnColorItemClickListtener = new View.OnClickListener() {
         @Override
@@ -163,9 +152,9 @@ public class DrawingActivity extends AppCompatActivity {
                                 String myuser = mFireHelper.getCurrentUid();
                                 if (myuser != null) {
                                     if (isAnonymous) {
-                                        mFireHelper.addNote(bitmap1, mMonument, myuser, "Anonymous", mSize, mOpeartionEndListener);
+                                        mFireHelper.addNote(bitmap1, mMonument, myuser, "Anonymous", mSize);
                                     } else {
-                                        mFireHelper.addNote(bitmap1, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize, mOpeartionEndListener);
+                                        mFireHelper.addNote(bitmap1, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize);
                                     }
                                     Dialog loadingDialog = new Dialog(DrawingActivity.this);
                                     loadingDialog.setContentView(R.layout.loading_dialog);
@@ -241,6 +230,22 @@ public class DrawingActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mOperationEndListener = new FireHelper.IOnOperationEndListener() {
+            @Override
+            public void doingSomething() {
+                Intent intent = new Intent(DrawingActivity.this, PagerActivity.class);
+                intent.putExtra(StartActivity.ARGUMENT_WITH_MONUMENT, mMonument);
+                startActivity(intent);
+                DrawingActivity.this.finish();
+                overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
+            }
+        };
+        mFireHelper.setOnOperationEndListener(mOperationEndListener);
     }
 
     private void setItemsOnClickListenners() {
