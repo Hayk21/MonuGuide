@@ -63,7 +63,7 @@ public class WebFragment extends Fragment {
         return mWebView;
     }
 
-    public class MyWebClient extends WebViewClient {
+    private class MyWebClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);

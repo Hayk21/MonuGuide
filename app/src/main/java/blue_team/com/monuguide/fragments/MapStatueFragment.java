@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -64,12 +65,13 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     private Marker mMarker;
     private FireHelper fireHelper = new FireHelper();
     List<Monument> listOfMonument;
+    private ArrayList<Marker> mMarkerArrayList = new ArrayList<>();
     private FloatingActionButton mCurrentLocationBtn;
     public boolean mSetMyLocation = false;
     boolean b = false;
 
     private double mRadius = 0.047685;
-    private float mDefaultZoom = (float) 13.0;
+    private float mDefaultZoom = (float) 13.0; //This goes up to 21
     private double mLatStart;
     private double mLatEnd;
     private double mLongStart;
@@ -122,24 +124,6 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
             initMap();
         }
-
-    }
-
-    private void setMyLocation() {
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-        else {
-            LatLng currentLL = new LatLng(mLatitude, mLongitude);
-            CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
-            mMap.addMarker(new MarkerOptions().position(currentLL).title("My loaction"));
-            float zoomLevel = mDefaultZoom; //This goes up to 21
-            CameraUpdate zoom = CameraUpdateFactory.zoomTo(zoomLevel);
-            mMap.moveCamera(center);
-            mMap.animateCamera(zoom, 4000, null);
-        }
     }
 
     private MapFragment getMapFragment() {
@@ -154,6 +138,20 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     }
 
 
+    private void setMyLocation() {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+        else {
+            LatLng currentLL = new LatLng(mLatitude, mLongitude);
+            CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
+            mMap.moveCamera(center);
+            mMap.addMarker(new MarkerOptions().position(currentLL).title("My loaction"));
+            fireHelper.getMonuments(mLatitude, mLongitude, mRadius);
+        }
+    }
 
     private void initMap(){
         getMapFragment().getMapAsync(new OnMapReadyCallback() {
@@ -165,8 +163,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                 CameraUpdate center = CameraUpdateFactory.newLatLng(defaultLatLng);
                 mMarker = mMap.addMarker((new MarkerOptions().position(defaultLatLng)
                         .title("Yerevan")));
-                float zoomLevel = mDefaultZoom; //This goes up to 21
-                CameraUpdate zoom=CameraUpdateFactory.zoomTo(zoomLevel);
+                CameraUpdate zoom=CameraUpdateFactory.zoomTo(mDefaultZoom);
                 mMap.moveCamera(center);
                 mMap.animateCamera(zoom, 9000, null);
 
@@ -198,7 +195,6 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                         animation.setAnimationListener(new Animation.AnimationListener() {
                             @Override
                             public void onAnimationStart(Animation animation) {
-
                             }
 
                             @Override
@@ -211,7 +207,9 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
                             }
                         });
+                        if(mCurrentLocationBtn.getVisibility() != View.GONE) {
                             mCurrentLocationBtn.startAnimation(animation);
+                        }
                         return false;
                     }
                 });
@@ -245,10 +243,12 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                 mLatitude = location.getLatitude();
                 if(!mSetMyLocation){
                     setMyLocation();
+                    CameraUpdate zoom = CameraUpdateFactory.zoomTo(mDefaultZoom);
+                    mMap.animateCamera(zoom, 4000, null);
                     mSetMyLocation = true;
+                    fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), mRadius);
                 }
-                fireHelper.getMonuments(location.getLatitude(), location.getLongitude(), mRadius);
-                getMonumentList();
+
                 mapMove();
             }
 
@@ -286,19 +286,23 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             }
         });
 
-        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
-            public void onCameraChange(CameraPosition cameraPosition) {
-                if (cameraPosition.zoom >= mDefaultZoom){
-                    //getMonumentList();
+            public void onCameraIdle() {
+                float x = (float) ((mLatEnd - mLatStart)*(mLatEnd - mLatStart) + (mLongEnd - mLongStart)*(mLongEnd - mLongStart));
+                if (mMap.getCameraPosition().zoom >= mDefaultZoom){
+                    if( x > 0.00002809){
+                        fireHelper.getMonuments(mMap.getCameraPosition().target.latitude, mMap.getCameraPosition().target.longitude, mRadius);
+                    }
                 }
-                //else mMap.clear();
-                Log.v(TAG, "Latitude!! = " + (mLatStart - mLatEnd) + "    Longitude!! = " + (mLongEnd - mLongStart));
+                else {
+                    mMap.clear();
+                }
             }
+
         });
 
     }
-
 
     private FireHelper.IOnGetMonumentListSuccessListener onGetMonumentListSuccessListener = new FireHelper.IOnGetMonumentListSuccessListener() {
         @Override
@@ -312,26 +316,20 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     private void getMonumentList(){
         mMap.clear();
         LatLng currentLL = new LatLng(mLatitude, mLongitude);
-        mMap.addMarker(new MarkerOptions().position(currentLL).title("Marker in Armenia"));
+        mMap.addMarker(new MarkerOptions().position(currentLL).title("Yerevan"));
         for (Monument monument : listOfMonument) {
-            mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(monument.getLatitude(), monument.getLongitude()))
-                    .title(monument.getName()).snippet(monument.getDesc())));
-            setMarkerType((int) monument.getType());
-            mMarker.setTag(monument);
+            mMarkerArrayList.add(createMarker(monument));
         }
     }
 
-    private void setMonumentsInMoveMap(CameraPosition cameraPosition){
-
-        if (cameraPosition.zoom >= mDefaultZoom) {
-            fireHelper.getMonuments(cameraPosition.target.latitude, cameraPosition.target.longitude, mRadius);
-            getMonumentList();
-            Log.v(TAG, "setMonumentsInMove");
-        }
-        else
-            mMap.clear();
-
+    private Marker createMarker(Monument monument) {
+        mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(monument.getLatitude(), monument.getLongitude()))
+                .title(monument.getName()).snippet(monument.getDesc())));
+        setMarkerType((int) monument.getType());
+        mMarker.setTag(monument);
+        return mMarker;
     }
+
 
     private void setMarkerType(int monumentType){
         switch (monumentType){
@@ -351,12 +349,10 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     public void setMonumentFromSearch(Monument monument){
         LatLng currentLL = new LatLng(monument.getLatitude(), monument.getLongitude());
         CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
-        mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(monument.getLatitude(), monument.getLongitude()))
-                .title(monument.getName()).snippet(monument.getDesc())));
-        setMarkerType((int) monument.getType());
-        mMarker.setTag(monument);
-        CameraUpdate zoom=CameraUpdateFactory.zoomTo(mDefaultZoom);
-        mMap.moveCamera(center);
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(mDefaultZoom);
         mMap.animateCamera(zoom, 9000, null);
+        createMarker(monument);
+        mMap.moveCamera(center);
+        mMarker.showInfoWindow();
     }
 }

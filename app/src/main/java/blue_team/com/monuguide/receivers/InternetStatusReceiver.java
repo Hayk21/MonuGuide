@@ -17,11 +17,11 @@ import static android.content.Context.CONNECTIVITY_SERVICE;
 
 
 public class InternetStatusReceiver extends BroadcastReceiver {
-    private Context context;
+    private Context mContext;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        this.context = context;
+        this.mContext = context;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         boolean condition2 = sharedPreferences.getBoolean(LocationService.SERVICE_CONNECTION, false);
         boolean condtion1 = sharedPreferences.getBoolean(SettingsActivity.KEY_OF_FUNCTION, false);
@@ -37,8 +37,8 @@ public class InternetStatusReceiver extends BroadcastReceiver {
     }
 
     private boolean isConnect() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(CONNECTIVITY_SERVICE);
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         if ((connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             return true;
