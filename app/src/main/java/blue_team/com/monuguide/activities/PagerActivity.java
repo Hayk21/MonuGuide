@@ -1,7 +1,7 @@
 package blue_team.com.monuguide.activities;
 
 import android.Manifest;
-import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,12 +17,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -55,6 +53,8 @@ public class PagerActivity extends FragmentActivity {
     private FireHelper mFireHelper = new FireHelper();
     private AlertDialog mAlertDialog;
     Animation animation;
+    Dialog loadingDialog;
+    LocationManager mLocationManager;
 
     List<Note> mListOfNote;
     private FireHelper.IOnNoteSuccessListener iOnNoteSuccessListener = new FireHelper.IOnNoteSuccessListener() {
@@ -73,11 +73,11 @@ public class PagerActivity extends FragmentActivity {
         }
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pager);
+        loadingDialog = new Dialog(PagerActivity.this);
         mListOfNote = new ArrayList<>();
         mFireHelper.setOnNoteSuccessListener(iOnNoteSuccessListener);
 
@@ -111,23 +111,32 @@ public class PagerActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 draw.startAnimation(animation);
-                LocationManager locationManager = (LocationManager) PagerActivity.this.getSystemService(Context.LOCATION_SERVICE);
+                mLocationManager = (LocationManager) PagerActivity.this.getSystemService(Context.LOCATION_SERVICE);
                 ConnectivityManager connectivityManager = (ConnectivityManager) PagerActivity.this.getSystemService(CONNECTIVITY_SERVICE);
                 if (connectivityManager.getActiveNetworkInfo() != null) {
-                    if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                         if (mFireHelper.getCurrentUid() != null) {
                             if (ActivityCompat.checkSelfPermission(PagerActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(PagerActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                                 ActivityCompat.requestPermissions(PagerActivity.this,
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                         MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
                             } else {
-                                locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
-                                locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
+                                loadingDialog.setContentView(R.layout.loading_dialog);
+                                loadingDialog.setCanceledOnTouchOutside(false);
+                                loadingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                    @Override
+                                    public void onCancel(DialogInterface dialogInterface) {
+                                        mLocationManager.removeUpdates(locationListener);
+                                    }
+                                });
+                                loadingDialog.show();
+                                mLocationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
+                                mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
                             }
                         } else {
                             AlertDialog.Builder builder = new AlertDialog.Builder(PagerActivity.this);
-                            builder.setTitle("If you wish paint note you will be login in facebook\n continue...?");
-                            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            builder.setTitle(getString(R.string.add_note_monument_text));
+                            builder.setPositiveButton("Log in", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     Intent intent = new Intent(PagerActivity.this, FacebookLoginActivity.class);
@@ -145,7 +154,7 @@ public class PagerActivity extends FragmentActivity {
                         }
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(PagerActivity.this);
-                        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                        builder.setMessage(getString(R.string.turn_on_GPS))
                                 .setCancelable(false)
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
@@ -164,8 +173,8 @@ public class PagerActivity extends FragmentActivity {
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(PagerActivity.this);
-                    builder.setMessage("Please connect with internet")
-                            .setPositiveButton("CONNECT", new DialogInterface.OnClickListener() {
+                    builder.setMessage(getString(R.string.connect_internet))
+                            .setPositiveButton("Connect", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
                                     if (!wifiManager.isWifiEnabled())
@@ -174,7 +183,7 @@ public class PagerActivity extends FragmentActivity {
                                         wifiManager.setWifiEnabled(true);
                                 }
                             })
-                            .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     dialog.cancel();
                                 }
@@ -195,29 +204,6 @@ public class PagerActivity extends FragmentActivity {
         overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
     }
 
-
-    public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
-
-        public MyFragmentPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return PageFragment.newInstance(position, mListOfNote.get(position), mMonument);
-        }
-
-        @Override
-        public int getCount() {
-            return mListOfNote.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mListOfNote.get(position).getAutorName();
-        }
-    }
-
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
@@ -227,14 +213,21 @@ public class PagerActivity extends FragmentActivity {
             y = y * y;
             double result = x + y;
             if (result <= 1) {
+                loadingDialog.dismiss();
                 Intent intent = new Intent(PagerActivity.this, DrawingActivity.class);
                 intent.putExtra(EXTRA_WITH_MONUMENT, mMonument);
                 intent.putExtra(EXTRA_WITH_SIZE, mSize);
                 startActivity(intent);
-                PagerActivity.this.finish();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        PagerActivity.this.finish();
+                    }
+                }, 3000);
                 overridePendingTransition(R.anim.draw_open_anim, R.anim.draw_alpha_down);
             } else {
-                Toast.makeText(PagerActivity.this, "You are far from monument to see notes", Toast.LENGTH_LONG).show();
+                loadingDialog.dismiss();
+                Toast.makeText(PagerActivity.this, getString(R.string.far_from_monument), Toast.LENGTH_LONG).show();
             }
         }
 
@@ -253,4 +246,26 @@ public class PagerActivity extends FragmentActivity {
 
         }
     };
+
+    private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+
+        private MyFragmentPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return PageFragment.newInstance(position, mListOfNote.get(position), mMonument);
+        }
+
+        @Override
+        public int getCount() {
+            return mListOfNote.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mListOfNote.get(position).getAutorName();
+        }
+    }
 }

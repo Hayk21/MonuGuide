@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 
 import blue_team.com.monuguide.R;
@@ -33,6 +32,7 @@ public class DrawingActivity extends AppCompatActivity {
     private String[] arrayOfItems = {"Anonymous", "With your name"};
     private FireHelper mFireHelper = new FireHelper();
     private boolean isAnonymous = true;
+
     private AddNote.operationEndListener mOpeartionEndListener = new AddNote.operationEndListener() {
         @Override
         public void doingSomething() {
@@ -44,14 +44,6 @@ public class DrawingActivity extends AppCompatActivity {
         }
     };
 
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-
     View.OnClickListener OnColorItemClickListtener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -62,7 +54,6 @@ public class DrawingActivity extends AppCompatActivity {
             mCurrentCollor.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
         }
     };
-
 
     View.OnClickListener OnToolsItemClickListenner = new View.OnClickListener() {
         @Override
@@ -216,16 +207,6 @@ public class DrawingActivity extends AppCompatActivity {
     };
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent intent = new Intent(DrawingActivity.this, PagerActivity.class);
-        intent.putExtra(StartActivity.ARGUMENT_WITH_MONUMENT, mMonument);
-        startActivity(intent);
-        DrawingActivity.this.finish();
-        overridePendingTransition(R.anim.draw_alpha_up, R.anim.draw_close_anim);
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawing);
@@ -242,10 +223,24 @@ public class DrawingActivity extends AppCompatActivity {
         mListOfTools = (LinearLayout) findViewById(R.id.list_of_res);
         mCurrentCollor = (ImageButton) mFirstListOfColors.getChildAt(0);
         mCurrentCollor.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
-
         setItemsOnClickListenners();
+    }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(DrawingActivity.this, PagerActivity.class);
+        intent.putExtra(StartActivity.ARGUMENT_WITH_MONUMENT, mMonument);
+        startActivity(intent);
+        DrawingActivity.this.finish();
+        overridePendingTransition(R.anim.draw_alpha_up, R.anim.draw_close_anim);
+    }
 
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void setItemsOnClickListenners() {

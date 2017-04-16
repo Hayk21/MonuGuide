@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +40,7 @@ public class PageFragment extends Fragment {
     private int mCountLike;
     private ImageView mLike;
     private TextView mLikeCount;
-    private Animation open, close, close2;
+    private Animation mOpen, mClose, mClose2;
     private AlertDialog mAlertDialog;
     private FireHelper mFireHelper = new FireHelper();
     private FireHelper.IOnFindUserLikeSuccessListener mOnFindUserLikeSuccessListener;
@@ -54,7 +53,7 @@ public class PageFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            close.setAnimationListener(new Animation.AnimationListener() {
+            mClose.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
 
@@ -63,7 +62,7 @@ public class PageFragment extends Fragment {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     mLike.setImageDrawable(getResources().getDrawable(R.mipmap.like_icon));
-                    mLike.startAnimation(open);
+                    mLike.startAnimation(mOpen);
                     mLike.setTag("default");
                 }
 
@@ -72,7 +71,7 @@ public class PageFragment extends Fragment {
 
                 }
             });
-            close2.setAnimationListener(new Animation.AnimationListener() {
+            mClose2.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
 
@@ -81,7 +80,7 @@ public class PageFragment extends Fragment {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     mLike.setImageDrawable(getResources().getDrawable(R.mipmap.pressed_like_icon));
-                    mLike.startAnimation(open);
+                    mLike.startAnimation(mOpen);
                     mLike.setTag("pressed");
                 }
 
@@ -91,19 +90,17 @@ public class PageFragment extends Fragment {
                 }
             });
             String user = mFireHelper.getCurrentUid();
-            if(user != null) {
+            if (user != null) {
                 if (mLike.getTag().toString().equals("default")) {
                     mLike.setTag("pressed");
-                    mLike.startAnimation(close2);
-                    mFireHelper.addLike(mNoteID,user,mMonumentID);
+                    mLike.startAnimation(mClose2);
+                    mFireHelper.addLike(mNoteID, user, mMonumentID);
                 } else {
                     mLike.setTag("default");
-                    mLike.startAnimation(close);
+                    mLike.startAnimation(mClose);
                     mFireHelper.subLike(mNoteID, user, mMonumentID);
                 }
-            }
-            else
-            {
+            } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Attention").setMessage("If you want to like this note,log in with facebook.");
                 builder.setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -131,7 +128,7 @@ public class PageFragment extends Fragment {
         args.putInt(PAGE_NUMBER, page);
         args.putString(PAGE_URL, note.getImage());
         args.putString(NOTE_ID, note.getId());
-        args.putString(MONUMENT_ID,monument.getId());
+        args.putString(MONUMENT_ID, monument.getId());
         pageFragment.setArguments(args);
         return pageFragment;
 
@@ -143,7 +140,7 @@ public class PageFragment extends Fragment {
         mOnFindUserLikeSuccessListener = new FireHelper.IOnFindUserLikeSuccessListener() {
             @Override
             public void onSuccess(HashMap<String, String> mMap) {
-                if(mMap != null) {
+                if (mMap != null) {
                     if (!mMap.isEmpty()) {
                         mLike.setImageDrawable(getResources().getDrawable(R.mipmap.pressed_like_icon));
                         mLike.setTag("pressed");
@@ -167,18 +164,12 @@ public class PageFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        open = AnimationUtils.loadAnimation(getActivity(), R.anim.push_effect);
-        close = AnimationUtils.loadAnimation(getActivity(), R.anim.pull_effect);
-        close2 = AnimationUtils.loadAnimation(getActivity(), R.anim.pull_effect);
+        mOpen = AnimationUtils.loadAnimation(getActivity(), R.anim.push_effect);
+        mClose = AnimationUtils.loadAnimation(getActivity(), R.anim.pull_effect);
+        mClose2 = AnimationUtils.loadAnimation(getActivity(), R.anim.pull_effect);
         mURL = this.getArguments().getString(PAGE_URL);
         mNoteID = this.getArguments().getString(NOTE_ID);
         mMonumentID = this.getArguments().getString(MONUMENT_ID);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d("Log_Tag_1","on destroy");
     }
 
     @Override
@@ -186,10 +177,9 @@ public class PageFragment extends Fragment {
         super.onStart();
         mFireHelper.setOnGetLikeCountSuccessListener(mOnGetLikeCountSuccessListener);
         mFireHelper.getLikeCount(mMonumentID, mNoteID);
-        if(mFireHelper.getCurrentUid() != null)
-        {
+        if (mFireHelper.getCurrentUid() != null) {
             mFireHelper.setOnFindUserLikeSuccessListener(mOnFindUserLikeSuccessListener);
-            mFireHelper.findLikeUser(mNoteID,mFireHelper.getCurrentUid(),mMonumentID);
+            mFireHelper.findLikeUser(mNoteID, mFireHelper.getCurrentUid(), mMonumentID);
         }
     }
 

@@ -211,7 +211,9 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
                             }
                         });
+                        if(mCurrentLocationBtn.getVisibility() != View.GONE) {
                             mCurrentLocationBtn.startAnimation(animation);
+                        }
                         return false;
                     }
                 });

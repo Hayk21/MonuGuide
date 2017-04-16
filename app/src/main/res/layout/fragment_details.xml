@@ -46,7 +46,6 @@
         android:layout_marginRight="@dimen/small_brush"
         android:layout_marginBottom="@dimen/small_brush"
         android:maxLines="9"
-        android:text="jthguitrhjrtihjtrhjntrgubnrtjkbngrkjnbrkjnbrtnbrnbkrnbjkrnbrtnbrkjnbkjrtbrbtrjkbtbjkebnjknbkjnbjkntjkbjkbnkjetnbkjebjketbjkebjkenjkbnekjbnkjenbekjnjknejkbnejkbnekjbnjetbbjebnejkbnejkekjbekjnekjnejkbnjkbnejkbnekjbnekjbnjekbnekjbnejbnjbejkjejek"
         android:textColor="@color/text_color"
         android:textStyle="italic"
         android:textSize="18sp" />

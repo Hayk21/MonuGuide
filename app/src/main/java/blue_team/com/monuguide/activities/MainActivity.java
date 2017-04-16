@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity
     private FireHelper mFireHelper = new FireHelper();
     private NavigationView navigationView;
     private SearchFragment favoriteFragment;
-    private locBR  mLocBR = new locBR();
+    private locBR mLocBR = new locBR();
     private Boolean mLocationStatus = false;
     private AlertDialog mAlertDialog;
     ConnectivityManager cm;
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity
         mIntentFilter.addAction("android.location.PROVIDERS_CHANGED");
         mIntentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         mIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-            registerReceiver(mLocBR, mIntentFilter);
+        registerReceiver(mLocBR, mIntentFilter);
 
         //getLocation();
     }
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-            unregisterReceiver(mLocBR);
+        unregisterReceiver(mLocBR);
     }
 
     @Override
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             if (mFrameLayout.getVisibility() == View.VISIBLE) {
-                if(mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)!=null) {
+                if (mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT) != null) {
                     item.collapseActionView();
                     searchView.setIconified(true);
                     searchView.clearFocus();
@@ -175,8 +175,7 @@ public class MainActivity extends AppCompatActivity
                     fragmentTransaction1.remove(mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
                     fragmentTransaction1.commit();
                     mFrameLayout.startAnimation(animation_close);
-                }
-                else if(mFragmentManager.findFragmentByTag(FAVORITE_FRAGMENT)!=null){
+                } else if (mFragmentManager.findFragmentByTag(FAVORITE_FRAGMENT) != null) {
                     FragmentTransaction fragmentTransaction1 = mFragmentManager.beginTransaction();
                     fragmentTransaction1.remove(mFragmentManager.findFragmentByTag(FAVORITE_FRAGMENT));
                     fragmentTransaction1.commit();
@@ -192,7 +191,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_search, menu);
         item = menu.findItem(R.id.menuSearch);
@@ -207,7 +205,7 @@ public class MainActivity extends AppCompatActivity
                     FragmentTransaction fragmentTransaction1 = mFragmentManager.beginTransaction();
                     fragmentTransaction1.remove(mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT));
                     fragmentTransaction1.commit();
-                    if(favoriteFragment == null) {
+                    if (favoriteFragment == null) {
                         mFrameLayout.startAnimation(animation_close);
                     }
                 }
@@ -238,17 +236,18 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
                 FragmentTransaction transaction = mFragmentManager.beginTransaction();
-                if(mFragmentManager.findFragmentByTag(FAVORITE_FRAGMENT)!=null){
+                if (mFragmentManager.findFragmentByTag(FAVORITE_FRAGMENT) != null) {
                     transaction.remove(mFragmentManager.findFragmentByTag(FAVORITE_FRAGMENT));
                     transaction.add(R.id.search_container, searchFragment, SEARCH_FRAGMENT);
                     transaction.commit();
                     mFrameLayout.setVisibility(View.INVISIBLE);
                     mFrameLayout.setVisibility(View.VISIBLE);
-                }else {
-                transaction.add(R.id.search_container, searchFragment, SEARCH_FRAGMENT);
-                transaction.commit();
-                mFrameLayout.setVisibility(View.VISIBLE);
-                mFrameLayout.startAnimation(animation_open);}
+                } else {
+                    transaction.add(R.id.search_container, searchFragment, SEARCH_FRAGMENT);
+                    transaction.commit();
+                    mFrameLayout.setVisibility(View.VISIBLE);
+                    mFrameLayout.startAnimation(animation_open);
+                }
             }
         });
 
@@ -265,8 +264,8 @@ public class MainActivity extends AppCompatActivity
                 if (newText.isEmpty()) {
                     System.out.println("datark");
                     ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).setText();
-                    ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).monumentList.clear();
-                    ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).mAdapter.setMonumentList(((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).monumentList);
+                    ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).mMonumentList.clear();
+                    ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).mAdapter.setMonumentList(((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).mMonumentList);
                     ((SearchFragment) mFragmentManager.findFragmentByTag(SEARCH_FRAGMENT)).mAdapter.notifyDataSetChanged();
                 } else {
                     System.out.println("baza");
@@ -277,21 +276,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
         return super.onCreateOptionsMenu(menu);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -305,7 +289,6 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.login) {
@@ -343,24 +326,56 @@ public class MainActivity extends AppCompatActivity
                 }
             }
 
-            } else if (id == R.id.nav_manage) {
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
+        } else if (id == R.id.nav_manage) {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
 
-            } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_share) {
 
-            } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_send) {
 
-            }
-
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
-            return true;
         }
 
-    private void checkNetworkLocationInfo(){
-        if (mBroadcastReceiver == null){
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LOCATION_REQUEST) {
+
+            System.out.println("requestCode = ");
+            // Make sure the request was successful
+            switch (resultCode) {
+                case 1:
+                    mLocationStatus = true;
+                    break;
+                case 0:
+                    mLocationStatus = false;
+                    snackbar = Snackbar
+                            .make((View) findViewById(R.id.mapId), getString(R.string.snack_bar_text), Snackbar.LENGTH_INDEFINITE);
+                    snackbar.show();
+                    System.out.println("show snackbar");
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+                Toast.makeText(mContext, "Eccept permission to use app", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void checkNetworkLocationInfo() {
+        if (mBroadcastReceiver == null) {
             mBroadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
@@ -403,12 +418,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void  getLocation()  {
+    private void getLocation() {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
-        }
-        else
+        } else
             mLocationStatus = true;
     }
 
@@ -428,10 +442,11 @@ public class MainActivity extends AppCompatActivity
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                             dialog.cancel();
-                            if(cm.getActiveNetworkInfo() == null || !locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-                            snackbar = Snackbar
-                                    .make((View) findViewById(R.id.mapId), getString(R.string.snack_bar_text), Snackbar.LENGTH_INDEFINITE);
-                            snackbar.show();}else {
+                            if (cm.getActiveNetworkInfo() == null || !locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                                snackbar = Snackbar
+                                        .make((View) findViewById(R.id.mapId), getString(R.string.snack_bar_text), Snackbar.LENGTH_INDEFINITE);
+                                snackbar.show();
+                            } else {
                                 snackbar.dismiss();
                             }
                         }
@@ -442,47 +457,17 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == LOCATION_REQUEST) {
-
-            System.out.println("requestCode = ");
-            // Make sure the request was successful
-            switch (resultCode) {
-                case 1: mLocationStatus = true;
-                    break;
-                case 0: mLocationStatus = false;
-                    snackbar = Snackbar
-                        .make((View) findViewById(R.id.mapId), getString(R.string.snack_bar_text), Snackbar.LENGTH_INDEFINITE);
-                        snackbar.show();
-                    System.out.println("show snackbar");
-                    break;
-            }
-        }
-    }
-
-    private class locBR extends BroadcastReceiver{
+    private class locBR extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && cm.getActiveNetworkInfo() != null){
-                    if (snackbar != null) {
-                        snackbar.dismiss();
-                    }
-            }else {
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && cm.getActiveNetworkInfo() != null) {
+                if (snackbar != null) {
+                    snackbar.dismiss();
+                }
+            } else {
                 snackbar = Snackbar
                         .make((View) findViewById(R.id.mapId), getString(R.string.snack_bar_text), Snackbar.LENGTH_INDEFINITE);
                 snackbar.show();
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-            } else {
-                Toast.makeText(mContext, "Eccept permission to use app", Toast.LENGTH_SHORT).show();
             }
         }
     }

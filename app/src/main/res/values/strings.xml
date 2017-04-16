@@ -20,8 +20,8 @@
     </string-array>
     <string-array name="list_of_radius_values">
         <item>0.0014</item>
-        <item>0.00015</item>
-        <item>1</item>
+        <item>0.0021</item>
+        <item>0.0028</item>
     </string-array>
 
     <string name="pref_header_notifications">Notifications</string>
@@ -33,7 +33,7 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
 
-    <string name="default_radius">1</string>
+    <string name="default_radius">0.0014</string>
     <string name="comment_text">Notes</string>
     <string name="favorites_text">Add to Favorites</string>
 
@@ -42,7 +42,7 @@
     <string name="wiki_text">More Inforamtion</string>
     <string name="login_text">Log in</string>
     <string name="cancel">Cancel</string>
-    <string name="nothing_text">There are no notes here,You can be FISRT!!!</string>
+    <string name="nothing_text">There are no notes here,Be the firts to leave a Note!</string>
     <string name="no_result">No result for this search</string>
     <string name="no_monuments">No favorite monuments</string>
     <string name="ok">OK</string>
@@ -51,6 +51,7 @@
     <string name="face_tittle">If you would like to use all of the features of our app then please log in via Facebook</string>
     <string name="snack_bar_text">For using this APP you need to turn ON your GPS and Internet connection</string>
     <string name="add_favorite_monument_text">If you want to have your own list of favorite monuments,please log in with your facebook account</string>
+    <string name="add_note_monument_text">If you want to add your own note,please log in with your facebook account</string>
     <string name="turn_on_GPS">Your GPS is currently OFF,do you want to turn it ON?</string>
     <string name="connect_internet">Please connect to internet</string>
     <string name="far_from_monument">You are far from monument,so you can"'"t see notes,please get near</string>
@@ -59,4 +60,5 @@
     <string name="favorite_monuments">Favorite Monuments</string>
     <string name="name_of_app">MonuGuide</string>
     <string name="face_tittle_2_text">You are logged in as</string>
+    <string name="sign_out">sign out</string>
 </resources>

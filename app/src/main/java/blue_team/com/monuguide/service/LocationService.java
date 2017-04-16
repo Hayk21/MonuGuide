@@ -19,7 +19,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -42,11 +41,11 @@ public class LocationService extends Service {
     private LocationManager mLocationManager;
     private NotificationManager mNotManager;
     private NotificationCompat.Builder mBuilder;
-    private boolean isConnected = false;
+    private boolean mIsConnected = false;
     private FireHelper mFireHelper = new FireHelper();
     private List<Monument> mListOfMonument, mListOfFindedMonuments, mShowMonuments;
-    private boolean isEqual = false;
-    private int notifID;
+    private boolean mIsEqual = false;
+    private int mNotifID;
     private long[] mVibrateTime = {300, 200, 300, 500, 300, 200, 300};
 
     private FireHelper.IOnGetMonumentListSuccessListener onSuccessListener = new FireHelper.IOnGetMonumentListSuccessListener() {
@@ -63,7 +62,6 @@ public class LocationService extends Service {
         @Override
         public void onLocationChanged(final Location location) {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LocationService.this);
-            Log.d("Log_Tag2", sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0"));
             mFireHelper.getMonuments(location.getLatitude(), location.getLongitude(), Double.valueOf(sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0")));
 
             testForNotification();
@@ -92,7 +90,7 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        isConnected = false;
+        mIsConnected = false;
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (isConnect()) {
             startServiceOperation();
@@ -106,8 +104,8 @@ public class LocationService extends Service {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
         } else if (isConnect()) {
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10, 20, locationListener);
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 20, locationListener);
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 20, locationListener);
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 20, locationListener);
             Toast.makeText(this, "Location Service Run", Toast.LENGTH_SHORT).show();
         }
         return START_STICKY;
@@ -121,7 +119,7 @@ public class LocationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (isConnected)
+        if (mIsConnected)
             mLocationManager.removeUpdates(locationListener);
         stopForeground(true);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -139,8 +137,8 @@ public class LocationService extends Service {
         mBuilder = new NotificationCompat.Builder(getApplicationContext());
         mShowMonuments = new ArrayList<>();
         mListOfFindedMonuments = new ArrayList<>();
-        isConnected = true;
-        notifID = 0;
+        mIsConnected = true;
+        mNotifID = 0;
         Intent foregroundIntent = new Intent(this, SettingsActivity.class);
         PendingIntent foregroundPendingIntent = PendingIntent.getActivity(this, 0, foregroundIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder = new NotificationCompat.Builder(this);
@@ -181,17 +179,17 @@ public class LocationService extends Service {
                         for (Monument monument : mListOfMonument) {
                             for (Monument findMon : mListOfFindedMonuments) {
                                 if (monument.getId().equals(findMon.getId())) {
-                                    isEqual = true;
+                                    mIsEqual = true;
                                     break;
                                 }
                             }
-                            if (!isEqual) {
+                            if (!mIsEqual) {
                                 mListOfFindedMonuments.add(monument);
                                 if (mShowMonuments == null)
                                     mShowMonuments = new ArrayList<>();
                                 mShowMonuments.add(monument);
                             }
-                            isEqual = false;
+                            mIsEqual = false;
                         }
                         if (mShowMonuments != null) {
                             showNotification();
@@ -211,7 +209,6 @@ public class LocationService extends Service {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LocationService.this);
             if (sharedPreferences.getBoolean(SettingsActivity.KEY_OF_VIBRATE, false))
                 mBuilder.setVibrate(mVibrateTime);
-            Log.d("Log_Tag", sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE, ""));
             if (!sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE, "").equals("")) {
                 mBuilder.setSound(Uri.parse(sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE, "")));
             }
@@ -219,12 +216,11 @@ public class LocationService extends Service {
             Intent monumentIntent = new Intent(LocationService.this, StartActivity.class);
             monumentIntent.setAction(ACTION + monument.getId());
             monumentIntent.putExtra(SHOWING_MONUMENT, monument);
-            PendingIntent monumentPendingIntent = PendingIntent.getActivity(LocationService.this, notifID, monumentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent monumentPendingIntent = PendingIntent.getActivity(LocationService.this, mNotifID, monumentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             mBuilder.setContentIntent(monumentPendingIntent);
             monumentNotification = mBuilder.build();
-            mNotManager.notify(notifID, monumentNotification);
-            notifID++;
+            mNotManager.notify(mNotifID, monumentNotification);
+            mNotifID++;
         }
     }
-
 }
