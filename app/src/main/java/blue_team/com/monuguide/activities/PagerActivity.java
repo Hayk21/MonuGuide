@@ -47,8 +47,6 @@ import static blue_team.com.monuguide.activities.SettingsActivity.MY_PERMISSIONS
 public class PagerActivity extends FragmentActivity {
 
     public static final String EXTRA_WITH_MONUMENT = "ExtraMonumentID";
-    public static final String EXTRA_WITH_SIZE = "ExtraListSize";
-    int mSize;
     private ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
     private Monument mMonument;
@@ -67,7 +65,7 @@ public class PagerActivity extends FragmentActivity {
             mListOfNote.addAll(mMap.values());
             Collections.sort(mListOfNote, new CustomComparator());
             if (!mListOfNote.isEmpty()) {
-                mSize = mListOfNote.size();
+                //mSize = mListOfNote.size();
                 mViewPager.setAdapter(mPagerAdapter);
             } else {
                 mViewPager.setVisibility(View.GONE);
@@ -220,7 +218,6 @@ public class PagerActivity extends FragmentActivity {
                 loadingDialog.dismiss();
                 Intent intent = new Intent(PagerActivity.this, DrawingActivity.class);
                 intent.putExtra(EXTRA_WITH_MONUMENT, mMonument);
-                intent.putExtra(EXTRA_WITH_SIZE, mSize);
                 startActivity(intent);
                 new Handler().postDelayed(new Runnable() {
                     @Override
