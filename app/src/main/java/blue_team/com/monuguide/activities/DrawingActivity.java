@@ -1,4 +1,4 @@
-        package blue_team.com.monuguide.activities;
+package blue_team.com.monuguide.activities;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -11,13 +11,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.custom_views.PaintView;
 import blue_team.com.monuguide.firebase.FireHelper;
-import blue_team.com.monuguide.firebase.async_tasks.AddNote;
 import blue_team.com.monuguide.models.Monument;
 
 public class DrawingActivity extends AppCompatActivity {
@@ -30,23 +28,10 @@ public class DrawingActivity extends AppCompatActivity {
     private LinearLayout mFirstListOfColors, mSecondListOfColors, mListOfTools;
     private ImageButton mCurrentCollor;
     private AlertDialog mAlertDialog;
-    private String[] arrayOfItems = {"Anonymous","With your name"};
+    private String[] arrayOfItems = {"Anonymous", "With your name"};
     private FireHelper mFireHelper = new FireHelper();
     private boolean isAnonymous = true;
-    private AddNote.operationEndListener mOpeartionEndListener = new AddNote.operationEndListener() {
-        @Override
-        public void doingSomething() {
-            DrawingActivity.this.finish();
-        }
-    };
-
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
+    private FireHelper.IOnOperationEndListener mOperationEndListener;
 
     View.OnClickListener OnColorItemClickListtener = new View.OnClickListener() {
         @Override
@@ -58,7 +43,6 @@ public class DrawingActivity extends AppCompatActivity {
             mCurrentCollor.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
         }
     };
-
 
     View.OnClickListener OnToolsItemClickListenner = new View.OnClickListener() {
         @Override
@@ -150,9 +134,9 @@ public class DrawingActivity extends AppCompatActivity {
                     builder2.setSingleChoiceItems(arrayOfItems, 0, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            if(i == 0){
+                            if (i == 0) {
                                 isAnonymous = true;
-                            }else if(i == 1){
+                            } else if (i == 1) {
                                 isAnonymous = false;
                             }
                         }
@@ -161,19 +145,28 @@ public class DrawingActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int id) {
                             mPaintView.buildDrawingCache();
                             Bitmap bitmap = mPaintView.getDrawingCache();
-                            Bitmap bitmap1 = bitmap.copy(Bitmap.Config.ARGB_8888,false);
+                            Bitmap bitmap1 = bitmap.copy(Bitmap.Config.ARGB_8888, false);
                             bitmap.recycle();
                             bitmap = null;
-                            if(mMonument != null) {
+                            if (mMonument != null) {
                                 String myuser = mFireHelper.getCurrentUid();
-                                if(myuser != null) {
+                                if (myuser != null) {
                                     if (isAnonymous) {
-                                        mFireHelper.addNote(bitmap1, mMonument, myuser, "Anonymous", mSize,mOpeartionEndListener);
+                                        mFireHelper.addNote(bitmap1, mMonument, myuser, "Anonymous", mSize);
                                     } else {
-                                        mFireHelper.addNote(bitmap1, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize,mOpeartionEndListener);
+                                        mFireHelper.addNote(bitmap1, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize);
                                     }
+                                    Dialog loadingDialog = new Dialog(DrawingActivity.this);
+                                    loadingDialog.setContentView(R.layout.loading_dialog);
+                                    loadingDialog.setCanceledOnTouchOutside(false);
+                                    loadingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                        @Override
+                                        public void onCancel(DialogInterface dialogInterface) {
+                                            DrawingActivity.this.finish();
+                                        }
+                                    });
+                                    loadingDialog.show();
                                 }
-                                PagerActivity.setFirstCommit(true);
                             }
                             mPaintView.destroyDrawingCache();
                             mPaintView.setDrawingCacheEnabled(false);
@@ -190,6 +183,9 @@ public class DrawingActivity extends AppCompatActivity {
                     mAlertDialog.show();
                     break;
                 case R.id.back_button:
+                    Intent intent = new Intent(DrawingActivity.this, PagerActivity.class);
+                    intent.putExtra(StartActivity.ARGUMENT_WITH_MONUMENT, mMonument);
+                    startActivity(intent);
                     DrawingActivity.this.finish();
                     overridePendingTransition(R.anim.draw_alpha_up, R.anim.draw_close_anim);
                     break;
@@ -198,13 +194,6 @@ public class DrawingActivity extends AppCompatActivity {
             }
         }
     };
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        DrawingActivity.this.finish();
-        overridePendingTransition(R.anim.draw_alpha_up, R.anim.draw_close_anim);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -223,10 +212,40 @@ public class DrawingActivity extends AppCompatActivity {
         mListOfTools = (LinearLayout) findViewById(R.id.list_of_res);
         mCurrentCollor = (ImageButton) mFirstListOfColors.getChildAt(0);
         mCurrentCollor.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
-
         setItemsOnClickListenners();
+    }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(DrawingActivity.this, PagerActivity.class);
+        intent.putExtra(StartActivity.ARGUMENT_WITH_MONUMENT, mMonument);
+        startActivity(intent);
+        DrawingActivity.this.finish();
+        overridePendingTransition(R.anim.draw_alpha_up, R.anim.draw_close_anim);
+    }
 
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mOperationEndListener = new FireHelper.IOnOperationEndListener() {
+            @Override
+            public void doingSomething() {
+                Intent intent = new Intent(DrawingActivity.this, PagerActivity.class);
+                intent.putExtra(StartActivity.ARGUMENT_WITH_MONUMENT, mMonument);
+                startActivity(intent);
+                DrawingActivity.this.finish();
+                overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
+            }
+        };
+        mFireHelper.setOnOperationEndListener(mOperationEndListener);
     }
 
     private void setItemsOnClickListenners() {

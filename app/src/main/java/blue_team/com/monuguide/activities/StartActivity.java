@@ -1,6 +1,7 @@
 package blue_team.com.monuguide.activities;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -12,28 +13,24 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.Services.LocationService;
+
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.fragments.DetailsFragment;
 import blue_team.com.monuguide.fragments.WebFragment;
 import blue_team.com.monuguide.models.Monument;
+import blue_team.com.monuguide.service.LocationService;
 
 import static blue_team.com.monuguide.activities.MainActivity.LOCATION_REQUEST;
 import static blue_team.com.monuguide.activities.SettingsActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -50,8 +47,8 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     private FireHelper mFireHalper = new FireHelper();
     private AlertDialog mAlertDialog;
     private Animation open, close, close2;
-    LocationManager locationManager;
-
+    LocationManager mLocationManager;
+    Dialog mLoadingDialog;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -63,10 +60,11 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         setupActionBar();
+        mLoadingDialog = new Dialog(StartActivity.this);
         open = AnimationUtils.loadAnimation(this, R.anim.push_effect);
         close = AnimationUtils.loadAnimation(this, R.anim.pull_effect);
         close2 = AnimationUtils.loadAnimation(this, R.anim.pull_effect);
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (getIntent() != null) {
             if (getIntent().getParcelableExtra(LocationService.SHOWING_MONUMENT) != null) {
                 mMonument = getIntent().getParcelableExtra(LocationService.SHOWING_MONUMENT);
@@ -114,7 +112,7 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
     @Override
     public void onFragmentInteraction(int ID, final Monument monument, final ImageView view) {
         ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(CONNECTIVITY_SERVICE);
-        Animation animation = AnimationUtils.loadAnimation(this,R.anim.pressed_anim);
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.pressed_anim);
         switch (ID) {
             case R.id.location_img:
                 view.startAnimation(animation);
@@ -219,14 +217,23 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
             case R.id.comment_img:
                 view.startAnimation(animation);
                 if (connectivityManager.getActiveNetworkInfo() != null) {
-                    if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions(StartActivity.this,
                                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                        }else {
-                            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
-                            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
+                        } else {
+                            mLoadingDialog.setContentView(R.layout.loading_dialog);
+                            mLoadingDialog.setCanceledOnTouchOutside(false);
+                            mLoadingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialogInterface) {
+                                    mLocationManager.removeUpdates(locationListener);
+                                }
+                            });
+                            mLoadingDialog.show();
+                            mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
+                            mLocationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
                         }
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -296,12 +303,14 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
             y = y * y;
             double result = x + y;
 //            0.00000196
-            if(result<=1){
+            if (result <= 1) {
+                mLoadingDialog.dismiss();
                 Intent intent = new Intent(StartActivity.this, PagerActivity.class);
                 intent.putExtra(ARGUMENT_WITH_MONUMENT, mMonument);
                 startActivity(intent);
                 overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
-            }else {
+            } else {
+                mLoadingDialog.dismiss();
                 Toast.makeText(StartActivity.this, getString(R.string.far_from_monument), Toast.LENGTH_LONG).show();
             }
         }
@@ -321,7 +330,4 @@ public class StartActivity extends AppCompatActivity implements DetailsFragment.
 
         }
     };
-
-
-
 }

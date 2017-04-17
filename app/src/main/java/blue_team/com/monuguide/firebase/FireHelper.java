@@ -56,6 +56,7 @@ public class FireHelper {
     private IOnFindFavMonSuccessListener mOnFindFavMonSuccessListener;
     private IOnFindUserLikeSuccessListener mOnFindUserLikeSuccessListener;
     private IOnGetLikeCountSuccessListener mOnGetLikeCountSuccessListener;
+    private IOnOperationEndListener mOnOperationEndListener;
 
     public FireHelper()
     {
@@ -115,9 +116,9 @@ public class FireHelper {
         ffm.execute();
     }
 
-    public void addNote(Bitmap bitmap, Monument monument, String userID, String userName, int size, AddNote.operationEndListener operationEndListener)
+    public void addNote(Bitmap bitmap, Monument monument, String userID, String userName, int size)
     {
-        AddNote sn = new AddNote(bitmap, monument, userID, userName, size, this,operationEndListener);
+        AddNote sn = new AddNote(bitmap, monument, userID, userName, size, this);
         sn.execute();
     }
 
@@ -285,5 +286,17 @@ public class FireHelper {
 
     public interface IOnGetLikeCountSuccessListener{
         void onSuccess(int likeCount);
+    }
+
+    public IOnOperationEndListener getOnOperationEndListener() {
+        return mOnOperationEndListener;
+    }
+
+    public void setOnOperationEndListener(IOnOperationEndListener onOperationEndListener) {
+        mOnOperationEndListener = onOperationEndListener;
+    }
+
+    public interface IOnOperationEndListener{
+        void doingSomething();
     }
 }

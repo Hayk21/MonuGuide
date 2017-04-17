@@ -11,8 +11,8 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_margin="10dp"
+        android:layout_weight="1"
         android:alpha="0.8"
         android:theme="@style/AppTheme.AppBarOverlay">
 
@@ -23,25 +23,6 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
-
-
-
-
-                <!--<EditText-->
-                    <!--android:id="@+id/search_edit"-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_weight="3"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:gravity="left" />-->
-
-                <!--<ImageView-->
-                    <!--android:id="@+id/cancel_search"-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="26dp"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:layout_gravity="center"-->
-                    <!--android:src="@android:drawable/ic_menu_close_clear_cancel"/>-->
-
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
@@ -50,21 +31,12 @@
         android:id="@+id/search_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="9"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:layout_weight="9"
         android:alpha="0.9"
         android:background="@android:color/white"
         android:visibility="invisible">
 
     </FrameLayout>
-
-    <!--<android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" /> -->
-
 </LinearLayout>

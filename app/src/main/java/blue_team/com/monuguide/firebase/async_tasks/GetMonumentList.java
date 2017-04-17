@@ -29,11 +29,19 @@ public class GetMonumentList extends AsyncTask<Void, Void, Void>
         public void onDataChange(DataSnapshot dataSnapshot) {
             for (DataSnapshot mySnapshot: dataSnapshot.getChildren()) {
                 Monument addVal = mySnapshot.getValue(Monument.class);
+                String key = mySnapshot.getKey();
+                mMon.put(key,addVal);
             }
-            count = 1;
-            mFireHelper.setmDatabase1(mGetMonumentsByLatitudeQuery.getRef());
-            mFireHelper.getMonuments(mLatitude,mLongitude,mRadius);
-            mGetMonumentsByLatitudeQuery.removeEventListener(getMonByLatitudeValueEventListener);
+            if(!mMon.isEmpty()) {
+                mMon.clear();
+                count = 1;
+                mFireHelper.setmDatabase1(mGetMonumentsByLatitudeQuery.getRef());
+                mFireHelper.getMonuments(mLatitude, mLongitude, mRadius);
+                mGetMonumentsByLatitudeQuery.removeEventListener(getMonByLatitudeValueEventListener);
+            }
+            else{
+                mFireHelper.getOnGetMonumentSuccessListener().onSuccess(mMon);
+            }
         }
 
         @Override

@@ -13,11 +13,10 @@ import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import blue_team.com.monuguide.R;
-import blue_team.com.monuguide.Services.LocationService;
+import blue_team.com.monuguide.service.LocationService;
 
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -29,12 +28,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public static final String KEY_OF_RINGTONE = "notifications_new_message_ringtone";
     private Intent mIntent;
     private SwitchPreference mSwitchPreference;
-
-
-    private static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,18 +72,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
     @Override
     public boolean onIsMultiPane() {
         return isXLargeTablet(this);
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+        startActivity(intent);
+        this.finish();
+        overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -108,14 +101,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         } else {
-            Log.d("Log_Tag", s);
             mIntent = new Intent(SettingsActivity.this, LocationService.class);
             if (s.equals(KEY_OF_FUNCTION)) {
                 if (sharedPreferences.getBoolean(s, false)) {
                     startService(mIntent);
                 } else stopService(mIntent);
             } else if (s.equals(KEY_OF_LIST_RADIUS)) {
-                Log.d("Log_Tag1", sharedPreferences.getString(s, "1"));
             }
         }
     }
@@ -141,12 +132,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-        startActivity(intent);
-        this.finish();
-        overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
+    private static boolean isXLargeTablet(Context context) {
+        return (context.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+    }
+
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 }
 

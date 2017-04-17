@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -57,7 +58,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements
     private FireHelper mFireHelper = new FireHelper();
     private User mMyUser;
     ImageView mUserImg;
-    TextView mFaceTittle,mUserName;
+    TextView mFaceTittle,mFaceTittle2,mUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements
         mSignOutButton = (Button) findViewById(R.id.button_facebook_signout);
         mUserImg = (ImageView) findViewById(R.id.user_img);
         mFaceTittle = (TextView) findViewById(R.id.face_tittle);
+        mFaceTittle2 = (TextView) findViewById(R.id.face_tittle_2);
         mUserName = (TextView) findViewById(R.id.user_name);
 
         mLoginButton.setReadPermissions("email", "public_profile");
@@ -94,6 +96,7 @@ public class FacebookLoginActivity extends AppCompatActivity implements
             public void onError(FacebookException error) {
                 updateUI(null);
                 error.getMessage();
+                Toast.makeText(FacebookLoginActivity.this, "Connect to Internet", Toast.LENGTH_SHORT).show();
                // FacebookLoginActivity.this.finish();
             }
         });
@@ -212,8 +215,10 @@ public class FacebookLoginActivity extends AppCompatActivity implements
             mFaceTittle.setVisibility(View.GONE);
             mUserName.setVisibility(View.VISIBLE);
             mUserName.setText(user.getDisplayName());
+            mFaceTittle.setVisibility(View.GONE);
+            mFaceTittle2.setVisibility(View.VISIBLE);
             if(user.getPhotoUrl()!=null) {
-                Picasso.with(this).load(user.getPhotoUrl()).placeholder(R.mipmap.no_user).resize(500, 500).into(mUserImg);
+                Picasso.with(this).load(user.getPhotoUrl()).placeholder(R.mipmap.no_user).resize(300, 300).into(mUserImg);
             }
             mLoginButton.setVisibility(View.GONE);
             mSignOutButton.setVisibility(View.VISIBLE);
@@ -221,6 +226,8 @@ public class FacebookLoginActivity extends AppCompatActivity implements
             mUserImg.setVisibility(View.GONE);
             mFaceTittle.setVisibility(View.VISIBLE);
             mUserName.setVisibility(View.GONE);
+            mFaceTittle2.setVisibility(View.GONE);
+            mFaceTittle.setVisibility(View.VISIBLE);
             mLoginButton.setVisibility(View.VISIBLE);
             mSignOutButton.setVisibility(View.GONE);
         }

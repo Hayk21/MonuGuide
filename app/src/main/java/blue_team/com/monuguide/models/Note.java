@@ -11,6 +11,7 @@ public class Note implements Parcelable {
     private String autorName;
     private String id;
     private String image;
+    private Long datetime;
     private int likeCount;
     private HashMap<String,String> like;
 
@@ -87,6 +88,13 @@ public class Note implements Parcelable {
 
     }
 
+    public Long getDatetime() {
+        return datetime;
+    }
+
+    public void setDatetime(Long datetime) {
+        this.datetime = datetime;
+    }
 
     @Override
     public int describeContents() {

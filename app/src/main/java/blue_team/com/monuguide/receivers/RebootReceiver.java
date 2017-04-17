@@ -9,17 +9,17 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 
-import blue_team.com.monuguide.Services.LocationService;
 import blue_team.com.monuguide.activities.SettingsActivity;
+import blue_team.com.monuguide.service.LocationService;
 
 import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class RebootReceiver extends BroadcastReceiver {
-    private Context context;
+    private Context mContext;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        this.context = context;
+        this.mContext = context;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         boolean answer = sharedPreferences.getBoolean(SettingsActivity.KEY_OF_FUNCTION, false);
         if (answer && isConnect()) {
@@ -29,8 +29,8 @@ public class RebootReceiver extends BroadcastReceiver {
     }
 
     private boolean isConnect() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(CONNECTIVITY_SERVICE);
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         if ((connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             return true;
