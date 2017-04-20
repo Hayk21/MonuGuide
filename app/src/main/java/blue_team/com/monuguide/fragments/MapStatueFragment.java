@@ -53,7 +53,7 @@ import static android.location.LocationManager.GPS_PROVIDER;
 import static android.location.LocationManager.NETWORK_PROVIDER;
 import static blue_team.com.monuguide.activities.SettingsActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 
-public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
+public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
     private static final String TAG = "MapFragment";
 
@@ -70,10 +70,14 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
     private ArrayList<Marker> mMarkerArrayList = new ArrayList<>();
     private FloatingActionButton mCurrentLocationBtn;
     public boolean mSetMyLocation = false;
+    private boolean mMarkerClicked = false;
     boolean b = false;
+    private boolean mFromSearch = false;
+    private Monument mSearchMonument;
 
     private double mRadius = 0.047685;
-    private float mDefaultZoom = (float) 13.0; //This goes up to 21
+    private double mShowMonuments = 0.00002809;
+    private float mDefaultZoom = (float) 14.0; //This goes up to 21
     private double mLatStart;
     private double mLatEnd;
     private double mLongStart;
@@ -118,7 +122,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        } else {
+        }else {
 
             setLocationListener();
             mLocationManager.requestLocationUpdates(GPS_PROVIDER, 1000, 1, mLocationListener);
@@ -156,7 +160,8 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        } else {
+        }
+        else {
             LatLng currentLL = new LatLng(mLatitude, mLongitude);
             CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
             mMap.moveCamera(center);
@@ -165,7 +170,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void initMap() {
+    private void initMap(){
         getMapFragment().getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
@@ -193,6 +198,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
                 mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng latLng) {
+                        mMarkerClicked = false;
                         if (mCurrentLocationBtn.getVisibility() == View.GONE) {
                             Animation animation1 = AnimationUtils.loadAnimation(getActivity(), R.anim.translate_down);
                             mCurrentLocationBtn.setVisibility(View.VISIBLE);
@@ -203,7 +209,8 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
-                        Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.translate_up);
+                        mMarkerClicked = true;
+                        Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.translate_up);
                         animation.setAnimationListener(new Animation.AnimationListener() {
                             @Override
                             public void onAnimationStart(Animation animation) {
@@ -219,7 +226,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
 
                             }
                         });
-                        if (mCurrentLocationBtn.getVisibility() != View.GONE) {
+                        if(mCurrentLocationBtn.getVisibility() != View.GONE) {
                             mCurrentLocationBtn.startAnimation(animation);
                         }
                         return false;
@@ -230,7 +237,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
                     public void onInfoWindowClick(Marker marker) {
                         Monument monument = (Monument) marker.getTag();
                         Intent intent = new Intent(getActivity(), StartActivity.class);
-                        intent.putExtra(LocationService.SHOWING_MONUMENT, monument);
+                        intent.putExtra(LocationService.SHOWING_MONUMENT,monument);
                         startActivity(intent);
 
                     }
@@ -253,7 +260,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
             public void onLocationChanged(Location location) {
                 mLongitude = location.getLongitude();
                 mLatitude = location.getLatitude();
-                if (!mSetMyLocation) {
+                if(!mSetMyLocation){
                     setMyLocation();
                     CameraUpdate zoom = CameraUpdateFactory.zoomTo(mDefaultZoom);
                     mMap.animateCamera(zoom, 4000, null);
@@ -301,13 +308,18 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                float x = (float) ((mLatEnd - mLatStart) * (mLatEnd - mLatStart) + (mLongEnd - mLongStart) * (mLongEnd - mLongStart));
-                if (mMap.getCameraPosition().zoom >= mDefaultZoom) {
-                    if (x > 0.00002809) {
-                        fireHelper.getMonuments(mMap.getCameraPosition().target.latitude, mMap.getCameraPosition().target.longitude, mRadius);
+            float x = (float) ((mLatEnd - mLatStart)*(mLatEnd - mLatStart) + (mLongEnd - mLongStart)*(mLongEnd - mLongStart));
+                if (!mMarkerClicked) {
+                    if (mMap.getCameraPosition().zoom >= mDefaultZoom) {
+                        if (x > mShowMonuments) {
+                            fireHelper.getMonuments(mMap.getCameraPosition().target.latitude, mMap.getCameraPosition().target.longitude, mRadius);
+                        }
+                    } else {
+                        mMap.clear();
                     }
-                } else {
-                    mMap.clear();
+                }
+                else{
+                    mMarkerClicked = false;
                 }
             }
 
@@ -342,7 +354,6 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-
     private void setMarkerType(int monumentType){
         switch (monumentType){
             case 1:
@@ -359,13 +370,23 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
 
 
     public void setMonumentFromSearch(Monument monument){
+        mSearchMonument = monument;
+        mFromSearch = true;
         LatLng currentLL = new LatLng(monument.getLatitude(), monument.getLongitude());
         CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(mDefaultZoom);
-        mMap.animateCamera(zoom, 9000, null);
         createMarker(monument);
         mMap.moveCamera(center);
         mMarker.showInfoWindow();
+        //mMap.animateCamera(zoom, 9000, null);
+        //mMap.animateCamera(CameraUpdateFactory.zoomTo(mMap.getCameraPosition().zoom), null);
+
+
+        CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
+                currentLL, mMap.getCameraPosition().zoom);
+        mMap.animateCamera(location);
+
+
     }
 
     @Override
