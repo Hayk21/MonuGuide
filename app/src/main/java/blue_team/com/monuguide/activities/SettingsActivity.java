@@ -106,7 +106,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                 if (sharedPreferences.getBoolean(s, false)) {
                     startService(mIntent);
                 } else stopService(mIntent);
-            } else if (s.equals(KEY_OF_LIST_RADIUS)) {
             }
         }
     }

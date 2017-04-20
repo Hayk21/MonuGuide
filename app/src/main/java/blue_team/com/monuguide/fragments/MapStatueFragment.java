@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -23,6 +24,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import android.location.LocationListener;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -51,7 +53,7 @@ import static android.location.LocationManager.GPS_PROVIDER;
 import static android.location.LocationManager.NETWORK_PROVIDER;
 import static blue_team.com.monuguide.activities.SettingsActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 
-public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
+public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
 
     private static final String TAG = "MapFragment";
 
@@ -116,7 +118,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }else {
+        } else {
 
             setLocationListener();
             mLocationManager.requestLocationUpdates(GPS_PROVIDER, 1000, 1, mLocationListener);
@@ -124,6 +126,17 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
             initMap();
         }
+    }
+
+    public void permissionEnabled() {
+        setLocationListener();
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+        }
+        mLocationManager.requestLocationUpdates(GPS_PROVIDER, 1000, 1, mLocationListener);
+        mLocationManager.requestLocationUpdates(NETWORK_PROVIDER, 1000 * 10, 10, mLocationListener);
+
+        initMap();
     }
 
     private MapFragment getMapFragment() {
@@ -143,8 +156,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-        else {
+        } else {
             LatLng currentLL = new LatLng(mLatitude, mLongitude);
             CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
             mMap.moveCamera(center);
@@ -153,7 +165,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
         }
     }
 
-    private void initMap(){
+    private void initMap() {
         getMapFragment().getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
@@ -163,7 +175,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                 CameraUpdate center = CameraUpdateFactory.newLatLng(defaultLatLng);
                 mMarker = mMap.addMarker((new MarkerOptions().position(defaultLatLng)
                         .title("Yerevan")));
-                CameraUpdate zoom=CameraUpdateFactory.zoomTo(mDefaultZoom);
+                CameraUpdate zoom = CameraUpdateFactory.zoomTo(mDefaultZoom);
                 mMap.moveCamera(center);
                 mMap.animateCamera(zoom, 9000, null);
 
@@ -181,7 +193,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                 mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng latLng) {
-                        if(mCurrentLocationBtn.getVisibility() == View.GONE) {
+                        if (mCurrentLocationBtn.getVisibility() == View.GONE) {
                             Animation animation1 = AnimationUtils.loadAnimation(getActivity(), R.anim.translate_down);
                             mCurrentLocationBtn.setVisibility(View.VISIBLE);
                             mCurrentLocationBtn.startAnimation(animation1);
@@ -191,7 +203,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
-                        Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.translate_up);
+                        Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.translate_up);
                         animation.setAnimationListener(new Animation.AnimationListener() {
                             @Override
                             public void onAnimationStart(Animation animation) {
@@ -207,7 +219,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
                             }
                         });
-                        if(mCurrentLocationBtn.getVisibility() != View.GONE) {
+                        if (mCurrentLocationBtn.getVisibility() != View.GONE) {
                             mCurrentLocationBtn.startAnimation(animation);
                         }
                         return false;
@@ -218,7 +230,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                     public void onInfoWindowClick(Marker marker) {
                         Monument monument = (Monument) marker.getTag();
                         Intent intent = new Intent(getActivity(), StartActivity.class);
-                        intent.putExtra(LocationService.SHOWING_MONUMENT,monument);
+                        intent.putExtra(LocationService.SHOWING_MONUMENT, monument);
                         startActivity(intent);
 
                     }
@@ -241,7 +253,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             public void onLocationChanged(Location location) {
                 mLongitude = location.getLongitude();
                 mLatitude = location.getLatitude();
-                if(!mSetMyLocation){
+                if (!mSetMyLocation) {
                     setMyLocation();
                     CameraUpdate zoom = CameraUpdateFactory.zoomTo(mDefaultZoom);
                     mMap.animateCamera(zoom, 4000, null);
@@ -289,13 +301,12 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                float x = (float) ((mLatEnd - mLatStart)*(mLatEnd - mLatStart) + (mLongEnd - mLongStart)*(mLongEnd - mLongStart));
-                if (mMap.getCameraPosition().zoom >= mDefaultZoom){
-                    if( x > 0.00002809){
+                float x = (float) ((mLatEnd - mLatStart) * (mLatEnd - mLatStart) + (mLongEnd - mLongStart) * (mLongEnd - mLongStart));
+                if (mMap.getCameraPosition().zoom >= mDefaultZoom) {
+                    if (x > 0.00002809) {
                         fireHelper.getMonuments(mMap.getCameraPosition().target.latitude, mMap.getCameraPosition().target.longitude, mRadius);
                     }
-                }
-                else {
+                } else {
                     mMap.clear();
                 }
             }
@@ -331,6 +342,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     }
 
 
+
     private void setMarkerType(int monumentType){
         switch (monumentType){
             case 1:
@@ -354,5 +366,20 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
         createMarker(monument);
         mMap.moveCamera(center);
         mMarker.showInfoWindow();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            setLocationListener();
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            }
+                mLocationManager.requestLocationUpdates(GPS_PROVIDER, 1000, 1, mLocationListener);
+                mLocationManager.requestLocationUpdates(NETWORK_PROVIDER, 1000 * 10, 10, mLocationListener);
+
+                initMap();
+
+        }
     }
 }

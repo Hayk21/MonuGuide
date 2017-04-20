@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -30,6 +31,7 @@ import blue_team.com.monuguide.activities.SettingsActivity;
 import blue_team.com.monuguide.activities.StartActivity;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.models.Monument;
+import blue_team.com.monuguide.receivers.InternetStatusReceiver;
 
 
 public class LocationService extends Service {
@@ -47,6 +49,7 @@ public class LocationService extends Service {
     private boolean mIsEqual = false;
     private int mNotifID;
     private long[] mVibrateTime = {300, 200, 300, 500, 300, 200, 300};
+    Double number;
 
     private FireHelper.IOnGetMonumentListSuccessListener onSuccessListener = new FireHelper.IOnGetMonumentListSuccessListener() {
         @Override
@@ -62,7 +65,8 @@ public class LocationService extends Service {
         @Override
         public void onLocationChanged(final Location location) {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LocationService.this);
-            mFireHelper.getMonuments(location.getLatitude(), location.getLongitude(), Double.valueOf(sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0")));
+            number = Double.valueOf(sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0.0014"));
+            mFireHelper.getMonuments(location.getLatitude(), location.getLongitude(), Double.valueOf(sharedPreferences.getString(SettingsActivity.KEY_OF_LIST_RADIUS, "0.0014")));
 
             testForNotification();
 
@@ -142,7 +146,7 @@ public class LocationService extends Service {
         Intent foregroundIntent = new Intent(this, SettingsActivity.class);
         PendingIntent foregroundPendingIntent = PendingIntent.getActivity(this, 0, foregroundIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder = new NotificationCompat.Builder(this);
-        mBuilder.setSmallIcon(R.drawable.header_notif_icon).setContentText("AutoFind Is Run").setContentTitle("MonuGuide").setAutoCancel(true).setWhen(System.currentTimeMillis()).setDefaults(Notification.DEFAULT_SOUND).setContentIntent(foregroundPendingIntent);
+        mBuilder.setSmallIcon(R.drawable.header_notif_icon).setContentText("AutoFinder Is Run").setContentTitle("MonuGuide").setAutoCancel(true).setWhen(System.currentTimeMillis()).setDefaults(Notification.DEFAULT_SOUND).setContentIntent(foregroundPendingIntent);
         foregroundNotification = mBuilder.build();
         startForeground(ID_FOR_FOREGROUND, foregroundNotification);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -212,7 +216,7 @@ public class LocationService extends Service {
             if (!sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE, "").equals("")) {
                 mBuilder.setSound(Uri.parse(sharedPreferences.getString(SettingsActivity.KEY_OF_RINGTONE, "")));
             }
-            mBuilder.setContentTitle("Theare is Monument").setSmallIcon(R.drawable.notif_icon).setContentText(monument.getName() + " is finded near you.").setWhen(System.currentTimeMillis()).setAutoCancel(true);
+            mBuilder.setContentTitle("Theare is a Monument").setSmallIcon(R.drawable.notif_icon).setContentText(monument.getName() + " monument is near you.").setWhen(System.currentTimeMillis()).setAutoCancel(true);
             Intent monumentIntent = new Intent(LocationService.this, StartActivity.class);
             monumentIntent.setAction(ACTION + monument.getId());
             monumentIntent.putExtra(SHOWING_MONUMENT, monument);

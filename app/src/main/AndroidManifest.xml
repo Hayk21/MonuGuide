@@ -47,7 +47,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.DrawingActivity"
             android:launchMode="singleTask"
@@ -60,7 +60,7 @@
         <service
             android:name=".service.LocationService"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true" />
 
         <receiver android:name=".receivers.RebootReceiver">
             <intent-filter>
@@ -71,8 +71,8 @@
         </receiver>
         <receiver android:name=".receivers.InternetStatusReceiver">
             <intent-filter>
-                <action android:name="android.location.PROVIDERS_CHANGED" />
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.location.PROVIDERS_CHANGED" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
