@@ -19,13 +19,16 @@ import android.widget.TextView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import blue_team.com.monuguide.R;
 import blue_team.com.monuguide.activities.FacebookLoginActivity;
+import blue_team.com.monuguide.activities.PagerActivity;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.models.Monument;
 import blue_team.com.monuguide.models.Note;
+
 
 
 public class PageFragment extends Fragment {
@@ -42,9 +45,13 @@ public class PageFragment extends Fragment {
     private TextView mLikeCount;
     private Animation mOpen, mClose, mClose2;
     private AlertDialog mAlertDialog;
+    private ArrayList<Note> mNotesList;
     private FireHelper mFireHelper = new FireHelper();
     private FireHelper.IOnFindUserLikeSuccessListener mOnFindUserLikeSuccessListener;
     private FireHelper.IOnGetLikeCountSuccessListener mOnGetLikeCountSuccessListener;
+    private FireHelper.IOnFindNoteListener mOnFindNoteListener;
+    private FireHelper.IOnDeleteNoteListener mOnDeleteNoteListener;
+    private IOnRemoveItemListener mOnRemoveListener;
     private ProgressBar mProgressBar;
 
 
@@ -151,12 +158,40 @@ public class PageFragment extends Fragment {
                 }
             }
         };
+
         mOnGetLikeCountSuccessListener = new FireHelper.IOnGetLikeCountSuccessListener() {
             @Override
             public void onSuccess(int likeCount) {
                 mCountLike = likeCount;
                 String lc = mCountLike + " ";
                 mLikeCount.setText(lc);
+            }
+        };
+
+        mOnFindNoteListener = new FireHelper.IOnFindNoteListener() {
+            @Override
+            public void onSuccess(HashMap<String, Note> mNote) {
+                mNotesList.addAll(mNote.values());
+                String userId = mFireHelper.getCurrentUid();
+                if (mNotesList != null && userId != null) {
+                    if (!mNotesList.isEmpty()) {
+                        if(mNotesList.get(0).getUid().equals(userId))
+                        mDelete.setVisibility(View.VISIBLE);
+                    } else {
+                        mDelete.setVisibility(View.INVISIBLE);
+                    }
+                }
+                else
+                {
+                    mDelete.setVisibility(View.INVISIBLE);
+                }
+            }
+        };
+
+        mOnDeleteNoteListener = new FireHelper.IOnDeleteNoteListener() {
+            @Override
+            public void doingSomething(String noteId) {
+                mOnRemoveListener.onSuccess(noteId);
             }
         };
     }
@@ -170,6 +205,7 @@ public class PageFragment extends Fragment {
         mURL = this.getArguments().getString(PAGE_URL);
         mNoteID = this.getArguments().getString(NOTE_ID);
         mMonumentID = this.getArguments().getString(MONUMENT_ID);
+        mNotesList = new ArrayList<>();
     }
 
     @Override
@@ -181,6 +217,9 @@ public class PageFragment extends Fragment {
             mFireHelper.setOnFindUserLikeSuccessListener(mOnFindUserLikeSuccessListener);
             mFireHelper.findLikeUser(mNoteID, mFireHelper.getCurrentUid(), mMonumentID);
         }
+
+        mFireHelper.setOnFindNoteListener(mOnFindNoteListener);
+        mFireHelper.findNoteById(mNoteID, mMonumentID);
     }
 
     @Nullable
@@ -197,12 +236,11 @@ public class PageFragment extends Fragment {
         mDelete = (ImageView) view.findViewById(R.id.delete_note);
         mLike.setOnClickListener(OnLikeClickListener);
 
-        //stexel petqa stugum katares u tenas ete @s note patkanuma @s userin uremn zibili arkx@ visible darcni vor@ mDelete-na.
-
         mDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Hesa stex petqa jnjes u tamacnes noteri list@.
+                mFireHelper.setOnDeleteNoteListener(mOnDeleteNoteListener);
+                mFireHelper.deleteNote(mNoteID, mMonumentID);
             }
         });
         mProgressBar = (ProgressBar) view.findViewById(R.id.progress_page);
@@ -217,5 +255,18 @@ public class PageFragment extends Fragment {
 
             }
         });
+    }
+
+    public IOnRemoveItemListener getOnRemoveListener() {
+        return mOnRemoveListener;
+    }
+
+    public void setOnRemoveListener(IOnRemoveItemListener mOnRemoveListener) {
+        this.mOnRemoveListener = mOnRemoveListener;
+    }
+
+    public interface IOnRemoveItemListener
+    {
+        void onSuccess(String noteId);
     }
 }

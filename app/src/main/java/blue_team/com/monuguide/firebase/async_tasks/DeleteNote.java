@@ -8,31 +8,29 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import blue_team.com.monuguide.firebase.FireHelper;
-import blue_team.com.monuguide.models.Note;
 
 public class DeleteNote extends AsyncTask<Void, Void, Void>{
 
-    private Note mNote;
+    private String mNoteID;
     private String mMonumentID;
     private FireHelper mFireHelper;
-    private Query mDeleteNote;
 
-    public DeleteNote(Note note, String monumentID, FireHelper fh)
+    public DeleteNote(String noteID, String monumentID, FireHelper fh)
     {
-        this.mNote = note;
+        this.mNoteID = noteID;
         this.mFireHelper = fh;
         this.mMonumentID = monumentID;
     }
 
     @Override
     protected Void doInBackground(Void... params) {
-        deleteNote(mMonumentID,mNote);
-        mFireHelper.getOnDeleteNoteListener().doingSomething();
+        deleteNote(mMonumentID, mNoteID);
+        mFireHelper.getOnDeleteNoteListener().doingSomething(mNoteID);
         return null;
     }
 
-    private void deleteNote(String mMonumentID, Note mNote)
+    private void deleteNote(String mMonumentID, String mNoteID)
     {
-        mDeleteNote = mFireHelper.getmDatabase().child("models").child("monuments").child(mMonumentID).child("notes").orderByKey().equalTo(mNote.getId());
+        mFireHelper.getmDatabase().child("models").child("monuments").child(mMonumentID).child("notes").child(mNoteID).removeValue();
     }
 }

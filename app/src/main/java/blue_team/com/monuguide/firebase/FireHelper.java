@@ -26,8 +26,10 @@ import blue_team.com.monuguide.firebase.async_tasks.AddFavoriteMon;
 import blue_team.com.monuguide.firebase.async_tasks.AddLike;
 import blue_team.com.monuguide.firebase.async_tasks.AddNote;
 import blue_team.com.monuguide.firebase.async_tasks.AddUser;
+import blue_team.com.monuguide.firebase.async_tasks.DeleteNote;
 import blue_team.com.monuguide.firebase.async_tasks.FindFavMon;
 import blue_team.com.monuguide.firebase.async_tasks.FindLikeUser;
+import blue_team.com.monuguide.firebase.async_tasks.FindNoteById;
 import blue_team.com.monuguide.firebase.async_tasks.FindUser;
 import blue_team.com.monuguide.firebase.async_tasks.GetFavMonList;
 import blue_team.com.monuguide.firebase.async_tasks.GetLikeCount;
@@ -58,6 +60,7 @@ public class FireHelper {
     private IOnGetLikeCountSuccessListener mOnGetLikeCountSuccessListener;
     private IOnOperationEndListener mOnOperationEndListener;
     private IOnDeleteNoteListener mOnDeleteNoteListener;
+    private IOnFindNoteListener mOnFindNoteListener;
 
     public FireHelper()
     {
@@ -121,6 +124,18 @@ public class FireHelper {
     {
         AddNote sn = new AddNote(bitmap, monument, userID, userName, this);
         sn.execute();
+    }
+
+    public void deleteNote(String noteID, String monumentID)
+    {
+        DeleteNote dn = new DeleteNote(noteID, monumentID, this);
+        dn.execute();
+    }
+
+    public void findNoteById(String noteId, String monumentId)
+    {
+        FindNoteById fnbi = new FindNoteById(noteId, monumentId, this);
+        fnbi.execute();
     }
 
     public void addFavoriteMon(Monument monument,String userID)
@@ -310,6 +325,18 @@ public class FireHelper {
     }
 
     public interface IOnDeleteNoteListener{
-        void doingSomething();
+        void doingSomething(String NoteId);
+    }
+
+    public IOnFindNoteListener getOnFindNoteListener() {
+        return mOnFindNoteListener;
+    }
+
+    public void setOnFindNoteListener(IOnFindNoteListener mOnFindNoteListener) {
+        this.mOnFindNoteListener = mOnFindNoteListener;
+    }
+
+    public interface IOnFindNoteListener{
+        void onSuccess(HashMap<String, Note> mNote);
     }
 }
