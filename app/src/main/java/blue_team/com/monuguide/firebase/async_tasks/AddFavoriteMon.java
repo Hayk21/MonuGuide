@@ -19,7 +19,14 @@ public class AddFavoriteMon extends AsyncTask<Void,Void,Void>
 
     @Override
     protected Void doInBackground(Void... params) {
-        mFireHelper.getmDatabase().child("models").child("users").child(mUserID).child("favoriteMon").child(mMonument.getId()).setValue(mMonument);
+        addFavoriteMonument();
         return null;
     }
+
+    private void addFavoriteMonument()
+    {
+        mFireHelper.getmDatabase().child("models").child("users").child(mUserID).child("favoriteMon").child(mMonument.getId()).setValue(mMonument);
+
+    }
 }
+

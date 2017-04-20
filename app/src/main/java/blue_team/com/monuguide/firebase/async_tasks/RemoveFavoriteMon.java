@@ -18,7 +18,12 @@ public class RemoveFavoriteMon extends AsyncTask<Void, Void, Void>
     }
     @Override
     protected Void doInBackground(Void... params) {
-        mFireHelper.getmDatabase().child("models").child("users").child(mUserID).child("favoriteMon").child(mMonument.getId()).removeValue();
+        removeFavMon();
         return null;
+    }
+
+    private void removeFavMon()
+    {
+        mFireHelper.getmDatabase().child("models").child("users").child(mUserID).child("favoriteMon").child(mMonument.getId()).removeValue();
     }
 }

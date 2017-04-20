@@ -22,34 +22,48 @@ public class AddNote extends AsyncTask<Void,Void,Void>
     private String mUserID;
     private String mUserName;
     private String mNoteId;
-    private int mSize;
     private FireHelper mFireHelper;
     private Note mNote;
 
-    public AddNote(Bitmap bitmap, Monument monument, String userID,String userName, int size, FireHelper fh) {
+    public AddNote(Bitmap bitmap, Monument monument, String userID,String userName, FireHelper fh) {
         this.mBitmap = bitmap;
         this.mMonument = monument;
         this.mUserID = userID;
         this.mUserName = userName;
-        this.mSize = size;
         this.mFireHelper = fh;
         mNote = new Note();
     }
 
     @Override
     protected Void doInBackground(Void... params) {
+        byte[] data = getBitmapImage();
+        mNote = addNewNote();
+        addImageInStorage(data);
+        return null;
+    }
+
+    private byte[] getBitmapImage()
+    {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         mBitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
         mBitmap.recycle();
         mBitmap = null;
         byte[] data = baos.toByteArray();
-        //String s = mMonument.getId() + "Note";
-        //s += (mSize + 1);
+        return data;
+    }
+
+    private Note addNewNote()
+    {
         mNote = new Note();
         mNote.setAutorName(mUserName);
         mNote.setUid(mUserID);
         mNoteId = mFireHelper.getmDatabase().child("models").child("monuments").child(mMonument.getId()).child("notes").push().getKey();
         mNote.setId(mNoteId);
+        return mNote;
+    }
+
+    private void addImageInStorage(byte[] data)
+    {
         UploadTask uploadTask = mFireHelper.getmStorageRef().child("noteImages/" + mNoteId).putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
@@ -62,16 +76,23 @@ public class AddNote extends AsyncTask<Void,Void,Void>
                 @SuppressWarnings("VisibleForTests")
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 String imageUrl = downloadUrl.toString();
-                mNote.setImage(imageUrl);
-                mNote.setLikeCount(0);
-                mNote.setDatetime(System.currentTimeMillis());
-
-                mFireHelper.getmDatabase().child("models").child("monuments").child(mMonument.getId()).child("notes").child(mNote.getId()).setValue(mNote);
-                mFireHelper.getOnOperationEndListener().doingSomething();
-                }
-            });
-
-        return null;
+                addNote(imageUrl);
+                addNoteInDatabase();
+            }
+        });
     }
 
+    private void addNote(String imageUrl)
+    {
+        mNote.setImage(imageUrl);
+        mNote.setLikeCount(0);
+        mNote.setDatetime(System.currentTimeMillis());
+    }
+
+    private void addNoteInDatabase()
+    {
+        mFireHelper.getmDatabase().child("models").child("monuments").child(mMonument.getId()).child("notes").child(mNote.getId()).setValue(mNote);
+        mFireHelper.getOnOperationEndListener().doingSomething();
+
+    }
 }

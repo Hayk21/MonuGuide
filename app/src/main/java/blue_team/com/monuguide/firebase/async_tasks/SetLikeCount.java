@@ -13,18 +13,21 @@ public class SetLikeCount extends AsyncTask<Void, Void, Void>
     private String mNoteId;
     private DatabaseReference mDatabase;
 
-
     public SetLikeCount(int likeCount, String monumentId, String noteId, DatabaseReference database) {
         this.mLikeCount = likeCount;
         this.mMonumentId = monumentId;
         this.mNoteId = noteId;
         this.mDatabase = database;
-
     }
 
     @Override
     protected Void doInBackground(Void... params) {
-        mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").child(mNoteId).child("likeCount").setValue(mLikeCount);
+        setLikeCount();
         return null;
+    }
+
+    private void setLikeCount()
+    {
+        mDatabase.child("models").child("monuments").child(mMonumentId).child("notes").child(mNoteId).child("likeCount").setValue(mLikeCount);
     }
 }

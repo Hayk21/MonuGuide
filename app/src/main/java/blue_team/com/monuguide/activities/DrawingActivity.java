@@ -23,7 +23,6 @@ public class DrawingActivity extends AppCompatActivity {
     public static final int SMALL_BRUSH = 10, MEDIUM_BRUSH = 30, BIG_BRUSH = 50;
     public static final int SMALL_ERASER = 30, MEDIUM_ERASER = 60, BIG_ERASER = 90;
     private Monument mMonument;
-    private int mSize;
     private PaintView mPaintView;
     private LinearLayout mFirstListOfColors, mSecondListOfColors, mListOfTools;
     private ImageButton mCurrentCollor;
@@ -152,9 +151,9 @@ public class DrawingActivity extends AppCompatActivity {
                                 String myuser = mFireHelper.getCurrentUid();
                                 if (myuser != null) {
                                     if (isAnonymous) {
-                                        mFireHelper.addNote(bitmap1, mMonument, myuser, "Anonymous", mSize);
+                                        mFireHelper.addNote(bitmap1, mMonument, myuser, "Anonymous");
                                     } else {
-                                        mFireHelper.addNote(bitmap1, mMonument, myuser, mFireHelper.getCurrentUserName(), mSize);
+                                        mFireHelper.addNote(bitmap1, mMonument, myuser, mFireHelper.getCurrentUserName());
                                     }
                                     Dialog loadingDialog = new Dialog(DrawingActivity.this);
                                     loadingDialog.setContentView(R.layout.loading_dialog);
@@ -204,7 +203,6 @@ public class DrawingActivity extends AppCompatActivity {
         Intent activityIntent = this.getIntent();
         if (activityIntent.getParcelableExtra(PagerActivity.EXTRA_WITH_MONUMENT) != null) {
             mMonument = activityIntent.getParcelableExtra(PagerActivity.EXTRA_WITH_MONUMENT);
-            mSize = activityIntent.getIntExtra(PagerActivity.EXTRA_WITH_SIZE, 0);
         }
         mPaintView = (PaintView) findViewById(R.id.paintView);
         mFirstListOfColors = (LinearLayout) findViewById(R.id.list_of_colors_1);
