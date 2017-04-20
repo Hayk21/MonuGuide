@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -342,8 +343,6 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
 
 
 
-    private void setMarkerType(int monumentType) {
-        switch (monumentType) {
     private void setMarkerType(int monumentType){
         switch (monumentType){
             case 1:
@@ -359,10 +358,9 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-    public void setMonumentFromSearch(Monument monument) {
+    public void setMonumentFromSearch(Monument monument){
         LatLng currentLL = new LatLng(monument.getLatitude(), monument.getLongitude());
         CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(mDefaultZoom);
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(mDefaultZoom);
         mMap.animateCamera(zoom, 9000, null);
         createMarker(monument);
