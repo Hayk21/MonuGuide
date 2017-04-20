@@ -38,7 +38,7 @@ public class PageFragment extends Fragment {
     private String mMonumentID;
     private String mURL;
     private int mCountLike;
-    private ImageView mLike;
+    private ImageView mLike,mDelete;
     private TextView mLikeCount;
     private Animation mOpen, mClose, mClose2;
     private AlertDialog mAlertDialog;
@@ -194,7 +194,17 @@ public class PageFragment extends Fragment {
         ImageView mCurrentImage = (ImageView) view.findViewById(R.id.image_page);
         mLikeCount = (TextView) view.findViewById(R.id.like_count);
         mLike = (ImageView) view.findViewById(R.id.like_img);
+        mDelete = (ImageView) view.findViewById(R.id.delete_note);
         mLike.setOnClickListener(OnLikeClickListener);
+
+        //stexel petqa stugum katares u tenas ete @s note patkanuma @s userin uremn zibili arkx@ visible darcni vor@ mDelete-na.
+
+        mDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Hesa stex petqa jnjes u tamacnes noteri list@.
+            }
+        });
         mProgressBar = (ProgressBar) view.findViewById(R.id.progress_page);
         Picasso.with(getActivity()).load(mURL).into(mCurrentImage, new Callback() {
             @Override

@@ -1,21 +1,16 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- A 'parent' preference, which enables/disables child preferences (below)
-         when checked/unchecked. -->
     <SwitchPreference
         android:id="@+id/switch_preference"
         android:defaultValue="false"
         android:key="notifications_new_message"
         android:title="@string/pref_title_new_message_notifications" />
 
-    <!-- Allows the user to choose a ringtone in the 'notification' category. -->
-    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
-    <!-- NOTE: RingtonePreference's summary should be set to its value by the activity code. -->
     <ListPreference
+        android:defaultValue="@string/default_radius"
         android:dependency="notifications_new_message"
         android:key="notifications_new_message_radius"
         android:title="Radius"
-        android:defaultValue="@string/default_radius"
         android:entries="@array/list_of_radius_titles"
         android:entryValues="@array/list_of_radius_values"/>
 
@@ -25,7 +20,6 @@
         android:ringtoneType="notification"
         android:title="@string/pref_title_ringtone" />
 
-    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
     <SwitchPreference
         android:defaultValue="false"
         android:dependency="notifications_new_message"

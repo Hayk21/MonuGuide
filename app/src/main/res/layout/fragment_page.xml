@@ -53,6 +53,15 @@
             android:textColor="@color/text_color"
             android:textSize="30sp" />
 
+        <ImageView
+            android:id="@+id/delete_note"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@mipmap/delete_note_icon"
+            android:layout_margin="@dimen/small_brush"
+            android:visibility="invisible"/>
+
 
     </LinearLayout>
 

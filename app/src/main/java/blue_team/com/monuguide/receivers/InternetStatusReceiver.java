@@ -39,10 +39,6 @@ public class InternetStatusReceiver extends BroadcastReceiver {
     private boolean isConnect() {
         ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(CONNECTIVITY_SERVICE);
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-        if ((connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            return true;
-        } else
-            return false;
+        return connectivityManager.getActiveNetworkInfo() != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 }
