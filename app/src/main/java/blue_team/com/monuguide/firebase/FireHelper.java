@@ -57,6 +57,7 @@ public class FireHelper {
     private IOnFindUserLikeSuccessListener mOnFindUserLikeSuccessListener;
     private IOnGetLikeCountSuccessListener mOnGetLikeCountSuccessListener;
     private IOnOperationEndListener mOnOperationEndListener;
+    private IOnDeleteNoteListener mOnDeleteNoteListener;
 
     public FireHelper()
     {
@@ -297,6 +298,18 @@ public class FireHelper {
     }
 
     public interface IOnOperationEndListener{
+        void doingSomething();
+    }
+
+    public IOnDeleteNoteListener getOnDeleteNoteListener() {
+        return mOnDeleteNoteListener;
+    }
+
+    public void setOnDeleteNoteListener(IOnDeleteNoteListener mOnDeleteNoteListener) {
+        this.mOnDeleteNoteListener = mOnDeleteNoteListener;
+    }
+
+    public interface IOnDeleteNoteListener{
         void doingSomething();
     }
 }
