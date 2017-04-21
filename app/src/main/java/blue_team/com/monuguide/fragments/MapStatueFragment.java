@@ -300,6 +300,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             }
         });
 
+
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
@@ -310,7 +311,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
                             fireHelper.getMonuments(mMap.getCameraPosition().target.latitude, mMap.getCameraPosition().target.longitude, mRadius);
                         }
                     } else {
-                        mMap.clear();
+                       // mMap.clear();
                     }
                 }
                 else{
@@ -319,7 +320,6 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             }
 
         });
-
     }
 
     private void addDeleteMarkersInMapMove(){
