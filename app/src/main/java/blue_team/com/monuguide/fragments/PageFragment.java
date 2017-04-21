@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,13 @@ public class PageFragment extends Fragment {
     private FireHelper.IOnFindNoteListener mOnFindNoteListener;
     private FireHelper.IOnDeleteNoteListener mOnDeleteNoteListener;
     private ProgressBar mProgressBar;
+    static int number;
+    FireHelper.IOnRemoveItemListener onRemoveItemListener = new FireHelper.IOnRemoveItemListener() {
+        @Override
+        public void onSuccess(String noteId) {
+
+        }
+    };
 
 
     View.OnClickListener OnLikeClickListener = new View.OnClickListener() {
@@ -131,6 +139,7 @@ public class PageFragment extends Fragment {
     public static PageFragment newInstance(int page, Note note, Monument monument) {
         PageFragment pageFragment = new PageFragment();
         Bundle args = new Bundle();
+        number = page;
         args.putInt(PAGE_NUMBER, page);
         args.putString(PAGE_URL, note.getImage());
         args.putString(NOTE_ID, note.getId());
@@ -216,7 +225,6 @@ public class PageFragment extends Fragment {
             mFireHelper.setOnFindUserLikeSuccessListener(mOnFindUserLikeSuccessListener);
             mFireHelper.findLikeUser(mNoteID, mFireHelper.getCurrentUid(), mMonumentID);
         }
-
         mFireHelper.setOnFindNoteListener(mOnFindNoteListener);
         mFireHelper.findNoteById(mNoteID, mMonumentID);
     }
@@ -238,9 +246,10 @@ public class PageFragment extends Fragment {
         mDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mFireHelper.setOnRemoveListener(onRemoveItemListener);
                 mFireHelper.setOnDeleteNoteListener(mOnDeleteNoteListener);
                 mFireHelper.deleteNote(mNoteID, mMonumentID);
-                mFireHelper.getOnRemoveListener().onSuccess(mNoteID);
+//                mFireHelper.getOnRemoveListener().onSuccess(mNoteID);
             }
         });
         mProgressBar = (ProgressBar) view.findViewById(R.id.progress_page);

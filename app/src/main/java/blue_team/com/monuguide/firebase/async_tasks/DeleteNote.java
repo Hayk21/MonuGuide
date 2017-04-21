@@ -32,5 +32,6 @@ public class DeleteNote extends AsyncTask<Void, Void, Void>{
     private void deleteNote(String mMonumentID, String mNoteID)
     {
         mFireHelper.getmDatabase().child("models").child("monuments").child(mMonumentID).child("notes").child(mNoteID).removeValue();
+        mFireHelper.getOnRemoveListener().onSuccess(mNoteID);
     }
 }
