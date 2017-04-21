@@ -61,19 +61,16 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     private GoogleMap mMap;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
-    private Location mLocation;
     private double mLatitude;
     private double mLongitude;
     private Marker mMarker;
     private FireHelper fireHelper = new FireHelper();
-    List<Monument> listOfMonument;
-    private ArrayList<Marker> mMarkerArrayList = new ArrayList<>();
+    List<String> listOfMonument = new ArrayList<>();
+    private HashMap<String,Marker> mMarkerShowHashMap = new HashMap<>();
+    private HashMap<String, Monument> mMonumentHashMap = new HashMap<>();
     private FloatingActionButton mCurrentLocationBtn;
     public boolean mSetMyLocation = false;
     private boolean mMarkerClicked = false;
-    boolean b = false;
-    private boolean mFromSearch = false;
-    private Monument mSearchMonument;
 
     private double mRadius = 0.047685;
     private double mShowMonuments = 0.00002809;
@@ -87,7 +84,6 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        listOfMonument = new ArrayList<>();
         fireHelper.setOnGetMonumentListSuccessListener(onGetMonumentListSuccessListener);
     }
 
@@ -178,8 +174,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
                 LatLng defaultLatLng = new LatLng(40.177626, 44.512458);
                 CameraUpdate center = CameraUpdateFactory.newLatLng(defaultLatLng);
-                mMarker = mMap.addMarker((new MarkerOptions().position(defaultLatLng)
-                        .title("Yerevan")));
+                //mMarker = mMap.addMarker((new MarkerOptions().position(defaultLatLng).title("Yerevan")));
                 CameraUpdate zoom = CameraUpdateFactory.zoomTo(mDefaultZoom);
                 mMap.moveCamera(center);
                 mMap.animateCamera(zoom, 9000, null);
@@ -327,23 +322,42 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
     }
 
+    private void addDeleteMarkersInMapMove(){
+        if(!mMarkerShowHashMap.isEmpty()) {
+            for (String key : mMarkerShowHashMap.keySet()) {
+                if (mMonumentHashMap.containsKey(key)) {
+                    mMonumentHashMap.remove(key);
+                }
+                else{
+                    listOfMonument.add(key);
+                }
+            }
+
+            if (!listOfMonument.isEmpty()){
+                for (String key:listOfMonument) {
+                    mMarkerShowHashMap.remove(key);
+                }
+            }
+
+            for (Monument monument: mMonumentHashMap.values()) {
+                mMarkerShowHashMap.put(monument.getId() + "", createMarker(monument));
+            }
+        }
+        else{
+            for (Monument monument : mMonumentHashMap.values()) {
+                mMarkerShowHashMap.put(monument.getId() + "", createMarker(monument));
+            }
+        }
+    }
+
     private FireHelper.IOnGetMonumentListSuccessListener onGetMonumentListSuccessListener = new FireHelper.IOnGetMonumentListSuccessListener() {
         @Override
         public void onSuccess(HashMap<String, Monument> mMap) {
-            listOfMonument.clear();
-            listOfMonument.addAll(mMap.values());
-            getMonumentList();
+           mMonumentHashMap.clear();
+            mMonumentHashMap = mMap;
+            addDeleteMarkersInMapMove();
         }
     };
-
-    private void getMonumentList(){
-        mMap.clear();
-        LatLng currentLL = new LatLng(mLatitude, mLongitude);
-        mMap.addMarker(new MarkerOptions().position(currentLL).title("Yerevan"));
-        for (Monument monument : listOfMonument) {
-            mMarkerArrayList.add(createMarker(monument));
-        }
-    }
 
     private Marker createMarker(Monument monument) {
         mMarker = mMap.addMarker((new MarkerOptions().position(new LatLng(monument.getLatitude(), monument.getLongitude()))
@@ -370,18 +384,12 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
 
     public void setMonumentFromSearch(Monument monument){
-        mSearchMonument = monument;
-        mFromSearch = true;
         LatLng currentLL = new LatLng(monument.getLatitude(), monument.getLongitude());
         CameraUpdate center = CameraUpdateFactory.newLatLng(currentLL);
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(mDefaultZoom);
         createMarker(monument);
         mMap.moveCamera(center);
         mMarker.showInfoWindow();
-        //mMap.animateCamera(zoom, 9000, null);
-        //mMap.animateCamera(CameraUpdateFactory.zoomTo(mMap.getCameraPosition().zoom), null);
-
-
         CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
                 currentLL, mMap.getCameraPosition().zoom);
         mMap.animateCamera(location);
