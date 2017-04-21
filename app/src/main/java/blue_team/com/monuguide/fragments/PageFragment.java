@@ -51,7 +51,6 @@ public class PageFragment extends Fragment {
     private FireHelper.IOnGetLikeCountSuccessListener mOnGetLikeCountSuccessListener;
     private FireHelper.IOnFindNoteListener mOnFindNoteListener;
     private FireHelper.IOnDeleteNoteListener mOnDeleteNoteListener;
-    private IOnRemoveItemListener mOnRemoveListener;
     private ProgressBar mProgressBar;
 
 
@@ -191,7 +190,7 @@ public class PageFragment extends Fragment {
         mOnDeleteNoteListener = new FireHelper.IOnDeleteNoteListener() {
             @Override
             public void doingSomething(String noteId) {
-                mOnRemoveListener.onSuccess(noteId);
+                //mFireHelper.getOnRemoveListener().onSuccess(noteId);
             }
         };
     }
@@ -241,6 +240,7 @@ public class PageFragment extends Fragment {
             public void onClick(View view) {
                 mFireHelper.setOnDeleteNoteListener(mOnDeleteNoteListener);
                 mFireHelper.deleteNote(mNoteID, mMonumentID);
+                mFireHelper.getOnRemoveListener().onSuccess(mNoteID);
             }
         });
         mProgressBar = (ProgressBar) view.findViewById(R.id.progress_page);
@@ -257,16 +257,5 @@ public class PageFragment extends Fragment {
         });
     }
 
-    public IOnRemoveItemListener getOnRemoveListener() {
-        return mOnRemoveListener;
-    }
 
-    public void setOnRemoveListener(IOnRemoveItemListener mOnRemoveListener) {
-        this.mOnRemoveListener = mOnRemoveListener;
-    }
-
-    public interface IOnRemoveItemListener
-    {
-        void onSuccess(String noteId);
-    }
 }

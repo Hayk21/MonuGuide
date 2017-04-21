@@ -61,6 +61,7 @@ public class FireHelper {
     private IOnOperationEndListener mOnOperationEndListener;
     private IOnDeleteNoteListener mOnDeleteNoteListener;
     private IOnFindNoteListener mOnFindNoteListener;
+    private IOnRemoveItemListener mOnRemoveListener;
 
     public FireHelper()
     {
@@ -338,5 +339,18 @@ public class FireHelper {
 
     public interface IOnFindNoteListener{
         void onSuccess(HashMap<String, Note> mNote);
+    }
+
+    public IOnRemoveItemListener getOnRemoveListener() {
+        return mOnRemoveListener;
+    }
+
+    public void setOnRemoveListener(IOnRemoveItemListener mOnRemoveListener) {
+        this.mOnRemoveListener = mOnRemoveListener;
+    }
+
+    public interface IOnRemoveItemListener
+    {
+        void onSuccess(String noteId);
     }
 }

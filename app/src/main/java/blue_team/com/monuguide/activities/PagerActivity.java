@@ -53,7 +53,6 @@ public class PagerActivity extends FragmentActivity {
     private TextView mNothingText;
     private FireHelper mFireHelper = new FireHelper();
     private AlertDialog mAlertDialog;
-    private PageFragment.IOnRemoveItemListener mOnRemoveItemListener;
     Animation animation;
     Dialog loadingDialog;
     LocationManager mLocationManager;
@@ -76,6 +75,21 @@ public class PagerActivity extends FragmentActivity {
         }
     };
 
+    private FireHelper.IOnRemoveItemListener mOnRemoveItemListener = new FireHelper.IOnRemoveItemListener() {
+        @Override
+        public void onSuccess(String noteId) {
+            for(int i = 0; i < mListOfNote.size(); ++i)
+            {
+                if(mListOfNote.get(i).getId().equals(noteId))
+                {
+                    mListOfNote.remove(i);
+                }
+            }
+            mPagerAdapter.notifyDataSetChanged();
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +97,7 @@ public class PagerActivity extends FragmentActivity {
         loadingDialog = new Dialog(PagerActivity.this);
         mListOfNote = new ArrayList<>();
         mFireHelper.setOnNoteSuccessListener(iOnNoteSuccessListener);
+        mFireHelper.setOnRemoveListener(mOnRemoveItemListener);
         animation = AnimationUtils.loadAnimation(this, R.anim.pressed_anim);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mNothingText = (TextView) findViewById(R.id.nothing_id);
@@ -197,18 +212,7 @@ public class PagerActivity extends FragmentActivity {
             }
         });
 
-        mOnRemoveItemListener = new PageFragment.IOnRemoveItemListener() {
-            @Override
-            public void onSuccess(String noteId) {
-                for(int i = 0; i < mListOfNote.size(); ++i)
-                {
-                    if(mListOfNote.get(i).getId().equals(noteId))
-                    {
-                        mListOfNote.remove(i);
-                    }
-                }
-            }
-        };
+
 
     }
 
@@ -288,6 +292,4 @@ public class PagerActivity extends FragmentActivity {
             return mListOfNote.get(position).getAutorName();
         }
     }
-
-
 }
