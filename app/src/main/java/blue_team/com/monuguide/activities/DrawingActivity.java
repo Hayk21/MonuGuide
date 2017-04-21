@@ -31,6 +31,7 @@ public class DrawingActivity extends AppCompatActivity {
     private FireHelper mFireHelper = new FireHelper();
     private boolean isAnonymous = true;
     private FireHelper.IOnOperationEndListener mOperationEndListener;
+    private Dialog loadingDialog;
 
     View.OnClickListener OnColorItemClickListtener = new View.OnClickListener() {
         @Override
@@ -155,7 +156,7 @@ public class DrawingActivity extends AppCompatActivity {
                                     } else {
                                         mFireHelper.addNote(bitmap1, mMonument, myuser, mFireHelper.getCurrentUserName());
                                     }
-                                    Dialog loadingDialog = new Dialog(DrawingActivity.this);
+                                    loadingDialog = new Dialog(DrawingActivity.this);
                                     loadingDialog.setContentView(R.layout.loading_dialog);
                                     loadingDialog.setCanceledOnTouchOutside(false);
                                     loadingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -238,6 +239,7 @@ public class DrawingActivity extends AppCompatActivity {
             public void doingSomething() {
                 Intent intent = new Intent(DrawingActivity.this, PagerActivity.class);
                 intent.putExtra(StartActivity.ARGUMENT_WITH_MONUMENT, mMonument);
+                loadingDialog.dismiss();
                 startActivity(intent);
                 DrawingActivity.this.finish();
                 overridePendingTransition(R.anim.alpha_up, R.anim.alpha_down);
