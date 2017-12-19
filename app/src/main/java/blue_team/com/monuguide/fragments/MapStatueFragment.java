@@ -7,15 +7,14 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,16 +22,12 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import android.location.LocationListener;
-import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -42,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import blue_team.com.monuguide.R;
-
 import blue_team.com.monuguide.activities.StartActivity;
 import blue_team.com.monuguide.firebase.FireHelper;
 import blue_team.com.monuguide.models.Monument;
@@ -57,7 +51,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
 
     private static final String TAG = "MapFragment";
 
-    private static View view;
+    private View view;
     private GoogleMap mMap;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
@@ -255,7 +249,7 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
             public void onLocationChanged(Location location) {
                 mLongitude = location.getLongitude();
                 mLatitude = location.getLatitude();
-                if(!mSetMyLocation){
+                if(!mSetMyLocation && mMap != null){
                     setMyLocation();
                     CameraUpdate zoom = CameraUpdateFactory.zoomTo(mDefaultZoom);
                     mMap.animateCamera(zoom, 4000, null);
@@ -284,42 +278,43 @@ public class MapStatueFragment extends Fragment implements OnMapReadyCallback{
     }
 
     private void mapMove(){
-        mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
-            @Override
-            public void onCameraMoveStarted(int i) {
-                mLatStart = mMap.getCameraPosition().target.latitude;
-                mLongStart = mMap.getCameraPosition().target.longitude;
-            }
-        });
+        if(mMap != null) {
+            mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+                @Override
+                public void onCameraMoveStarted(int i) {
+                    mLatStart = mMap.getCameraPosition().target.latitude;
+                    mLongStart = mMap.getCameraPosition().target.longitude;
+                }
+            });
 
-        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-            @Override
-            public void onCameraMove() {
-                mLatEnd = mMap.getCameraPosition().target.latitude;
-                mLongEnd = mMap.getCameraPosition().target.longitude;
-            }
-        });
+            mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                @Override
+                public void onCameraMove() {
+                    mLatEnd = mMap.getCameraPosition().target.latitude;
+                    mLongEnd = mMap.getCameraPosition().target.longitude;
+                }
+            });
 
 
-        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
-            @Override
-            public void onCameraIdle() {
-            float x = (float) ((mLatEnd - mLatStart)*(mLatEnd - mLatStart) + (mLongEnd - mLongStart)*(mLongEnd - mLongStart));
-                if (!mMarkerClicked) {
-                    if (mMap.getCameraPosition().zoom >= mDefaultZoom) {
-                        if (x > mShowMonuments) {
-                            fireHelper.getMonuments(mMap.getCameraPosition().target.latitude, mMap.getCameraPosition().target.longitude, mRadius);
+            mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+                @Override
+                public void onCameraIdle() {
+                    float x = (float) ((mLatEnd - mLatStart) * (mLatEnd - mLatStart) + (mLongEnd - mLongStart) * (mLongEnd - mLongStart));
+                    if (!mMarkerClicked) {
+                        if (mMap.getCameraPosition().zoom >= mDefaultZoom) {
+                            if (x > mShowMonuments) {
+                                fireHelper.getMonuments(mMap.getCameraPosition().target.latitude, mMap.getCameraPosition().target.longitude, mRadius);
+                            }
+                        } else {
+                             mMap.clear();
                         }
                     } else {
-                       // mMap.clear();
+                        mMarkerClicked = false;
                     }
                 }
-                else{
-                    mMarkerClicked = false;
-                }
-            }
 
-        });
+            });
+        }
     }
 
     private void addDeleteMarkersInMapMove(){
